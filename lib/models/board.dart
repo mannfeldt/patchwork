@@ -6,4 +6,9 @@ class Board {
   int width;
 
   Board();
+  void addPiece(Piece piece){
+    //lägger till piecen i listan. koordinaterna är redan uträknade i gamestate
+    //adderar piecens buttons till this.buttons
+    
+  }
 }

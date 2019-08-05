@@ -1,35 +1,63 @@
 import 'dart:math';
 import 'package:patchwork/models/piece.dart';
 import 'package:patchwork/models/square.dart';
+import 'package:patchwork/models/board.dart';
+import 'package:patchwork/models/player.dart';
 
 class RuleEngine {
+  static Square _west = new Square(-1, 0);
+  static Square _east = new Square(1, 0);
+  static Square _north = new Square(0, -1);
+  static Square _south = new Square(0, 1);
+  static final List directions = [_west, _east, _north, _south];
 
-  static timeBoard
+  static List<Piece> generatePieces() {
+    List<Piece> pieces = [];
+    for (int i = 0; i < 100; i++) {
+      Piece p = new Piece(i);
+      pieces.add(p);
+    }
 
-  static Piece generatePieces(){
-    Piece p = new Piece();
+    return pieces;
+    //p.squares = [new Square(0,0),new Square(1,0),new Square(2,0),new Square(2,1)];
     //sköt genereringen av size, suares osv här tack. för det är en del av logiken. eller nej förresten det är hårt kopplat till modellen
     // valideringen av det kan vi göra här för att se till så att vi får tillräckligt olika bitar
-    return p
-    print(p.color);
+    // return p;
+  }
+
+  static bool validatePlacement(Piece piece, Board board, int x, int y) {
+    //validerar om piece kan placeras på board vid postion x,y
+    //x,y är leftTopMostSquare of the piece
+  }
+
+  static bool canSelectPiece(Piece piece, Player player) {
+    //kollar att spelaren har tillräckligt med buttons för att köpa piecen
+    //kanske också kolla om piecen kan placeras nåonstanns på player.board? eller är det lite fusk?
+  }
+
+  static int getNextPlayerIndex(List<Player> players, int currentPlayerId) {
+    //returnera playerid på vems tur det är
+    //det är den som har lägst position
+    //om de har lika så returnera currentPlayerId tror jag. borde fungera även på mutliple players?
+    //det kan ju aldrig vara två på samma plats utan att den precis landat där och då får ju den fortsätta
+
+    //använd reduce? eller vanlig for loop?
   }
 }
 
-void main(){
-  RuleEngine.test();
+void main() {
+  List<Piece> ps = RuleEngine.generatePieces();
+  for (int k = 0; k < ps.length; k++) {
+    Piece p = ps[k];
+    List<String> s = p.getVisual();
+    for (int i = 0; i < s.length; i++) {
+      if (s[i].length > 0) {
+        //print(s[i]);
+      }
+    }
+    //print("-------------------");
+  }
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 /* 
 

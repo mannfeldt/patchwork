@@ -38,26 +38,26 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final gameState = Provider.of<GameState>(context);
-    Golfgame golfgame = gameState.getGame();
-    Widget child;
-    if (golfgame == null) {
-      //phase == level_completed?
-      child = Connect();
-    } else if (golfgame.phase == "connection") {
-      child = Lobby();
-    } else if (golfgame.phase == "starting") {
-      child = Center(child: Text("Starting.."));
-    } else if (golfgame.phase == "gameplay" ||
-        golfgame.phase == "level_completed") {
-      if (_previousPhase == "level_completed" && golfgame.phase == "gameplay") {
-        gameState.nextLevel();
-      }
-      child = GolfController();
-    } else {
-      child = Text("ERROR GAME PHASE WRONG?");
-    }
-    _previousPhase = golfgame != null ? golfgame.phase : null;
-
+    //Golfgame golfgame = gameState.getGame();
+    // Widget child;
+    // if (golfgame == null) {
+    //   //phase == level_completed?
+    //   child = Connect();
+    // } else if (golfgame.phase == "connection") {
+    //   child = Lobby();
+    // } else if (golfgame.phase == "starting") {
+    //   child = Center(child: Text("Starting.."));
+    // } else if (golfgame.phase == "gameplay" ||
+    //     golfgame.phase == "level_completed") {
+    //   if (_previousPhase == "level_completed" && golfgame.phase == "gameplay") {
+    //     gameState.nextLevel();
+    //   }
+    //   child = GolfController();
+    // } else {
+    //   child = Text("ERROR GAME PHASE WRONG?");
+    // }
+    //_previousPhase = golfgame != null ? golfgame.phase : null;
+    Widget child = MainMenu();
     //detta funkar inte. hur får jag provider i flera heirarkeier? hur kan jag använda state till att välja vilken widget som ska
 
     return Scaffold(
