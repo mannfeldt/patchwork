@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:patchwork/gamestate.dart';
 import 'package:provider/provider.dart';
 import 'package:patchwork/ruleEngine.dart';
+
 
 class MainMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    //final gameState = Provider.of<GameState>(context);
+    final gameState = Provider.of<GameState>(context);
 
     return Center(
       child: Column(
@@ -17,13 +19,13 @@ class MainMenu extends StatelessWidget {
                 onPressed: () {
                   RuleEngine.generatePieces();
                 },
-                child: Text("Continue"),
+                child: Text("Quick play (1v1) default setup"),
               ),
               RaisedButton(
                 onPressed: () {
-                  print("new game");
+                  gameState.setView("setup");
                 },
-                child: Text("New game"),
+                child: Text("New game (custom players and setup)"),
               )
             ],
           )

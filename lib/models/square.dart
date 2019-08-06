@@ -1,4 +1,3 @@
-
 class Square {
   int id;
   int x;
@@ -11,5 +10,6 @@ class Square {
   Square(int x, int y) {
     this.x = x;
     this.y = y;
+    this.hasButton = false;
   }
 }
