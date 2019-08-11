@@ -32,7 +32,7 @@ class SetupState extends State<Setup> {
         children: <Widget>[
           RaisedButton(
             onPressed: () {
-              gameState.setView("gameplay");
+              gameState.startGame();
             },
             child: Text("Start"),
           ),

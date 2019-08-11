@@ -8,6 +8,15 @@ import 'package:patchwork/gamestate.dart';
 import 'package:flutter/services.dart';
 
 void main() => runApp(MyApp());
+// TODO Animations. coola animeringar övergångar osv. snyggt vore om när man gör put piece så läggs den ner.
+// och knapparna räknas bort i en animation, sen flippas det automatiskt till timeboard-vyn där spelarens piece rör sig steg framåt
+//när den stannat och antingen fått en extra piece eller är nästa spelares tur så swapar den tillbaka till game-vyn
+//pieceSelectorn ska också animeras så att den snyggt plockar bort pieces och glider till vänster
+
+// TODO Rotering och spegling kanske man kan göra medan man drar biten? typ om man spelar med två fingrar och så har vi större knappar nere under boarden medan man drar i en bit
+// kanvara bra om det är jobbigt att behöva släppa biten hela tiden.
+//
+
 
 class MyApp extends StatelessWidget {
   @override
@@ -40,30 +49,19 @@ class HomePage extends StatelessWidget {
     final gameState = Provider.of<GameState>(context);
     final view = gameState.getView();
     Widget child;
+    bool showAppBar = true;
     if (view == null) {
       child = MainMenu();
     }else if(view == "setup"){
       child = Setup();
     }else if(view == "gameplay"){
       child = Gameplay();
+      showAppBar=false;
+    }else if(view == "finished"){
+      child = Text("finished view");
+      showAppBar=false;
     }
-    // if (golfgame == null) {
-    //   //phase == level_completed?
-    //   child = Connect();
-    // } else if (golfgame.phase == "connection") {
-    //   child = Lobby();
-    // } else if (golfgame.phase == "starting") {
-    //   child = Center(child: Text("Starting.."));
-    // } else if (golfgame.phase == "gameplay" ||
-    //     golfgame.phase == "level_completed") {
-    //   if (_previousPhase == "level_completed" && golfgame.phase == "gameplay") {
-    //     gameState.nextLevel();
-    //   }
-    //   child = GolfController();
-    // } else {
-    //   child = Text("ERROR GAME PHASE WRONG?");
-    // }
-    //_previousPhase = golfgame != null ? golfgame.phase : null;
+   
 // börja med det grafiska nu. när man klickarp å new game så ska en vy visas som är settings. här väljer man antal spelare och om det ska vara randombitar eller default
 // när man godkänt inställningar kommer man vidare till gameplay där man får se timeboard och alla spelbitar runt denna. (alla kan inte visas så får bli någon form av scroll/zoom/portal de kommer ut genom)
 //  därifrån ska man kunna swipea över till en annan vy som visar currentplayers spelbräde, tre nästkommande bitar att välja på, en passknapp, HuD för spelarens knappar (kanske senare också hur många ofyllda shape spelaren har )
@@ -71,12 +69,14 @@ class HomePage extends StatelessWidget {
 //     swipea mellan vyer kan uppnås med att se det som en lista med två objekt som ligger horizontellt och tar upp 100%?
 //     drag and drop ska vara med sikte på leftTopMost har jag sagt. då måste det också vara där man håller tummen på för att det ksa bli korrekt?
 //     alt. så blir det inte leftTopMost utan vi har en dragSquare som är den man har fingret på och det är den som styr hur placeringen blir beroende på var man släpper den
-    return Scaffold(
-      appBar: AppBar(
+    var scaffold = Scaffold(
+        
+      appBar: showAppBar ? AppBar(
         title: Text("Patchwork"),
-      ),
+      ):null,
       body: child,
     );
+    return scaffold;
   }
 }
 //https://github.com/CACppuccino/PatchworkGame

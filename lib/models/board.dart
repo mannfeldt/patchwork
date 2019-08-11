@@ -1,16 +1,27 @@
 import 'package:patchwork/models/piece.dart';
+import 'package:patchwork/models/square.dart';
 class Board {
   int buttons;
   List<Piece> pieces;
-  int maxY;
-  int maxX;
+  List<Square> squares;
+  List<Square> hovered;
+  int rows;
+  int cols;
 
   Board(){
     this.buttons =0;
-    this.maxY = 8;
-    this.maxX = 8;
+    this.rows = 9;
+    this.cols = 9;
+    this.pieces = [];
+    this.squares = [];
+    this.hovered = [];
   }
   void addPiece(Piece piece){
+
+    this.pieces.add(piece);
+    this.squares.addAll(piece.shape);
+    this.buttons += piece.buttons;
+    
     //lägger till piecen i listan. koordinaterna är redan uträknade i gamestate
     //adderar piecens buttons till this.buttons
     
