@@ -8,6 +8,8 @@ const double patchUnitSizeWithPadding = patchUnitSize + 1.0;
 const double boardTilePadding = 1.0;
 typedef PatchPlacedCallback = void Function(Piece piece);
 
+const double timeBoardTileHeight = 30.0;
+const double timeBoardTileWidth = 90.0;
 const double boardInset = 5.0;
 const int maxPieceSize = 10;
 const int maxPieceLength = 6;

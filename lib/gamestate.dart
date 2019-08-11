@@ -20,7 +20,6 @@ class GameState with ChangeNotifier {
   Player _currentPlayer;
   bool _extraPieceCollected;
   int _pieceMarkerIndex;
-  Piece _currentPiece; //biten som användaren valt att placera
   List<Player> _players =
       []; // player holds boardsstate(nytt objekt som inkluderar en lista med pieces, boardbuttons), buttonCash, position (timeboard), isAi,
   TimeBoard
@@ -37,7 +36,6 @@ class GameState with ChangeNotifier {
 
   getView() => _view;
   getTimeBoard() => _timeBoard;
-  getCurrentPiece() => _currentPiece;
   getCurrentPlayer() => _currentPlayer;
   getGamePieces() => _gamePieces;
   getPlayers() => _players;
@@ -69,6 +67,11 @@ class GameState with ChangeNotifier {
     });
     return completer.future;
   }
+  void restartApp(){
+    _view = null;
+    _players.clear();
+    notifyListeners();
+  }
 
   void setBoardTileSize(Size screenSize) {
     double boardTileSpace =
@@ -80,7 +83,7 @@ class GameState with ChangeNotifier {
   void startGame() {
     init();
     _view = "gameplay";
-    List<Piece> ps =RuleEngine.generatePieces();
+    List<Piece> ps = RuleEngine.generatePieces();
     _gamePieces = ps;
     _gamePieces.shuffle();
     _timeBoard = new TimeBoard("default");
@@ -167,12 +170,16 @@ class GameState with ChangeNotifier {
     nextTurn();
   }
 
-  void selectPiece(Piece piece) {}
+  void _finishGame() {
+    _view = "finished";
+    _players.forEach((player) => player.score = RuleEngine.calculateScore(player));
+    notifyListeners();
+  }
 
   void nextTurn() {
     bool gameFinished = RuleEngine.isGameFinished(_players);
     if (gameFinished) {
-      _view = "finished";
+      _finishGame();
     }
     _currentPlayer = RuleEngine.getNextPlayer(_players, _currentPlayer);
     //det här neda hör ju också till reglerna?
@@ -192,9 +199,9 @@ class GameState with ChangeNotifier {
     _currentPlayer.position += moves;
     int after = _currentPlayer.position;
     bool passedButton =
-        _timeBoard.buttonIndexes.any((b) => b < after && b > before);
+        _timeBoard.buttonIndexes.any((b) => b <= after && b > before);
     int passedPieceIndex = _timeBoard.pieceIndexes
-        .firstWhere((b) => b < after && b > before, orElse: () => -1);
+        .firstWhere((b) => b <= after && b > before, orElse: () => -1);
 
     if (passedButton) {
       _currentPlayer.buttons += _currentPlayer.board.buttons;
@@ -204,9 +211,9 @@ class GameState with ChangeNotifier {
       _timeBoard.pieceIndexes.removeWhere((p) => p == passedPieceIndex);
     }
 
-    if (after > _timeBoard.goalIndex) {
+    if (after >= _timeBoard.goalIndex) {
       _currentPlayer.state = "finished";
-      _currentPlayer.position = _timeBoard.goalIndex+1;
+      _currentPlayer.position = _timeBoard.goalIndex + 1;
     }
     if (!_extraPieceCollected) {
       nextTurn();

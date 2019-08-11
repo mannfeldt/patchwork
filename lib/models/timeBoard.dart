@@ -1,6 +1,5 @@
 class TimeBoard {
-  List<int>
-      buttonIndexes; //index på rutan efter knappen så står man på den indexet så får man
+  List<int> buttonIndexes;
   List<int> pieceIndexes;
   List<int> wildCardIndexes;
   int goalIndex;
@@ -15,7 +14,7 @@ class TimeBoard {
       case "wild":
         //differend mode,
         this.goalIndex = 70;
-        this.buttonIndexes = [5, 11, 17, 24, 31, 38, 45, 52, 59, 66 ];
+        this.buttonIndexes = [5, 11, 17, 24, 31, 38, 45, 52, 59, 66];
         this.pieceIndexes = [34, 42, 49, 56];
         this.wildCardIndexes = [20, 36, 69];
         break;

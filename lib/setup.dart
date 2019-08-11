@@ -98,6 +98,7 @@ class SetupState extends State<Setup> {
                   onPressed: () {
                     gameState.addPlayer(
                         nameController.text, _pickerColor, _isAi);
+                    nameController.clear();
                   },
                   child: Text("Add"),
                 ),
@@ -120,7 +121,8 @@ class SetupState extends State<Setup> {
                           Scaffold.of(context).showSnackBar(SnackBar(
                               content: Text(player.name + " removed")));
                         },
-                        background: Container(color: Colors.deepOrange.shade300),
+                        background:
+                            Container(color: Colors.deepOrange.shade300),
                         child: ListTile(
                           title: Text(player.name),
                           leading: Icon(

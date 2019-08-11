@@ -1,13 +1,9 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:meta/meta.dart';
 import 'package:patchwork/constants.dart';
 import 'package:patchwork/models/piece.dart';
 import 'package:patchwork/models/square.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:flutter/services.dart' show rootBundle;
 import 'dart:ui' as ui;
 
 final String assetName2 = 'assets/J.png';

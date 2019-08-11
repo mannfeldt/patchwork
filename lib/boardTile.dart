@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:patchwork/models/board.dart';
 import 'package:patchwork/models/piece.dart';
 import 'package:patchwork/models/player.dart';
 import 'package:patchwork/models/square.dart';
@@ -16,12 +14,15 @@ class BoardTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final gameState = Provider.of<GameState>(context);
     Player currentPlayer = gameState.getCurrentPlayer();
-//detta ska vara en dragtarget sen med lite eventlisteners etc
-
     return DragTarget<Piece>(
         builder: (context, List<Piece> candidateData, rejectedData) {
       return Container(
-        child: Text(square.hasButton ? "B" : ""),
+        child: square.hasButton
+            ? Icon(
+                Icons.radio_button_checked,
+                color: Colors.blue,
+              )
+            : null,
         decoration: new BoxDecoration(
             color: square.color,
             border: !square.filled

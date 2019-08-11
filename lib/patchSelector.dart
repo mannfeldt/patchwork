@@ -14,17 +14,27 @@ class PatchSelector extends StatelessWidget {
     bool extraPieceCollected = gameState.getExtraPieceCollected();
     if (extraPieceCollected) {
       Piece extraPiece = new Piece.single(0);
-      return Container(
-        alignment: Alignment.topCenter,
-        child: Patch(extraPiece,
-            draggable: true,
-            patchSize: gameState.getBoardTileSize(),
-            img: gameState.getImg()),
+      return Expanded(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            Text(
+              "Free patch",
+              style: TextStyle(
+                fontSize: 20,
+              ),
+            ),
+            Patch(extraPiece,
+                draggable: true,
+                patchSize: gameState.getBoardTileSize(),
+                img: gameState.getImg())
+          ],
+        ),
       );
     }
     return Expanded(
         child: Container(
-      padding: EdgeInsets.symmetric(horizontal: 2.0, vertical: 2.0),
+      padding: EdgeInsets.symmetric(horizontal: 2.0, vertical: 0.0),
       child: ListView.builder(
           scrollDirection: Axis.horizontal,
           itemCount: pieces.length,
@@ -39,32 +49,64 @@ class PatchSelector extends StatelessWidget {
                         draggable: index < 3 && piece.selectable,
                         patchSize: gameState.getBoardTileSize(),
                         img: gameState.getImg()),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: <Widget>[
-                        IconButton(
-                          icon: Icon(Icons.rotate_left),
-                          onPressed: () {
-                            gameState.rotatePiece(piece);
-                          },
+                    Expanded(
+                      child: Container(
+                        child: Stack(
+                          alignment: Alignment.topCenter,
+                          children: <Widget>[
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                IconButton(
+                                  icon: Icon(Icons.rotate_left),
+                                  onPressed: () {
+                                    gameState.rotatePiece(piece);
+                                  },
+                                ),
+                                IconButton(
+                                  icon: Icon(Icons.flip),
+                                  onPressed: () {
+                                    gameState.flipPiece(piece);
+                                  },
+                                ),
+                              ],
+                            ),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    Icon(
+                                      Icons.attach_money,
+                                      color: piece.cost > currentPlayer.buttons
+                                          ? Colors.red
+                                          : Colors.black87,
+                                    ),
+                                    Text(
+                                      piece.cost.toString(),
+                                      style: TextStyle(
+                                          color:
+                                              piece.cost > currentPlayer.buttons
+                                                  ? Colors.red
+                                                  : Colors.black87),
+                                    )
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    Icon(
+                                      Icons.access_time,
+                                    ),
+                                    Text(piece.time.toString())
+                                  ],
+                                )
+                              ],
+                            )
+                          ],
                         ),
-                        IconButton(
-                          icon: Icon(Icons.flip),
-                          onPressed: () {
-                            gameState.flipPiece(piece);
-                          },
-                        ),
-                      ],
-                    ),
-                    Text(
-                      "cost: " +
-                          piece.cost.toString() +
-                          " time: " +
-                          piece.time.toString(),
-                      style: TextStyle(
-                          color: piece.cost > currentPlayer.buttons
-                              ? Colors.red
-                              : Colors.black87),
+                      ),
                     )
                   ],
                 ));

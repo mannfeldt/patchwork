@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:patchwork/boardTile.dart';
-import 'package:patchwork/constants.dart';
 import 'package:patchwork/models/board.dart';
-import 'package:patchwork/models/piece.dart';
 import 'package:patchwork/models/player.dart';
 import 'package:patchwork/models/square.dart';
-import 'package:patchwork/patch.dart';
 import 'package:provider/provider.dart';
 import 'package:patchwork/gamestate.dart';
 

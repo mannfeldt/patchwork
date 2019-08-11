@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:patchwork/endScreen.dart';
 import 'package:patchwork/mainMenu.dart';
 import 'package:patchwork/gameplay.dart';
 import 'package:patchwork/setup.dart';
 import 'package:provider/provider.dart';
-import 'package:patchwork/models/piece.dart';
 import 'package:patchwork/gamestate.dart';
 import 'package:flutter/services.dart';
 
@@ -58,7 +58,7 @@ class HomePage extends StatelessWidget {
       child = Gameplay();
       showAppBar=false;
     }else if(view == "finished"){
-      child = Text("finished view");
+      child = EndScreen();
       showAppBar=false;
     }
    
