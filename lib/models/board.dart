@@ -4,7 +4,6 @@ class Board {
   int buttons;
   List<Piece> pieces;
   List<Square> squares;
-  List<Square> hovered;
   int rows;
   int cols;
 
@@ -14,7 +13,6 @@ class Board {
     this.cols = 9;
     this.pieces = [];
     this.squares = [];
-    this.hovered = [];
   }
   void addPiece(Piece piece){
 

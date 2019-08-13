@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:patchwork/constants.dart';
 import 'package:provider/provider.dart';
-import 'package:patchwork/ruleEngine.dart';
 import 'package:patchwork/gamestate.dart';
 import 'package:flutter_colorpicker/block_picker.dart';
 import 'package:flutter_colorpicker/utils.dart';
-import 'package:flutter_colorpicker/material_picker.dart';
-import 'package:patchwork/constants.dart';
 import 'package:patchwork/models/player.dart';
 
 class Setup extends StatefulWidget {
@@ -16,29 +14,63 @@ class Setup extends StatefulWidget {
 }
 
 class SetupState extends State<Setup> {
-  Color _pickerColor = Color(0xff443a49);
+  Color _pickerColor;
   TextEditingController nameController = TextEditingController();
   bool _isAi = false;
+  GameMode _gameMode;
   @override
   Widget build(BuildContext context) {
     final gameState = Provider.of<GameState>(context);
     List<Player> players = gameState.getPlayers();
-    //gameState.addPlayer();
-    //gameState.setPieceMode();
+    List<Color> usedColors = players.map((p) => p.color).toList();
+    List<Color> availableColors =
+        playerColors.where((color) => !usedColors.contains(color)).toList();
+    if (_pickerColor == null) {
+      _pickerColor = availableColors[0];
+    }
 
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-          RaisedButton(
-            onPressed: () {
-              gameState.startGame();
-            },
-            child: Text("Start"),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              DropdownButton<GameMode>(
+                  value: _gameMode,
+                  hint: Text("Select game mode"),
+                  onChanged: (GameMode newValue) {
+                    setState(() => _gameMode = newValue);
+                  },
+                  items: GameMode.values.map((GameMode mode) {
+                    return new DropdownMenuItem<GameMode>(
+                        value: mode, child: new Text(gameModeName[mode]));
+                  }).toList()),
+              RaisedButton(
+                onPressed: () {
+                  Scaffold.of(context).hideCurrentSnackBar();
+                  if (players.length < minimumPlayers) {
+                    Scaffold.of(context).showSnackBar(SnackBar(
+                        content: Text("Needs at least " +
+                            minimumPlayers.toString() +
+                            " players to start")));
+                  } else if (_gameMode == null) {
+                    Scaffold.of(context).showSnackBar(
+                        SnackBar(content: Text("Need to select a game mode")));
+                  } else {
+                    gameState.startGame(_gameMode);
+                  }
+                },
+                child: Text("Start"),
+              )
+            ],
           ),
           new Padding(
             padding: const EdgeInsets.fromLTRB(2.0, 30.0, 0, 0),
-            child: Text("Add players"),
+            child: Text(
+              "Add players",
+              style: TextStyle(fontSize: 20),
+            ),
           ),
           Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
             Expanded(
@@ -56,8 +88,8 @@ class SetupState extends State<Setup> {
                 child: new CheckboxListTile(
                   value: _isAi,
                   onChanged: _aiChanged,
+                  dense: true,
                   secondary: new Icon(Icons.android),
-                  activeColor: Colors.red,
                 ),
               ),
             ),
@@ -75,6 +107,7 @@ class SetupState extends State<Setup> {
                           child: BlockPicker(
                             pickerColor: _pickerColor,
                             onColorChanged: changeColor,
+                            availableColors: availableColors,
                           ),
                         ),
                       );
@@ -96,9 +129,16 @@ class SetupState extends State<Setup> {
                 padding: const EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
                 child: RaisedButton(
                   onPressed: () {
-                    gameState.addPlayer(
-                        nameController.text, _pickerColor, _isAi);
-                    nameController.clear();
+                    if (players.length >= maximumPlayers) {
+                      Scaffold.of(context).hideCurrentSnackBar();
+                      Scaffold.of(context).showSnackBar(
+                          SnackBar(content: Text("Can not add more players")));
+                    } else {
+                      gameState.addPlayer(
+                          nameController.text, _pickerColor, _isAi);
+                      nameController.clear();
+                      _pickerColor = null;
+                    }
                   },
                   child: Text("Add"),
                 ),
@@ -113,11 +153,11 @@ class SetupState extends State<Setup> {
                     itemCount: players.length,
                     itemBuilder: (context, index) {
                       final player = players[index];
-
                       return Dismissible(
                         key: Key(player.id.toString()),
                         onDismissed: (direction) {
                           gameState.removePlayer(player);
+                          Scaffold.of(context).hideCurrentSnackBar();
                           Scaffold.of(context).showSnackBar(SnackBar(
                               content: Text(player.name + " removed")));
                         },

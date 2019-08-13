@@ -1,11 +1,15 @@
 import 'dart:async';
 import 'dart:typed_data';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:patchwork/models/board.dart';
 import 'package:patchwork/models/piece.dart';
 import 'package:patchwork/models/player.dart';
 import 'package:patchwork/models/square.dart';
 import 'package:patchwork/models/timeBoard.dart';
 import 'package:flutter/material.dart';
-import 'package:patchwork/ruleEngine.dart';
+import 'package:patchwork/defaultGameMechanics.dart';
+import 'package:patchwork/patchworkRuleEngine.dart';
+import 'package:patchwork/survivalGameMechanics.dart';
 import 'package:patchwork/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart' show rootBundle;
@@ -13,26 +17,22 @@ import 'dart:ui' as ui;
 import 'package:patchwork/constants.dart';
 
 class GameState with ChangeNotifier {
+  PatchworkRuleEngine _ruleEngine;
   double _boardTileSize;
-  String _gameId;
   ui.Image _image;
-  String gameMode;
   Player _currentPlayer;
+  Board _currentBoard;
+  Piece _draggedPiece;
   bool _extraPieceCollected;
   int _pieceMarkerIndex;
-  List<Player> _players =
-      []; // player holds boardsstate(nytt objekt som inkluderar en lista med pieces, boardbuttons), buttonCash, position (timeboard), isAi,
-  TimeBoard
-      _timeBoard; //holds position of extra squares and buttons and goal. Has one default which is the replica but can also be randomly generated.
+  Square _hoveredBoardTile;
+  List<Square> _boardHoverShadow;
+  List<Player> _players = [];
+  TimeBoard _timeBoard;
   List<Piece> _gamePieces;
   String _view;
 
-  GameState(this._gameId);
-
-  void setView(String view) {
-    _view = view;
-    notifyListeners();
-  }
+  GameState();
 
   getView() => _view;
   getTimeBoard() => _timeBoard;
@@ -42,6 +42,40 @@ class GameState with ChangeNotifier {
   getImg() => _image;
   getBoardTileSize() => _boardTileSize;
   getExtraPieceCollected() => _extraPieceCollected;
+  getDraggedPiece() => _draggedPiece;
+  getHoveredBoardTile() => _hoveredBoardTile;
+  getBoardHoverShadow() => _boardHoverShadow;
+  getCurrentBoard() => _currentBoard;
+
+  void setView(String view) {
+    _view = view;
+    notifyListeners();
+  }
+
+  List<Square> setHoveredBoardTile(Square boardTile) {
+    List<Square> shadow = Utils.getBoardShadow(_draggedPiece, boardTile);
+    _boardHoverShadow = shadow;
+
+    _hoveredBoardTile = boardTile;
+    notifyListeners();
+    return _boardHoverShadow;
+  }
+
+  void cleaHoverBoardTile() {
+    _hoveredBoardTile = null;
+    _boardHoverShadow = null;
+    notifyListeners();
+  }
+
+  void setDraggedPiece(Piece p) {
+    _draggedPiece = p;
+    notifyListeners();
+  }
+
+  void dropDraggedPiece() {
+    _draggedPiece = null;
+    notifyListeners();
+  }
 
   void addPlayer(String name, Color color, bool isAi) {
     Player player = new Player(_players.length, name, color, isAi);
@@ -67,60 +101,68 @@ class GameState with ChangeNotifier {
     });
     return completer.future;
   }
-  void restartApp(){
+
+  void restartApp() {
     _view = null;
     _players.clear();
     notifyListeners();
   }
 
   void setBoardTileSize(Size screenSize) {
+    //varje boardTile ska ha en padding
     double boardTileSpace =
-        screenSize.width - 1 - (boardTilePadding * _currentPlayer.board.cols);
-    _boardTileSize = boardTileSpace / _currentPlayer.board.cols;
+        screenSize.width - 1 - (boardTilePadding * _currentBoard.cols);
+    _boardTileSize = boardTileSpace / _currentBoard.cols;
     //notifyListeners(); får error för eveig loop?
   }
 
-  void startGame() {
+  void startGame(GameMode mode) {
     init();
+    switch (mode) {
+      case GameMode.DEFAULT:
+        _ruleEngine = new DefaultGameMechanics();
+        break;
+      case GameMode.SURVIVAL:
+        _ruleEngine = new SurvivalGameMechanics();
+        break;
+      default:
+        break;
+    }
     _view = "gameplay";
-    List<Piece> ps = RuleEngine.generatePieces();
-    _gamePieces = ps;
-    _gamePieces.shuffle();
-    _timeBoard = new TimeBoard("default");
+    _gamePieces = _ruleEngine.generatePieces(_players.length);
+    _timeBoard = _ruleEngine.initTimeBoard();
+    _players = _ruleEngine.initPlayers(_players);
     _pieceMarkerIndex = 0;
     _currentPlayer = _players[0];
+    _currentBoard = _currentPlayer.board;
     _extraPieceCollected = false;
-    // ! TESTs
-    //_currentPlayer.board.pieces.add(_gamePieces[2]);
-
     nextTurn();
     notifyListeners();
   }
 
-  void updateHoverBoard(List<Square> hovered) {
-    _currentPlayer.board.hovered = hovered;
+  void updateHoverBoard() {
+    if (_hoveredBoardTile != null && _draggedPiece != null) {
+      List<Square> shadow =
+          Utils.getBoardShadow(_draggedPiece, _hoveredBoardTile);
+      _boardHoverShadow = shadow;
+    }
     notifyListeners();
   }
 
   void rotatePiece(Piece piece) {
     piece = Utils.rotatePiece(piece);
-    int pieceIndex = _gamePieces.indexWhere((g) => g.id == piece.id);
-    piece.version += 1;
-    _gamePieces[pieceIndex] = piece;
+    updateHoverBoard();
     notifyListeners();
   }
 
   void flipPiece(Piece piece) {
     piece = Utils.flipPiece(piece);
-    int pieceIndex = _gamePieces.indexWhere((g) => g.id == piece.id);
-    piece.version += 1;
-    _gamePieces[pieceIndex] = piece;
+    updateHoverBoard();
     notifyListeners();
   }
 
 //behöver identifiera alla acions man gör i spelet och placera dem i gamestate här och eventuellt skapa utrymme för dem i models
   void putPiece(Piece piece, int x, int y) {
-    //currentplayer.board.addpiece()
     //det är the left top most square of the piece som räknas som där den sätts ned.
     //den squaren kallas firstTouchSquare eller något. Den lägs på coordinaterna x och y och sen faller resteraden squares på plats utefter deras relativa position
     //x och y för varje square på piecen skrivs om enligt den förflyttningen. Alltså leftTopMostSquare blir på position x,y som är inparametrarna.
@@ -149,7 +191,8 @@ class GameState with ChangeNotifier {
       square.x += x;
       square.y += y;
     }
-    _currentPlayer.board.addPiece(piece);
+    cleaHoverBoardTile();
+    _currentBoard.addPiece(piece);
     _currentPlayer.buttons -= piece.cost;
     _pieceMarkerIndex = _gamePieces.indexWhere((p) => p.id == piece.id);
     _gamePieces.removeAt(_pieceMarkerIndex);
@@ -158,30 +201,45 @@ class GameState with ChangeNotifier {
     //skipa nextTurn ifall att man får en extra tur med gratisbiten
   }
 
+//fortsätt här
+// 1. _ruleEngine.test(this); se detta i gamestate. fixa till det enligt kommentarer. skicka alltid med this och bara ha void metoder i ruleengine?
+//nej det är bra att se vad som kommer tillbaka. skicka bara med this om det är något krångligt som kräver mer än en return. t.ex. pass? eller ska jag skicka med en callback i de fallen?
+  // 2. fixa till gameboard så att den är centeread, just nu är det bara padding till höger. använd inset eller Center
+  // 3. centrera button och pieces på timeboard. använd Stack och Center så att både knappar, pieces och players är centeraade och players ska då vara ovanpå knappar/pieces 
+  // 4. märk ut tydligare vilka bitar som är draggable, med en skugga kanske 
+  // 4.5 lägg till så att man ser om en bit är på rea, det gäller då främst bitar från survival. en flaga med procenten eller en överstruken siffra som är ordinreie pris. färgkoda för rea eller överpris? eller någon bra ikon?
+  // 5. testa spela survival, modifiera peicesgeneratorn till att vara mer spelbar eller modifera timeboard för att bättre passa, t.ex starta med mer cash, flera cashpoints?
+  // 6. gå igenom alla roliga mechanics jag har listat i google keep och skriv upp dem och placera in dem i passande gamemodes, tänk på inte för krångliga modes 
+  // 7. se om jag fått svar på stack overflow, fråga annat forum? reddit flutter?
+
+
   void extraPiecePlaced(Piece piece, int x, int y) {
     for (int i = 0; i < piece.shape.length; i++) {
       Square square = piece.shape[i];
       square.x += x;
       square.y += y;
     }
+    cleaHoverBoardTile();
     _extraPieceCollected = false;
-    _currentPlayer.board.addPiece(piece);
+    _currentBoard.addPiece(piece);
 
     nextTurn();
   }
 
   void _finishGame() {
     _view = "finished";
-    _players.forEach((player) => player.score = RuleEngine.calculateScore(player));
+    _players
+        .forEach((player) => player.score = _ruleEngine.calculateScore(player));
     notifyListeners();
   }
 
   void nextTurn() {
-    bool gameFinished = RuleEngine.isGameFinished(_players);
+    bool gameFinished = _ruleEngine.isGameFinished(_players);
     if (gameFinished) {
       _finishGame();
     }
-    _currentPlayer = RuleEngine.getNextPlayer(_players, _currentPlayer);
+    _currentPlayer = _ruleEngine.getNextPlayer(_players, _currentPlayer);
+    _currentBoard = _currentPlayer.board;
     //det här neda hör ju också till reglerna?
     List<Piece> cut = _gamePieces.sublist(0, _pieceMarkerIndex);
     List<Piece> newStart = _gamePieces.sublist(_pieceMarkerIndex);
@@ -189,7 +247,7 @@ class GameState with ChangeNotifier {
     _gamePieces = newStart;
     for (int i = 0; i < 3; i++) {
       Piece p = _gamePieces[i];
-      p.selectable = RuleEngine.canSelectPiece(p, _currentPlayer);
+      p.selectable = _ruleEngine.canSelectPiece(p, _currentPlayer);
     }
     notifyListeners();
   }
@@ -204,12 +262,27 @@ class GameState with ChangeNotifier {
         .firstWhere((b) => b <= after && b > before, orElse: () => -1);
 
     if (passedButton) {
-      _currentPlayer.buttons += _currentPlayer.board.buttons;
+      _currentPlayer.buttons += _currentBoard.buttons;
     }
     if (passedPieceIndex > 0) {
       _extraPieceCollected = true;
       _timeBoard.pieceIndexes.removeWhere((p) => p == passedPieceIndex);
     }
+
+    //här får jag kolla igenom alla möjliga enums som kan vara med i _gamemechanics.timeBoardMechanics
+
+    //innan nextturn så får jag kolla igenom alla enums i _gameMechanics.gameBoardMechanics
+
+    //jag har då switches som är för varje befintlig enum som då köra något speiciellt
+
+    //eller om jag kommer på färdiga gamemodes. och då har varje färdig gameMode en samling regler. och en gameModeMechanics klass håller koll på det
+    //gamestate har då en gameModeMechanics klass som är en klass som ärver metoder från ruleEngine. så hela gamestate går inte direkt mot ruleEngine utan mot
+    //_gameModeMechanics
+    //så jag har en klass som är DefaultMechanics extens PatchworkRuleEngine.
+    //i setup så väljer jag mode och varje modeklass är kopplat till en enum
+    //gamestate.setGameModeMechanics(new DefaultMechanics)
+
+    //jag måste flytta lite fler metoder till gameEngine och inte ha dem istate bara. allt som har med modes att göra? eller jag måste inte kanske
 
     if (after >= _timeBoard.goalIndex) {
       _currentPlayer.state = "finished";
@@ -235,6 +308,18 @@ class GameState with ChangeNotifier {
     int moves = (nextPlayersPosition - _currentPlayer.position) + 1;
     _currentPlayer.buttons += moves;
     _pieceMarkerIndex = 0;
+
+
+
+    //detta förändrar mycket jag kan då skicka in state och få ändra saker smidigt
+    //typ är kan jag köra _ruleengine.pass(this) och inte behöva skicka med alla parametrar
+    //och kan kan använda seters etc i ruleengine.
+    //testa ersätt pass och movePosition/eller den del av moveposition som har med att kolla om man passerat något. 
+    //lägg det i ruleegine
+    //gamestate ska bara hålla korrekt data, bestå av getters och setters samt hanetra actions från avnändaren.
+    //kan kan hantera putpiece eller scannboard i ruleengine som kan göra lite vad som egentligen
+    _ruleEngine.test(this);
+
     movePlayerPosition(moves);
     //räkna ut hur många moves en pass blir och dela ut buttons för det
     //sen kör movePlayerPosition(moves); // som är den vanliga moven som kollar events etc.

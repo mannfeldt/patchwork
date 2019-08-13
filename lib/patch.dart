@@ -8,17 +8,20 @@ import 'dart:ui' as ui;
 
 import 'package:provider/provider.dart';
 
-typedef PatchDroppedCallback = void Function(Piece piece, Offset patchPosition);
+typedef PatchDroppedCallback = void Function();
+typedef PatchDragStartCallback = void Function(Piece piece);
 
 class Patch extends StatefulWidget {
   final double patchSize;
   final Piece piece;
   final ui.Image img;
   final PatchDroppedCallback patchDroppedCallback;
+  final PatchDragStartCallback patchDragStartCallback;
   final bool draggable;
 
   Patch(this.piece,
       {this.patchDroppedCallback,
+      this.patchDragStartCallback,
       this.draggable = false,
       this.img,
       this.patchSize = patchUnitSize});
@@ -30,6 +33,7 @@ class Patch extends StatefulWidget {
 class _PatchState extends State<Patch> {
   @override
   Widget build(BuildContext context) {
+    final gameState = Provider.of<GameState>(context);
     if (widget.draggable) {
       return Draggable<Piece>(
         childWhenDragging: Container(
@@ -39,9 +43,10 @@ class _PatchState extends State<Patch> {
         feedback: _createDraggedPatch(widget.piece, patchUnitSize),
         data: widget.piece,
         onDragEnd: _handleDragEnded,
-        onDraggableCanceled: (velocity, offset) {},
+        ignoringFeedbackSemantics: true,
+        maxSimultaneousDrags: 1,
         onDragCompleted: () {},
-        onDragStarted: () {},
+        onDragStarted: _handleDragStart,
         dragAnchor: DragAnchor.pointer,
         feedbackOffset: Offset(widget.patchSize / 2, widget.patchSize / 2),
       );
@@ -52,7 +57,13 @@ class _PatchState extends State<Patch> {
 
   void _handleDragEnded(DraggableDetails draggableDetails) {
     if (widget.patchDroppedCallback != null) {
-      widget.patchDroppedCallback(widget.piece, draggableDetails.offset);
+      widget.patchDroppedCallback();
+    }
+  }
+
+  void _handleDragStart() {
+    if (widget.patchDragStartCallback != null) {
+      widget.patchDragStartCallback(widget.piece);
     }
   }
 

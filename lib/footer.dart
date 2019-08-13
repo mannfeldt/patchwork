@@ -12,14 +12,15 @@ class Footer extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
         Row(children: <Widget>[
-          Icon(currentPlayer.isAi ? Icons.android : Icons.person, color: currentPlayer.color,),
+          Icon(
+            currentPlayer.isAi ? Icons.android : Icons.person,
+            color: currentPlayer.color,
+          ),
           Text(currentPlayer.name)
         ]),
         Row(children: <Widget>[
           Icon(Icons.attach_money),
           Text(currentPlayer.buttons.toString()),
-          Icon(Icons.location_on),
-          Text(currentPlayer.position.toString()),
         ]),
         IconButton(
           icon: Icon(Icons.skip_next),

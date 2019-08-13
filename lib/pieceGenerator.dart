@@ -37,7 +37,8 @@ class PieceGenerator {
       int time = _getTimePart(totalValue);
       int cost = totalValue - time;
       int costAdjustment = _getCostAdjustment(cost);
-      Piece p = new Piece(id, shape, buttons, cost, time, color, costAdjustment);
+      Piece p =
+          new Piece(id, shape, buttons, cost, time, color, costAdjustment);
       pieces.add(p);
     }
     return pieces;
@@ -64,14 +65,14 @@ class PieceGenerator {
     //alltså om det är ett högt medel på befntliga så lutar vi mer åt att skapa en lägre och lika åt andra hållet
     var rng = new Random();
     int num = rng.nextInt(100);
-    if (num < 6) return 2;
-    if (num < 6 + 10) return 3;
-    if (num < 16 + 14) return 4;
-    if (num < 30 + 16) return 5;
-    if (num < 46 + 16) return 6;
-    if (num < 62 + 14) return 7;
-    if (num < 76 + 12) return 8;
-    if (num < 88 + 9) return 9;
+    if (num < 7) return 2;
+    if (num < 7 + 11) return 3;
+    if (num < 18 + 16) return 4;
+    if (num < 34 + 17) return 5;
+    if (num < 51 + 15) return 6;
+    if (num < 66 + 13) return 7;
+    if (num < 79 + 11) return 8;
+    if (num < 90 + 7) return 9;
     return 10;
   }
 
@@ -89,7 +90,7 @@ class PieceGenerator {
   static int _getDifficulty(List<Square> shape) {
     List<Square> searchable = [];
     List<Square> actual =
-        shape.map((s) => new Square(s.x + 1, s.y + 1, true)).toList();
+        shape.map((s) => new Square.simple(s.x + 1, s.y + 1)).toList();
 
     int maxY = actual.reduce((a, b) => a.y > b.y ? a : b).y;
     int maxX = actual.reduce((a, b) => a.x > b.x ? a : b).x;
@@ -98,7 +99,7 @@ class PieceGenerator {
 
     for (int curY = 0; curY < maxY + 2; curY++) {
       for (int curX = 0; curX < maxX + 2; curX++) {
-        Square s = new Square(curX, curY, true);
+        Square s = new Square.simple(curX, curY);
         searchable.add(s);
       }
     }
@@ -166,15 +167,21 @@ class PieceGenerator {
     List<Square> shape = [];
 
     var rng = new Random();
-    int startX = rng.nextInt(7);
-    int startY = rng.nextInt(7);
-    Square startSquare = new Square(startX, startY, true);
+    int startX = rng.nextInt(maxPieceLength-1);
+    int startY = rng.nextInt(maxPieceLength-1);
+    Square startSquare = new Square.simple(startX, startY);
+    startSquare.color = color;
     shape.add(startSquare);
+    int lopps = 0;
     while (shape.length < size) {
+      if (lopps > 100) {
+        print("error");
+      }
+      lopps++;
       Square latest = shape[shape.length - 1];
       Square direction = directions[rng.nextInt(4)];
       Square newSquare =
-          new Square(latest.x + direction.x, latest.y + direction.y, true);
+          new Square.simple(latest.x + direction.x, latest.y + direction.y);
       if (_outOfBounds(newSquare)) {
         continue;
       }
@@ -225,7 +232,7 @@ class PieceGenerator {
 
   static bool _outOfBounds(Square square) {
     int min = 0;
-    int max = maxPieceLength-1;
+    int max = maxPieceLength - 1;
     return square.x < min || square.x > max || square.y < min || square.y > max;
   }
 
@@ -247,7 +254,7 @@ class PieceGenerator {
         String char = visual[y].substring(x, x + 1);
         if (char == "X") {
           int realX = ((x - 1) / 3).round();
-          Square s = new Square(realX, y, true);
+          Square s = new Square.simple(realX, y);
           s.color = color;
           shape.add(s);
         }

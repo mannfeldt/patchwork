@@ -2,6 +2,15 @@ import 'package:patchwork/models/piece.dart';
 import 'package:patchwork/models/square.dart';
 
 class Utils {
+  static List<Square> getBoardShadow(Piece piece, Square boardTile) {
+    List<Square> shadow = piece.shape
+        .map((s) =>
+            new Square(s.x + boardTile.x, s.y + boardTile.y, true, piece.color)
+              ..hasButton = s.hasButton)
+        .toList();
+    return shadow;
+  }
+
   static List<Square> cropPiece(List<Square> shape) {
     int minY = shape.reduce((a, b) => a.y < b.y ? a : b).y;
     int minX = shape.reduce((a, b) => a.x < b.x ? a : b).x;
@@ -35,7 +44,7 @@ class Utils {
     int centerX = (maxX / 2).round();
     int maxY = shape.reduce((a, b) => a.y > b.y ? a : b).y;
     int centerY = (maxY / 2).round();
-    Square centerPoint = new Square(centerX, centerY, false);
+    Square centerPoint = new Square.simple(centerX, centerY);
 
     List<int> rotationDirectionX = [0, -1];
     List<int> rotationDirectionY = [1, 0];
@@ -43,13 +52,13 @@ class Utils {
     for (int i = 0; i < shape.length; i++) {
       Square before = shape[i];
       Square vr =
-          new Square(before.x - centerPoint.x, before.y - centerPoint.y, false);
+          new Square.simple(before.x - centerPoint.x, before.y - centerPoint.y);
       int relativeNewPositionX =
           (rotationDirectionX[0] * vr.x) + (rotationDirectionX[1] * vr.y);
       int relativeNewPositionY =
           (rotationDirectionY[0] * vr.x) + (rotationDirectionY[1] * vr.y);
       Square relativeNewSquare =
-          new Square(relativeNewPositionX, relativeNewPositionY, false);
+          new Square.simple(relativeNewPositionX, relativeNewPositionY);
 
       before.x = centerPoint.x + relativeNewSquare.x;
       before.y = centerPoint.y + relativeNewSquare.y;
@@ -67,7 +76,7 @@ class Utils {
     int centerX = (maxX / 2).round();
     int maxY = shape.reduce((a, b) => a.y > b.y ? a : b).y;
     int centerY = (maxY / 2).round();
-    Square centerPoint = new Square(centerX, centerY, false);
+    Square centerPoint = new Square.simple(centerX, centerY);
 
     List<int> rotationDirectionX = [0, -1];
     List<int> rotationDirectionY = [1, 0];
@@ -75,13 +84,13 @@ class Utils {
     for (int i = 0; i < shape.length; i++) {
       Square before = shape[i];
       Square vr =
-          new Square(before.x - centerPoint.x, before.y - centerPoint.y, false);
+          new Square.simple(before.x - centerPoint.x, before.y - centerPoint.y);
       int relativeNewPositionX =
           (rotationDirectionX[0] * vr.x) + (rotationDirectionX[1] * vr.x);
       int relativeNewPositionY =
           (rotationDirectionY[0] * vr.y) + (rotationDirectionY[1] * vr.y);
       Square relativeNewSquare =
-          new Square(relativeNewPositionX, relativeNewPositionY, false);
+          new Square.simple(relativeNewPositionX, relativeNewPositionY);
 
       before.x = centerPoint.x + relativeNewSquare.x;
       before.y = centerPoint.y + relativeNewSquare.y;

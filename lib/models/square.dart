@@ -10,10 +10,17 @@ class Square {
   Color color;
   bool filled;
 
-  Square(int x, int y, bool filled) {
+  Square(int x, int y, bool filled, Color color) {
     this.x = x;
     this.y = y;
     this.hasButton = false;
+    this.color = color;
     this.filled = filled;
+  }
+  Square.simple(int x, int y){
+    this.x = x;
+    this.y = y;
+    this.hasButton = false;
+    this.filled = false;
   }
 }

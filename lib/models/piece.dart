@@ -35,8 +35,7 @@ class Piece {
 
   Piece.single(int id) {
     this.id = id;
-    Square s = new Square(0, 0, true);
-    s.color = Colors.brown;
+    Square s = new Square(0, 0, true, Colors.brown);
     this.shape = [s];
     this.state = "active";
     this.size = shape.length;

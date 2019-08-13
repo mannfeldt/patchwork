@@ -46,12 +46,14 @@ class PatchShaper extends CustomPainter {
 
 //jag måste sizea upp precis hur stor en square blir på boardet. patchUnitSize måste vara dymaiskt, lika så patchDraggableUnitSize?
     double squareSize = unitSize;
+    print("PAINTING------------------");
     var buttonPaint = Paint()..color = Colors.lightBlue;
 
     var patchPaint;
     if (dragged) {
       patchPaint = Paint()..color = piece.color.withOpacity(0.4);
       squareSize = (unitSize + boardTilePadding) * 2;
+
     } else {
       patchPaint = Paint()..color = piece.color;
     }
@@ -68,7 +70,7 @@ class PatchShaper extends CustomPainter {
       var tile = _createpatchUnit(
           square.x * squareSize, square.y * squareSize, squareSize, squareSize);
       canvas.drawRRect(tile, patchPaint);
-      if (square.hasButton) {
+      if (square.hasButton && !dragged) {
         canvas.drawCircle(
             new Offset(square.x * squareSize + squareSize / 2,
                 square.y * squareSize + squareSize / 2),
@@ -81,7 +83,7 @@ class PatchShaper extends CustomPainter {
   @override
   bool shouldRepaint(PatchShaper patch) {
     return true;
-  }
+  }  
 
   RRect _createpatchUnit(double left, double top, double width, double height) {
     return RRect.fromRectAndRadius(
