@@ -11,7 +11,7 @@ class TimeBoard {
   }
   TimeBoard.survival() {
     this.goalIndex = 70;
-    this.buttonIndexes = [5, 11, 17, 24, 31, 38, 45, 52, 59, 66];
+    this.buttonIndexes = [4, 8, 12, 17, 23, 31, 38, 45, 52, 59, 66];
     this.pieceIndexes = [34, 42, 49, 56];
     this.wildCardIndexes = [20, 36, 69];
   }

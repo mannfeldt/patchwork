@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:patchwork/constants.dart';
 import 'package:provider/provider.dart';
@@ -26,7 +28,8 @@ class SetupState extends State<Setup> {
     List<Color> availableColors =
         playerColors.where((color) => !usedColors.contains(color)).toList();
     if (_pickerColor == null) {
-      _pickerColor = availableColors[0];
+      Random rng = new Random();
+      _pickerColor = availableColors[rng.nextInt(availableColors.length)];
     }
 
     return Center(
@@ -48,6 +51,7 @@ class SetupState extends State<Setup> {
                   }).toList()),
               RaisedButton(
                 onPressed: () {
+                  FocusScope.of(context).requestFocus(new FocusNode());
                   Scaffold.of(context).hideCurrentSnackBar();
                   if (players.length < minimumPlayers) {
                     Scaffold.of(context).showSnackBar(SnackBar(
@@ -136,6 +140,8 @@ class SetupState extends State<Setup> {
                     } else {
                       gameState.addPlayer(
                           nameController.text, _pickerColor, _isAi);
+                      FocusScope.of(context).requestFocus(new FocusNode());
+
                       nameController.clear();
                       _pickerColor = null;
                     }

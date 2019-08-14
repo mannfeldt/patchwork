@@ -14,24 +14,22 @@ class PatchSelector extends StatelessWidget {
     bool extraPieceCollected = gameState.getExtraPieceCollected();
     if (extraPieceCollected) {
       Piece extraPiece = new Piece.single(0);
-      return Expanded(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            Text(
-              "Free patch",
-              style: TextStyle(
-                fontSize: 20,
-              ),
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: <Widget>[
+          Text(
+            "Free patch",
+            style: TextStyle(
+              fontSize: 20,
             ),
-            Patch(extraPiece,
-                draggable: true,
-                patchDragStartCallback: gameState.setDraggedPiece,
-                patchDroppedCallback: gameState.dropDraggedPiece,
-                patchSize: gameState.getBoardTileSize(),
-                img: gameState.getImg())
-          ],
-        ),
+          ),
+          Patch(extraPiece,
+              draggable: true,
+              patchDragStartCallback: gameState.setDraggedPiece,
+              patchDroppedCallback: gameState.dropDraggedPiece,
+              patchSize: gameState.getBoardTileSize(),
+              img: gameState.getImg())
+        ],
       );
     }
     Piece draggedPiece = gameState.getDraggedPiece();
@@ -46,8 +44,7 @@ class PatchSelector extends StatelessWidget {
     //behöver helt enkelt kunna ändra något på objektet jag drar i medan jag drar
 
     //nu fungerar det typ! behöver bara få till repaint direkt.
-    return Expanded(
-        child: Stack(
+    return Stack(
       children: <Widget>[
         Visibility(
             visible: draggedPiece == null,
@@ -56,12 +53,13 @@ class PatchSelector extends StatelessWidget {
             maintainState: true,
             maintainInteractivity: true,
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 2.0, vertical: 0.0),
               child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: pieces.length,
                   itemBuilder: (context, index) {
                     Piece piece = pieces[index];
+                    bool draggable = index < 3 && piece.selectable;
+                    double tileSize = gameState.getBoardTileSize();
                     return Container(
                         width: MediaQuery.of(context).size.width / 3,
                         alignment: Alignment.topCenter,
@@ -69,17 +67,20 @@ class PatchSelector extends StatelessWidget {
                           children: <Widget>[
                             ConstrainedBox(
                                 constraints: new BoxConstraints(
-                                  minHeight: gameState.getBoardTileSize()*3,
+                                  minHeight: tileSize * 3,
                                 ),
-                                child: Center(
-                                  child: Patch(piece,
-                                      draggable: index < 3 && piece.selectable,
-                                      patchSize: gameState.getBoardTileSize(),
-                                      patchDragStartCallback:
-                                          gameState.setDraggedPiece,
-                                      patchDroppedCallback:
-                                          gameState.dropDraggedPiece,
-                                      img: gameState.getImg()),
+                                child: Card(
+                                  elevation: draggable ? 3 : 0,
+                                  child: Center(
+                                    child: Patch(piece,
+                                        draggable: draggable,
+                                        patchSize: tileSize,
+                                        patchDragStartCallback:
+                                            gameState.setDraggedPiece,
+                                        patchDroppedCallback:
+                                            gameState.dropDraggedPiece,
+                                        img: gameState.getImg()),
+                                  ),
                                 )),
                             Expanded(
                               child: Container(
@@ -98,14 +99,39 @@ class PatchSelector extends StatelessWidget {
                                                       currentPlayer.buttons
                                                   ? Colors.red
                                                   : Colors.black87,
+                                              size: 18,
+                                            ),
+                                            Visibility(
+                                              visible:
+                                                  piece.costAdjustment != 0,
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.fromLTRB(
+                                                        0, 0, 2.0, 0),
+                                                child: Text(
+                                                  (piece.cost).toString(),
+                                                  style: TextStyle(
+                                                      color: piece.cost >
+                                                              currentPlayer
+                                                                  .buttons
+                                                          ? Colors.red
+                                                          : Colors.black87,
+                                                      decoration: TextDecoration
+                                                          .lineThrough,
+                                                      fontSize: 18),
+                                                ),
+                                              ),
                                             ),
                                             Text(
-                                              piece.cost.toString(),
+                                              (piece.cost +
+                                                      piece.costAdjustment)
+                                                  .toString(),
                                               style: TextStyle(
                                                   color: piece.cost >
                                                           currentPlayer.buttons
                                                       ? Colors.red
-                                                      : Colors.black87),
+                                                      : Colors.black87,
+                                                  fontSize: 18),
                                             )
                                           ],
                                         ),
@@ -157,6 +183,6 @@ class PatchSelector extends StatelessWidget {
           ),
         )
       ],
-    ));
+    );
   }
 }

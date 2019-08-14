@@ -20,13 +20,18 @@ class Footer extends StatelessWidget {
         ]),
         Row(children: <Widget>[
           Icon(Icons.attach_money),
-          Text(currentPlayer.buttons.toString()),
+          Text(
+            currentPlayer.buttons.toString(),
+            style: TextStyle(fontSize: 20),
+          ),
         ]),
         IconButton(
           icon: Icon(Icons.skip_next),
           tooltip: "pass",
           onPressed: () {
-            gameState.pass();
+            if (gameState.getDraggedPiece() == null) {
+              gameState.pass();
+            }
           },
         )
       ],

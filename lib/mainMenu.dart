@@ -10,14 +10,16 @@ class MainMenu extends StatelessWidget {
     return Center(
       child: Column(children: <Widget>[
         RaisedButton(
-          onPressed: () {},
-          child: Text("Quick play (1v1) default setup"),
+          onPressed: () {
+            gameState.startQuickPlay();
+          },
+          child: Text("Quick play 1v1"),
         ),
         RaisedButton(
           onPressed: () {
             gameState.setView("setup");
           },
-          child: Text("New game (custom players and setup)"),
+          child: Text("New game"),
         )
       ]),
     );

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:patchwork/TimeBoardTile.dart';
+import 'package:patchwork/timeBoardTile.dart';
 import 'package:patchwork/constants.dart';
 import 'package:patchwork/models/piece.dart';
 import 'package:patchwork/models/player.dart';
@@ -15,38 +15,38 @@ class TimeGameBoard extends StatelessWidget {
     Player currentPlayer = gameState.getCurrentPlayer();
     List<Player> players = gameState.getPlayers();
     TimeBoard timeBoard = gameState.getTimeBoard();
+    double tileSize = gameState.getBoardTileSize();
     return Container(
       decoration: BoxDecoration(color: Colors.black12),
-      height: timeBoardTileHeight,
       padding: EdgeInsets.symmetric(horizontal: 0.0, vertical: 0.0),
       child: ListView.builder(
           scrollDirection: Axis.horizontal,
-          itemCount: timeBoard.goalIndex+1,
+          itemCount: timeBoard.goalIndex + 1,
           itemBuilder: (context, index) {
-            if(currentPlayer.position > index) return Container();
+            if (currentPlayer.position > index) return Container();
             bool hasExtraPiece = timeBoard.pieceIndexes.contains(index);
             bool hasButton = timeBoard.buttonIndexes.contains(index);
             bool isGoalLine = timeBoard.goalIndex == index;
-            bool isStartTile = index ==0;
+            bool isStartTile = index == 0;
             List<Player> positionedPlayers =
                 players.where((p) => p.position == index).toList();
-                if(index==0 && positionedPlayers.length>6){
-                  positionedPlayers = [new Player(0, "", Colors.black87, false)];
-                }
+            bool isCrowded = positionedPlayers.length > 3;
             return Container(
-                height: patchUnitSize,
-                alignment: Alignment.center,
-                child: Column(
-                  children: <Widget>[
-                    TimeBoardTile(
-                        currentPlayer: currentPlayer,
-                        players: positionedPlayers,
-                        hasButton: hasButton,
-                        isGoalLine: isGoalLine,
-                        isStartTile: isStartTile,
-                        hasPiece: hasExtraPiece),
-                  ],
-                ));
+              height: tileSize,
+              alignment: Alignment.center,
+              decoration: new BoxDecoration(
+                  border: new Border.all(
+                      color: Colors.black87, width: boardTilePadding)),
+              child: TimeBoardTile(
+                  currentPlayer: currentPlayer,
+                  players: positionedPlayers,
+                  hasButton: hasButton,
+                  isGoalLine: isGoalLine,
+                  isStartTile: isStartTile,
+                  tileWidth: tileSize * 1.5,
+                  isCrowded: isCrowded,
+                  hasPiece: hasExtraPiece),
+            );
           }),
     );
   }

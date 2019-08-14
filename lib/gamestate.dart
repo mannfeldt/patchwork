@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'dart:typed_data';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:patchwork/models/board.dart';
@@ -31,6 +32,7 @@ class GameState with ChangeNotifier {
   TimeBoard _timeBoard;
   List<Piece> _gamePieces;
   String _view;
+  double _bottomHeight;
 
   GameState();
 
@@ -46,6 +48,11 @@ class GameState with ChangeNotifier {
   getHoveredBoardTile() => _hoveredBoardTile;
   getBoardHoverShadow() => _boardHoverShadow;
   getCurrentBoard() => _currentBoard;
+  getBottomHeight() => _bottomHeight;
+
+  double getPatchSelectorHeight() {
+    return _bottomHeight - (_boardTileSize * 1.8);
+  }
 
   void setView(String view) {
     _view = view;
@@ -108,12 +115,26 @@ class GameState with ChangeNotifier {
     notifyListeners();
   }
 
-  void setBoardTileSize(Size screenSize) {
+  void setConstraints(double screenWidth, double screenHeight) {
     //varje boardTile ska ha en padding
-    double boardTileSpace =
-        screenSize.width - 1 - (boardTilePadding * _currentBoard.cols);
+    double boardTileSpace = screenWidth - (gameBoardInset * 2);
     _boardTileSize = boardTileSpace / _currentBoard.cols;
+
+    _bottomHeight = screenHeight - (screenWidth + (gameBoardInset * 1));
+
     //notifyListeners(); får error för eveig loop?
+  }
+
+  void startQuickPlay() {
+    Random rng = new Random();
+    addPlayer(
+        "Player 1", playerColors[rng.nextInt(playerColors.length)], false);
+    List<Color> availablieColors =
+        playerColors.where((c) => c != _players[0].color).toList();
+    addPlayer("Player 2",
+        availablieColors[rng.nextInt(availablieColors.length)], false);
+
+    startGame(GameMode.DEFAULT);
   }
 
   void startGame(GameMode mode) {
@@ -138,6 +159,11 @@ class GameState with ChangeNotifier {
     _extraPieceCollected = false;
     nextTurn();
     notifyListeners();
+  }
+
+  bool isValidPlacement(List<Square> placement) {
+    bool isValid = _ruleEngine.validatePlacement(placement, _currentBoard);
+    return isValid;
   }
 
   void updateHoverBoard() {
@@ -201,17 +227,20 @@ class GameState with ChangeNotifier {
     //skipa nextTurn ifall att man får en extra tur med gratisbiten
   }
 
-//fortsätt här
-// 1. _ruleEngine.test(this); se detta i gamestate. fixa till det enligt kommentarer. skicka alltid med this och bara ha void metoder i ruleengine?
-//nej det är bra att se vad som kommer tillbaka. skicka bara med this om det är något krångligt som kräver mer än en return. t.ex. pass? eller ska jag skicka med en callback i de fallen?
-  // 2. fixa till gameboard så att den är centeread, just nu är det bara padding till höger. använd inset eller Center
-  // 3. centrera button och pieces på timeboard. använd Stack och Center så att både knappar, pieces och players är centeraade och players ska då vara ovanpå knappar/pieces 
-  // 4. märk ut tydligare vilka bitar som är draggable, med en skugga kanske 
-  // 4.5 lägg till så att man ser om en bit är på rea, det gäller då främst bitar från survival. en flaga med procenten eller en överstruken siffra som är ordinreie pris. färgkoda för rea eller överpris? eller någon bra ikon?
-  // 5. testa spela survival, modifiera peicesgeneratorn till att vara mer spelbar eller modifera timeboard för att bättre passa, t.ex starta med mer cash, flera cashpoints?
-  // 6. gå igenom alla roliga mechanics jag har listat i google keep och skriv upp dem och placera in dem i passande gamemodes, tänk på inte för krångliga modes 
   // 7. se om jag fått svar på stack overflow, fråga annat forum? reddit flutter?
+  // lägg till bilder. använd funktionaliteten jag har redan för att få in en bild till patchShaper där jag kan rita ut bilden i rätt storlek?
+  //varje color är matchat mot en sökväg till en bild. på liknande sätt som enums är matchade till strängar.
+  //9. lägg också till en ikon till button, som då är liknande som golfikonerna jag gjorde. om nu inte jag har varhe mönster med button ocksp ovan
+  // 6. gå igenom alla roliga mechanics jag har listat i google keep och skriv upp dem och placera in dem i passande gamemodes, tänk på inte för krångliga modes
+  //behöver jag kanske lazyLoada selectPieces? rendrera bara de 10 nästa åt gången? ganska lägg gjort va? bara sluta vid index 10?
+  // onWillAccept bryt ut validPlacement till state och vidare till ruleengine. ibland kan det vara valid att överlappa. om man har extra power eller de som överlappar båda har knappar
+  // 8. strukturera om filerna. skapa mapp för widgets, eller organisera efter feature/screen?
+  //ibland så startar spelet utan att visa timeGameBoard
+  //deeporange är för nära red som är error placement color
+  // stor bugg! när jag roterar så blir skuggan alltid "grön" den blir inte röd fast än det är fel. ska jag behålla skugan om jag får till bilder?
 
+//jag får ett expetion när jag startar spelet för att context.height är för litet pga att keyboard kan vara öppet.
+//jag förösker stänga det med att ta av fokcus men det funkar inte längre.. just nu kör vi en kostsam omräkning av boardTileSize hela tiden för att den inte ska vara null eller minus etc
 
   void extraPiecePlaced(Piece piece, int x, int y) {
     for (int i = 0; i < piece.shape.length; i++) {
@@ -234,6 +263,12 @@ class GameState with ChangeNotifier {
   }
 
   void nextTurn() {
+    //här kollar vi på om någon fått ihop 7x7
+    //om personen har det och ingen annan har wonSevenBySeven så får den spelaren det
+
+    //i survival kan jag t.ex kolla om någon fått en bingorad menavvakta med det tills jag kartlagt vilka modes jag ska ha
+    _ruleEngine.endOfTurn(this);
+
     bool gameFinished = _ruleEngine.isGameFinished(_players);
     if (gameFinished) {
       _finishGame();
@@ -286,7 +321,7 @@ class GameState with ChangeNotifier {
 
     if (after >= _timeBoard.goalIndex) {
       _currentPlayer.state = "finished";
-      _currentPlayer.position = _timeBoard.goalIndex + 1;
+      _currentPlayer.position = _timeBoard.goalIndex;
     }
     if (!_extraPieceCollected) {
       nextTurn();
@@ -303,22 +338,20 @@ class GameState with ChangeNotifier {
   void pass() {
     int nextPlayersPosition = _players
         .where((p) => p.id != _currentPlayer.id)
-        .reduce((a, b) => a.position < b.position ? a : b)
+        .reduce((a, b) => a.position > b.position ? a : b)
         .position;
     int moves = (nextPlayersPosition - _currentPlayer.position) + 1;
     _currentPlayer.buttons += moves;
     _pieceMarkerIndex = 0;
 
-
-
     //detta förändrar mycket jag kan då skicka in state och få ändra saker smidigt
     //typ är kan jag köra _ruleengine.pass(this) och inte behöva skicka med alla parametrar
     //och kan kan använda seters etc i ruleengine.
-    //testa ersätt pass och movePosition/eller den del av moveposition som har med att kolla om man passerat något. 
+    //testa ersätt pass och movePosition/eller den del av moveposition som har med att kolla om man passerat något.
     //lägg det i ruleegine
     //gamestate ska bara hålla korrekt data, bestå av getters och setters samt hanetra actions från avnändaren.
     //kan kan hantera putpiece eller scannboard i ruleengine som kan göra lite vad som egentligen
-    _ruleEngine.test(this);
+    // _ruleEngine.test(this);
 
     movePlayerPosition(moves);
     //räkna ut hur många moves en pass blir och dela ut buttons för det

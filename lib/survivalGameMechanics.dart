@@ -2,9 +2,11 @@ import 'package:patchwork/gamestate.dart';
 import 'package:patchwork/models/piece.dart';
 import 'package:patchwork/models/board.dart';
 import 'package:patchwork/models/player.dart';
+import 'package:patchwork/models/square.dart';
 import 'package:patchwork/models/timeBoard.dart';
 import 'package:patchwork/pieceGenerator.dart';
 import 'package:patchwork/patchworkRuleEngine.dart';
+import 'package:patchwork/utils.dart';
 
 class SurvivalGameMechanics implements PatchworkRuleEngine {
   @override
@@ -49,8 +51,12 @@ class SurvivalGameMechanics implements PatchworkRuleEngine {
   }
 
   @override
-  bool validatePlacement(Piece piece, Board board, int x, int y) {
-    return null;
+  bool validatePlacement(List<Square> placement, Board board) {
+    bool isOutOfBounds = Utils.isOutOfBoardBounds(placement, board);
+    if (isOutOfBounds) return false;
+
+    bool fitsOnBoard = Utils.hasRoom(placement, board);
+    return fitsOnBoard;
   }
 
   @override
@@ -60,12 +66,12 @@ class SurvivalGameMechanics implements PatchworkRuleEngine {
 
   @override
   List<Player> initPlayers(List<Player> players) {
-    players.forEach((p) => p.buttons=10);
+    players.forEach((p) => p.buttons = 10);
     return players;
   }
 
   @override
-  void test(GameState test) {
-    test.setView("finished");
+  void endOfTurn(GameState gameState) {
+    // TODO: implement endOfTurn
   }
 }

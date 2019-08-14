@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:patchwork/boardTile.dart';
 import 'package:patchwork/models/board.dart';
-import 'package:patchwork/models/player.dart';
 import 'package:patchwork/models/square.dart';
 import 'package:provider/provider.dart';
 import 'package:patchwork/gamestate.dart';
@@ -61,7 +60,7 @@ class GameBoard extends StatelessWidget {
 
     for (int y = 0; y < board.rows; y++) {
       for (int x = 0; x < board.cols; x++) {
-        Square square = new Square(x, y, false, Colors.white);
+        Square square = new Square(x, y, false, board.player.color.withOpacity(0.2));
         bool exists = cells.any((s) => s.x == square.x && s.y == square.y);
         if (!exists) {
           cells.add(square);

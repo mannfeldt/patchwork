@@ -18,10 +18,10 @@ class Player {
     this.color = color;
     this.isAi = isAi;
     this.state = "waiting";
-    this.board = new Board();
     this.position = 0;
     this.buttons = 5;
     this.hasSevenBySeven = false;
     this.score = 0;
+    this.board = new Board(this);
   }
 }

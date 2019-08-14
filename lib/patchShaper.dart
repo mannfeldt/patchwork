@@ -53,17 +53,18 @@ class PatchShaper extends CustomPainter {
     if (dragged) {
       patchPaint = Paint()..color = piece.color.withOpacity(0.4);
       squareSize = (unitSize + boardTilePadding) * 2;
-
     } else {
       patchPaint = Paint()..color = piece.color;
     }
     //Image img = Image.asset(assetName);
-    // AssetImage img2 = new AssetImage(assetName);
-    //if(img != null){
-    //canvas.drawImage(img, new Offset(0.0, 0.0), new Paint());
-    //jag skulle kunna lägga till image som ett attribut i constans på alla default pieces.
-    //och de
-    //}
+    //AssetImage img2 = new AssetImage(assetName);
+    if (img != null) {
+      img.height=squareSize.round();
+      img.width=squareSize.round();
+      canvas.drawImage(img, new Offset(0.0, 0.0), new Paint());
+      //jag skulle kunna lägga till image som ett attribut i constans på alla default pieces.
+      //och de
+    }
 
     for (int i = 0; i < piece.shape.length; i++) {
       Square square = piece.shape[i];
@@ -83,7 +84,7 @@ class PatchShaper extends CustomPainter {
   @override
   bool shouldRepaint(PatchShaper patch) {
     return true;
-  }  
+  }
 
   RRect _createpatchUnit(double left, double top, double width, double height) {
     return RRect.fromRectAndRadius(

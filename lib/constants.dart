@@ -4,6 +4,7 @@ import 'package:patchwork/models/piece.dart';
 
 const double draggablePatchSize = 30.0;
 const double patchUnitSize = 20.0;
+const gameBoardInset = 5.0;
 const double patchUnitSizeWithPadding = patchUnitSize + 1.0;
 const double boardTilePadding = 1.0;
 typedef PatchPlacedCallback = void Function(Piece piece);

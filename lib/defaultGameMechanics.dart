@@ -53,8 +53,12 @@ class DefaultGameMechanics implements PatchworkRuleEngine {
   }
 
   @override
-  bool validatePlacement(Piece piece, Board board, int x, int y) {
-    return null;
+  bool validatePlacement(List<Square> placement, Board board) {
+    bool isOutOfBounds = Utils.isOutOfBoardBounds(placement, board);
+    if (isOutOfBounds) return false;
+
+    bool fitsOnBoard = Utils.hasRoom(placement, board);
+    return fitsOnBoard;
   }
 
   @override
@@ -68,8 +72,21 @@ class DefaultGameMechanics implements PatchworkRuleEngine {
   }
 
   @override
-  void test(GameState test) {
-    test.flipPiece(test.getGamePieces()[0]);
-    test.setView("finished");
+  void endOfTurn(GameState gameState) {
+    Player currentPlayer = gameState.getCurrentPlayer();
+    List<Player> players = gameState.getPlayers();
+    bool hasSevenBySeven = players.any((p) => p.hasSevenBySeven);
+    if (!hasSevenBySeven) {
+      //hämta detta från en konstant istället?
+      List<Square> initialShape = [];
+      for (int x = 0; x < 7; x++) {
+        for (int y = 0; y < 7; y++) {
+          Square s = new Square.simple(x, y);
+          initialShape.add(s);
+        }
+      }
+      currentPlayer.hasSevenBySeven =
+          Utils.hasPattern(initialShape, currentPlayer.board);
+    }
   }
 }

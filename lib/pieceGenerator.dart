@@ -80,10 +80,10 @@ class PieceGenerator {
     var rng = new Random();
     int num = rng.nextInt(100);
     int max = size - 2; //behöver två rutor för att skriva ut kostnaden
-    if (num < 33) return 0;
-    if (num < 33 + 25) return 1;
-    if (num < 58 + 20) return min(max, 2);
-    if (num < 78 + 15) return min(max, 3);
+    if (num < 38) return 0;
+    if (num < 38 + 28) return 1;
+    if (num < 66 + 21) return min(max, 2);
+    if (num < 87 + 11) return min(max, 3);
     return min(max, 4);
   }
 
@@ -113,9 +113,9 @@ class PieceGenerator {
         int neighbors = _countNeighbors(square, actual);
 
         if (neighbors == 1) difficulty += 1;
-        if (neighbors == 2) difficulty += (6 + shape.length / 3).round();
+        if (neighbors == 2) difficulty += (5 + shape.length / 3).round();
         if (neighbors == 3) difficulty += (10 + shape.length / 3).round();
-        if (neighbors == 4) difficulty += (22 + shape.length / 3).round();
+        if (neighbors == 4) difficulty += (26 + shape.length / 3).round();
 
         if (neighbors > 1) {
           multipleNeighbors.add(square);
@@ -129,10 +129,12 @@ class PieceGenerator {
           .any((s) => s.x == current.x - 1 && s.y == current.y - 1);
       bool hasNorthEast = multipleNeighbors
           .any((s) => s.x == current.x + 1 && s.y == current.y - 1);
-      if (hasNorthEast) difficulty += 22;
-      if (hasNorthWest) difficulty += 22;
+      if (hasNorthEast) difficulty += 23;
+      if (hasNorthWest) difficulty += 23;
     }
-    difficulty += multipleNeighbors.length * 2;
+    if (multipleNeighbors.length > 2) {
+      difficulty += multipleNeighbors.length * 3;
+    }
 
     if (shape.length > 4) {
       int spreadRatio = (maxX - minX) * (maxY - minY);
@@ -167,8 +169,8 @@ class PieceGenerator {
     List<Square> shape = [];
 
     var rng = new Random();
-    int startX = rng.nextInt(maxPieceLength-1);
-    int startY = rng.nextInt(maxPieceLength-1);
+    int startX = rng.nextInt(maxPieceLength - 1);
+    int startY = rng.nextInt(maxPieceLength - 1);
     Square startSquare = new Square.simple(startX, startY);
     startSquare.color = color;
     shape.add(startSquare);
@@ -227,7 +229,7 @@ class PieceGenerator {
 
     double adjustmentRate = costAdjustments[costAdjustment];
     int extraButtons = (before * adjustmentRate).floor();
-    return before + extraButtons;
+    return extraButtons;
   }
 
   static bool _outOfBounds(Square square) {

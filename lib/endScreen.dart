@@ -22,19 +22,35 @@ class EndScreen extends StatelessWidget {
             style: TextStyle(fontSize: 28.0),
           ),
         ),
-        Column(
-          children: players
-              .map((p) => Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 50.0, vertical: 0.0),
-                    child: ListTile(
-                      leading: Text(p.name),
-                      dense: false,
-                      trailing: Text(p.score.toString()),
+        Expanded(
+            child: ListView.builder(
+          itemCount: players.length,
+          itemBuilder: (context, index) {
+            final player = players[index];
+            return Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 30.0, vertical: 0),
+              child: Column(
+                children: <Widget>[
+                  ListTile(
+                    dense: true,
+                    title: Text(player.name),
+                    leading: Icon(player.isAi ? Icons.android : Icons.person,
+                        color: player.color),
+                    trailing: Text(
+                      player.score.toString(),
+                      style: TextStyle(fontSize: 18),
                     ),
-                  ))
-              .toList(),
-        ),
+                  ),
+                  Divider(
+                    height: 0,
+                    color: Colors.black87,
+                  )
+                ],
+              ),
+            );
+          },
+        )),
         RaisedButton(
           onPressed: () {
             gameState.restartApp();

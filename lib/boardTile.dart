@@ -26,7 +26,7 @@ class BoardTile extends StatelessWidget {
         decoration: new BoxDecoration(
             color: square.color,
             border: !square.filled
-                ? new Border.all(color: Colors.black87, width: boardTilePadding)
+                ? new Border.all(color: currentBoard.player.color, width: boardTilePadding)
                 : null),
         height: gameState.getBoardTileSize(),
         width: gameState.getBoardTileSize(),
@@ -36,21 +36,7 @@ class BoardTile extends StatelessWidget {
 
       List<Square> shadow = gameState.setHoveredBoardTile(square);
 
-      accepted = !shadow.any((s) =>
-          s.x < 0 ||
-          s.y < 0 ||
-          s.x >= currentBoard.cols ||
-          s.y >= currentBoard.rows);
-      if (accepted) {
-        for (int i = 0; i < currentBoard.squares.length; i++) {
-          Square inUse = currentBoard.squares[i];
-          bool occupied = shadow.any((s) => s.x == inUse.x && s.y == inUse.y);
-          if (occupied) {
-            accepted = false;
-            break;
-          }
-        }
-      }
+       accepted = gameState.isValidPlacement(shadow);
 
       for (int i = 0; i < shadow.length; i++) {
         Square s = shadow[i];

@@ -10,6 +10,8 @@ class TimeBoardTile extends StatefulWidget {
   final List<Player> players;
   final Player currentPlayer;
   final bool isGoalLine;
+  final double tileWidth;
+  final bool isCrowded;
 
   TimeBoardTile(
       {this.hasButton,
@@ -17,6 +19,8 @@ class TimeBoardTile extends StatefulWidget {
       this.players,
       this.isStartTile,
       this.isGoalLine,
+      this.tileWidth,
+      this.isCrowded,
       this.currentPlayer});
 
   @override
@@ -26,12 +30,30 @@ class TimeBoardTile extends StatefulWidget {
 class _TimeBoardTileState extends State<TimeBoardTile> {
   @override
   Widget build(BuildContext context) {
-    double tileWidth = timeBoardTileWidth;
-    if (widget.isGoalLine) tileWidth = MediaQuery.of(context).size.width - timeBoardTileWidth;
+    double tileWidth = widget.tileWidth;
+    if (widget.isGoalLine) {
+      tileWidth = MediaQuery.of(context).size.width - timeBoardTileWidth;
+    }
     if (widget.isStartTile) tileWidth *= 2;
     List<Widget> tileContent = [];
-    if (widget.players.length > 0) {
-      tileContent.addAll(widget.players
+    List<Widget> avatars = [];
+
+    if (widget.isCrowded) {
+      avatars.addAll(widget.players
+          .sublist(0, 3)
+          .map((p) => Icon(
+                p.isAi ? Icons.android : Icons.person,
+                color: p.color,
+              ))
+          .toList());
+      avatars.add(
+        Text(
+          "...",
+          style: TextStyle(fontSize: 24),
+        ),
+      );
+    } else if (widget.players.length > 0) {
+      avatars.addAll(widget.players
           .map((p) => Icon(
                 p.isAi ? Icons.android : Icons.person,
                 color: p.color,
@@ -41,7 +63,7 @@ class _TimeBoardTileState extends State<TimeBoardTile> {
     if (widget.hasButton) {
       tileContent.add(Icon(
         Icons.radio_button_checked,
-        color: Colors.blue,
+        color: Colors.blue.withOpacity(0.5),
       ));
     }
     if (widget.hasPiece) {
@@ -52,13 +74,18 @@ class _TimeBoardTileState extends State<TimeBoardTile> {
     }
 
     return Container(
-      height: timeBoardTileHeight,
       width: tileWidth,
-      decoration: new BoxDecoration(
-          border:
-              new Border.all(color: Colors.black87, width: boardTilePadding)),
-      child: Row(
-        children: tileContent,
+      child: Stack(
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: tileContent,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: avatars,
+          )
+        ],
       ),
     );
   }
