@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:patchwork/constants.dart';
 import 'package:patchwork/models/piece.dart';
 import 'package:patchwork/models/player.dart';
 import 'package:patchwork/patch.dart';
@@ -55,7 +56,7 @@ class PatchSelector extends StatelessWidget {
             child: Container(
               child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  itemCount: pieces.length,
+                  itemCount: lazyLoadPieces,
                   itemBuilder: (context, index) {
                     Piece piece = pieces[index];
                     bool draggable = index < 3 && piece.selectable;
@@ -71,15 +72,46 @@ class PatchSelector extends StatelessWidget {
                                 ),
                                 child: Card(
                                   elevation: draggable ? 3 : 0,
-                                  child: Center(
-                                    child: Patch(piece,
-                                        draggable: draggable,
-                                        patchSize: tileSize,
-                                        patchDragStartCallback:
-                                            gameState.setDraggedPiece,
-                                        patchDroppedCallback:
-                                            gameState.dropDraggedPiece,
-                                        img: gameState.getImg()),
+                                  child: Stack(
+                                    alignment: Alignment.center,
+                                    children: <Widget>[
+                                      Center(
+                                        child: Patch(piece,
+                                            draggable: draggable,
+                                            patchSize: tileSize,
+                                            patchDragStartCallback:
+                                                gameState.setDraggedPiece,
+                                            patchDroppedCallback:
+                                                gameState.dropDraggedPiece,
+                                            img: gameState.getImg()),
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: <Widget>[
+                                          IconButton(
+                                            iconSize:
+                                                gameState.getBoardTileSize() /
+                                                    2,
+                                            icon: Icon(
+                                              Icons.rotate_left,
+                                            ),
+                                            onPressed: () {
+                                              gameState.rotatePiece(piece);
+                                            },
+                                          ),
+                                          IconButton(
+                                            iconSize:
+                                                gameState.getBoardTileSize() /
+                                                    2,
+                                            icon: Icon(Icons.flip),
+                                            onPressed: () {
+                                              gameState.flipPiece(piece);
+                                            },
+                                          )
+                                        ],
+                                      )
+                                    ],
                                   ),
                                 )),
                             Expanded(

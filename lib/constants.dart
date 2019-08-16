@@ -28,7 +28,20 @@ final Square _south = new Square.simple(0, 1);
 //avarage buttons är strax över 1
 const int minimumPlayers = 2;
 const int maximumPlayers = 10;
+const int lazyLoadPieces = 12;
 final List<Square> directions = [_west, _east, _north, _south];
+final List<String> pieceImages = [
+  "arrows.jpg",
+  "b1.jpg",
+  "dots.jpg",
+  "dots2.jpg",
+  "plants.jpg",
+  "plants2.jpg",
+  "stars.jpg",
+  "stripes.jpg",
+  "10.png"
+];
+final String singlePiece = "single.png";
 final List<Color> pieceColors = [
   Colors.indigo,
   Colors.lightGreen,

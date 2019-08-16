@@ -87,7 +87,7 @@ class Utils {
   static List<Square> getBoardShadow(Piece piece, Square boardTile) {
     List<Square> shadow = piece.shape
         .map((s) =>
-            new Square(s.x + boardTile.x, s.y + boardTile.y, true, piece.color)
+            new Square(s.x + boardTile.x, s.y + boardTile.y, true, piece.color, s.imgSrc)
               ..hasButton = s.hasButton)
         .toList();
     return shadow;

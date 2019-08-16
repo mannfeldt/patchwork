@@ -1,7 +1,7 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:patchwork/models/board.dart';
 import 'package:patchwork/models/piece.dart';
 import 'package:patchwork/models/player.dart';
@@ -13,9 +13,9 @@ import 'package:patchwork/patchworkRuleEngine.dart';
 import 'package:patchwork/survivalGameMechanics.dart';
 import 'package:patchwork/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter/services.dart' show rootBundle;
 import 'dart:ui' as ui;
 import 'package:patchwork/constants.dart';
+import 'package:rxdart/rxdart.dart';
 
 class GameState with ChangeNotifier {
   PatchworkRuleEngine _ruleEngine;
@@ -32,6 +32,7 @@ class GameState with ChangeNotifier {
   TimeBoard _timeBoard;
   List<Piece> _gamePieces;
   String _view;
+  bool _didPass;
   double _bottomHeight;
 
   GameState();
@@ -95,19 +96,19 @@ class GameState with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<Null> init() async {
-    final ByteData data = await rootBundle.load('assets/J.png');
-    _image = await loadImage(new Uint8List.view(data.buffer));
-    notifyListeners();
-  }
+  // Future<Null> init() async {
+  //   final ByteData data = await rootBundle.load('assets/N.png');
+  //   _image = await loadImage(new Uint8List.view(data.buffer));
+  //   notifyListeners();
+  // }
 
-  Future<ui.Image> loadImage(List<int> img) async {
-    final Completer<ui.Image> completer = new Completer();
-    ui.decodeImageFromList(img, (ui.Image img) {
-      return completer.complete(img);
-    });
-    return completer.future;
-  }
+  // Future<ui.Image> loadImage(List<int> img) async {
+  //   final Completer<ui.Image> completer = new Completer();
+  //   ui.decodeImageFromList(img, (ui.Image img) {
+  //     return completer.complete(img);
+  //   });
+  //   return completer.future;
+  // }
 
   void restartApp() {
     _view = null;
@@ -138,7 +139,6 @@ class GameState with ChangeNotifier {
   }
 
   void startGame(GameMode mode) {
-    init();
     switch (mode) {
       case GameMode.DEFAULT:
         _ruleEngine = new DefaultGameMechanics();
@@ -222,25 +222,87 @@ class GameState with ChangeNotifier {
     _currentPlayer.buttons -= piece.cost;
     _pieceMarkerIndex = _gamePieces.indexWhere((p) => p.id == piece.id);
     _gamePieces.removeAt(_pieceMarkerIndex);
+    _didPass = false;
     movePlayerPosition(piece.time);
 
     //skipa nextTurn ifall att man får en extra tur med gratisbiten
   }
+  //!todo 1
 
-  // 7. se om jag fått svar på stack overflow, fråga annat forum? reddit flutter?
-  // lägg till bilder. använd funktionaliteten jag har redan för att få in en bild till patchShaper där jag kan rita ut bilden i rätt storlek?
-  //varje color är matchat mot en sökväg till en bild. på liknande sätt som enums är matchade till strängar.
-  //9. lägg också till en ikon till button, som då är liknande som golfikonerna jag gjorde. om nu inte jag har varhe mönster med button ocksp ovan
-  // 6. gå igenom alla roliga mechanics jag har listat i google keep och skriv upp dem och placera in dem i passande gamemodes, tänk på inte för krångliga modes
-  //behöver jag kanske lazyLoada selectPieces? rendrera bara de 10 nästa åt gången? ganska lägg gjort va? bara sluta vid index 10?
+//https://www.youtube.com/watch?v=s-ZG-jS5QHQ&list=PLjxrf2q8roU23XGwz3Km7sQZFTdB996iG&index=31 detta för att uppdetar feedback widgeten?
+
+//reordable listview är intressant? för pieceselector, kan vara en pwoer att ändra ordningen
+//använd indexedStack istället för en stack med visible widgets i. indexedStack ska behålla state osv men bara visa en i taget
+
+//https://flutter.dev/docs/development/ui/widgets/animation
+//https://flutter.dev/docs/development/ui/widgets hitta en widget för announcments
+
+  //kolla in animatedcontainern animatedSwitcher(denna för animaera gameboard in och ut etx?) animated positioned föratt flytta saker. widge of the week
+
+  //
+  //animatedlist är cool! använd för addPlayers, pieceSelector? få till så att man ser dismiss på de som försvinnera och de andra som läggs till?
+  //behöver sägga till animatedlist vilket index som laggts till eller tagits bort så det animeras. enkelt flr pieceselectorn då alla under _pieceSelectorIndex ska bort behöver inte animera in?
+  //i piceselectorn så ha en animated container runt varje patch också? kan den animera card elevation?
+//vad mer kan jag använda dessa animationer till? animatedlist för timeboardtiles? övergång för markörer?
+
+  //fixa en dialogruta för när en spelare får 7x7 ska kunna återanvändas till flera announcements. snackbar i värsta fall.
+  //om det ska initieras från ruleengine så måste metoden svara med en list<String> announcments? eller skicka med gameState och gameState har en announce()function, eller kan sätta announcement
+  //och gameplay eller någon widget läser upp dem i en dialog etc
+  //kolla filmer om animation in flutter, kolla flutter cookbook?
+
+  //testa lägg in någon animation. typ när man paserar en button och får pengar. en animation där pengar flyger från boardtiles hasbuttons till cashikonen? typ pieceselector ställer om sig. gameBoard fadar/övergång till nästa spelare, gamepeices rör sig, piece placeras på board
+
+  //börja bygg nya mechanics, börja med att lägga till lootboxes i survivalmode istället för några buttons/pieces. lootboxes kan ha pwoerups eller negativa. kan också enkelt vara +- position,buttons
+  // en lootbox är vad man får när man får bingo också?
+  //lägg till saxar positiva och negativa
+  //ens powers används direkt eller sparas i inventory? som visas mellan selector och timeboard
+
+//ska jag skriva ut hur många steg det är kvar i varje ruta av timeboarddTile? med opacity nere till hörnet varje ruta? förenklar att kolla hur långt fram det är till nästa seplare
+
   // onWillAccept bryt ut validPlacement till state och vidare till ruleengine. ibland kan det vara valid att överlappa. om man har extra power eller de som överlappar båda har knappar
   // 8. strukturera om filerna. skapa mapp för widgets, eller organisera efter feature/screen?
-  //ibland så startar spelet utan att visa timeGameBoard
-  //deeporange är för nära red som är error placement color
-  // stor bugg! när jag roterar så blir skuggan alltid "grön" den blir inte röd fast än det är fel. ska jag behålla skugan om jag får till bilder?
-
-//jag får ett expetion när jag startar spelet för att context.height är för litet pga att keyboard kan vara öppet.
+  //kan jag använda         transform: Matrix4.rotationZ(180) på något sätt för att simpulera rotation/spegling på feedback?
+  //det finns ett attribut på text och ikoner jag kan använda för att scala med olika skärmstorlekar. scalfaktorn får vara boardtilesize då. det är standard unit
 //jag förösker stänga det med att ta av fokcus men det funkar inte längre.. just nu kör vi en kostsam omräkning av boardTileSize hela tiden för att den inte ska vara null eller minus etc
+// vore snygg att få dit sytråden på varje peice när den läggs på bordet https://www.google.com/imgres?imgurl=https%3A%2F%2Fcdn3.volusion.com%2Fqrdkt.xdamu%2Fv%2Fvspfiles%2Fphotos%2FHT12900-2.jpg%3F1551411193&imgrefurl=https%3A%2F%2Fwww.hometrends.ie%2Fpatchwork-multi-print-rug-p%2Fht12900.htm&docid=Hp1AJMBHVw7I8M&tbnid=TzOVMa5Po8fWiM%3A&vet=10ahUKEwjCw8WEsoTkAhVh-ioKHV6HBqUQMwjGASgAMAA..i&w=1080&h=1524&safe=off&bih=984&biw=1924&q=patchwork&ved=0ahUKEwjCw8WEsoTkAhVh-ioKHV6HBqUQMwjGASgAMAA&iact=mrc&uact=8
+  //syikoner https://www.visualpharm.com/free-icons/sewing%20button-595b40b75ba036ed117d573a'
+  //Pageview är för att scrolla mellan vyer
+  //FittedBox för att få till bättre responsivitet? säerkställa att allt syns. eller är det bar tillf ör bilder?
+
+  //https://www.youtube.com/watch?v=ujhKGCBpGtQ den här killen får till feedback realtime udpates med hjälp av streams och rxdart. men han säger också att det ska gå med vanlig statefull setstate..
+
+  // Piece getPieceById(int id) {
+  //   Piece p = _gamePieces.firstWhere((p) => p.id == id);
+
+  //   return p;
+  // }
+
+  // GameState getInitalState() {
+  //   return this;
+  // }
+
+  // Stream<GameState> getStreamState() {
+  //   var _listController = BehaviorSubject<GameState>.seeded(this);
+
+  //   return _listController.stream;
+  // }
+//provider class
+
+//output
+//   Stream<Piece> get listStream => _listController.stream;
+
+// //input
+//   Sink<List<FoodItem>> get listSink => _listController.sink;
+
+//   addToList(FoodItem foodItem) {
+//     listSink.add(provider.addToList(foodItem));
+//   }
+
+//   removeFromList(FoodItem foodItem) {
+//     listSink.add(provider.removeFromList(foodItem));
+
+//   }
+// }
 
   void extraPiecePlaced(Piece piece, int x, int y) {
     for (int i = 0; i < piece.shape.length; i++) {
@@ -250,6 +312,7 @@ class GameState with ChangeNotifier {
     }
     cleaHoverBoardTile();
     _extraPieceCollected = false;
+    _didPass = false;
     _currentBoard.addPiece(piece);
 
     nextTurn();
@@ -262,7 +325,7 @@ class GameState with ChangeNotifier {
     notifyListeners();
   }
 
-  void nextTurn() {
+  void nextTurn() async {
     //här kollar vi på om någon fått ihop 7x7
     //om personen har det och ingen annan har wonSevenBySeven så får den spelaren det
 
@@ -273,7 +336,12 @@ class GameState with ChangeNotifier {
     if (gameFinished) {
       _finishGame();
     }
-    _currentPlayer = _ruleEngine.getNextPlayer(_players, _currentPlayer);
+    Player newPlayer = _ruleEngine.getNextPlayer(_players, _currentPlayer);
+    if (newPlayer.id != _currentPlayer.id && !_didPass) {
+      await sleep(1);
+    }
+    _didPass = false;
+    _currentPlayer = newPlayer;
     _currentBoard = _currentPlayer.board;
     //det här neda hör ju också till reglerna?
     List<Piece> cut = _gamePieces.sublist(0, _pieceMarkerIndex);
@@ -284,8 +352,18 @@ class GameState with ChangeNotifier {
       Piece p = _gamePieces[i];
       p.selectable = _ruleEngine.canSelectPiece(p, _currentPlayer);
     }
+    //vill ha en sleep eller animation så man ser var piecen hamnar. sleepar jag bara här så har dne inte fått sin position
+
     notifyListeners();
   }
+
+  Future sleep(int seconds) async {
+    for (int i = 0; i < seconds - 1; i++) {
+      await new Future.delayed(const Duration(seconds: 1));
+    }
+    return new Future.delayed(const Duration(seconds: 1));
+  }
+
 
   void movePlayerPosition(int moves) {
     int before = _currentPlayer.position;
@@ -352,6 +430,7 @@ class GameState with ChangeNotifier {
     //gamestate ska bara hålla korrekt data, bestå av getters och setters samt hanetra actions från avnändaren.
     //kan kan hantera putpiece eller scannboard i ruleengine som kan göra lite vad som egentligen
     // _ruleEngine.test(this);
+    _didPass = true;
 
     movePlayerPosition(moves);
     //räkna ut hur många moves en pass blir och dela ut buttons för det

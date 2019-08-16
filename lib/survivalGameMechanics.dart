@@ -33,7 +33,7 @@ class SurvivalGameMechanics implements PatchworkRuleEngine {
     List<Piece> pieces = [];
     int stacksOfPieces = (noOfPlayers / 2).round();
     for (int i = 0; i < stacksOfPieces; i++) {
-      pieces.addAll(PieceGenerator.getRandomPieces(40));
+      pieces.addAll(PieceGenerator.getSurvivalModePieces(40));
     }
     pieces.shuffle();
     return pieces;

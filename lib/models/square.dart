@@ -9,13 +9,15 @@ class Square {
       state; //dead, cloth, wool, cotton, silk. kan användas till vad som. om man dödar någons bräde eller om man startar med ett bräde med hål i så kan en square läggas där
   Color color;
   bool filled;
+  String imgSrc;
 
-  Square(int x, int y, bool filled, Color color) {
+  Square(int x, int y, bool filled, Color color, String imgSrc) {
     this.x = x;
     this.y = y;
     this.hasButton = false;
     this.color = color;
     this.filled = filled;
+    this.imgSrc = imgSrc;
   }
   Square.simple(int x, int y){
     this.x = x;

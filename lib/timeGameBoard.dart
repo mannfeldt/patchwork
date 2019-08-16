@@ -30,7 +30,7 @@ class TimeGameBoard extends StatelessWidget {
             bool isStartTile = index == 0;
             List<Player> positionedPlayers =
                 players.where((p) => p.position == index).toList();
-            bool isCrowded = positionedPlayers.length > 3;
+            bool isCrowded = positionedPlayers.length > 2;
             return Container(
               height: tileSize,
               alignment: Alignment.center,

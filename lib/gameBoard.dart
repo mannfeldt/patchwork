@@ -47,20 +47,21 @@ class GameBoard extends StatelessWidget {
       Square s = board.squares[i];
       cells.add(s);
     }
+    //ta fram denna för att få en skugga. lägg till onAccept på boardtile för att få rödmarkerat vid fel placering
 
-    if (shadow != null) {
-      for (int i = 0; i < shadow.length; i++) {
-        Square square = shadow[i];
-        bool exists = cells.any((s) => s.x == square.x && s.y == square.y);
-        if (!exists) {
-          cells.add(square);
-        }
-      }
-    }
+    // if (shadow != null && shadow[0].color==Colors.red) {
+    //   for (int i = 0; i < shadow.length; i++) {
+    //     Square square = shadow[i];
+    //     bool exists = cells.any((s) => s.x == square.x && s.y == square.y);
+    //     if (!exists) {
+    //       cells.add(square);
+    //     }
+    //   }
+    // }
 
     for (int y = 0; y < board.rows; y++) {
       for (int x = 0; x < board.cols; x++) {
-        Square square = new Square(x, y, false, board.player.color.withOpacity(0.2));
+        Square square = new Square(x, y, false, board.player.color.withOpacity(0.2), null);
         bool exists = cells.any((s) => s.x == square.x && s.y == square.y);
         if (!exists) {
           cells.add(square);

@@ -35,8 +35,8 @@ class Gameplay extends StatelessWidget {
       child: new LayoutBuilder(
           builder: (BuildContext context, BoxConstraints constraints) {
         // constraints variable has the size info
-        double boardTileSize = gameState.getBoardTileSize();
         gameState.setConstraints(constraints.maxWidth, constraints.maxHeight);
+        double boardTileSize = gameState.getBoardTileSize();
 
         return Center(
           child: Column(

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:patchwork/models/square.dart';
@@ -14,11 +15,42 @@ class PieceGenerator {
       int cost = piece['cost'];
       int time = piece['time'];
       Color color = _getColor();
-      List<Square> shape = _getShapeFromVisual(piece['visual'], color);
+      String imgName = _getImgName();
+      List<Square> shape = _getShapeFromVisual(piece['visual'], color, imgName);
       shape = _placeButtons(shape, buttons);
 
       int id = pieces.length;
-      Piece p = new Piece(id, shape, buttons, cost, time, color, 0);
+      Piece p = new Piece(id, shape, buttons, cost, time, color, 0, imgName);
+      pieces.add(p);
+    }
+    return pieces;
+  }
+
+  static List<Piece> getSurvivalModePieces(int amount) {
+    List<String> imageSelection = [];
+    Random rng = new Random();
+    while (imageSelection.length < min(4, pieceImages.length)) {
+      String img = pieceImages[rng.nextInt(pieceImages.length)];
+      if (!imageSelection.contains(img)) {
+        imageSelection.add(img);
+      }
+    }
+
+    List<Piece> pieces = [];
+    for (int i = 0; i < amount; i++) {
+      int id = i;
+      int size = _getSize();
+      int buttons = _getButtons(size);
+      Color color = _getColor();
+      String imgName = imageSelection[rng.nextInt(imageSelection.length)];
+      List<Square> shape = _placeButtons(_getShape(size, color, imgName), buttons);
+      int difficulty = _getDifficulty(shape);
+      int totalValue = _getTotalValue(buttons, size, difficulty);
+      int time = _getTimePart(totalValue);
+      int cost = totalValue - time;
+      int costAdjustment = _getCostAdjustment(cost);
+      Piece p = new Piece(
+          id, shape, buttons, cost, time, color, costAdjustment, imgName);
       pieces.add(p);
     }
     return pieces;
@@ -31,17 +63,24 @@ class PieceGenerator {
       int size = _getSize();
       int buttons = _getButtons(size);
       Color color = _getColor();
-      List<Square> shape = _placeButtons(_getShape(size, color), buttons);
+      String imgName = _getImgName();
+      List<Square> shape = _placeButtons(_getShape(size, color, imgName), buttons);
       int difficulty = _getDifficulty(shape);
       int totalValue = _getTotalValue(buttons, size, difficulty);
       int time = _getTimePart(totalValue);
       int cost = totalValue - time;
       int costAdjustment = _getCostAdjustment(cost);
-      Piece p =
-          new Piece(id, shape, buttons, cost, time, color, costAdjustment);
+      Piece p = new Piece(
+          id, shape, buttons, cost, time, color, costAdjustment, imgName);
       pieces.add(p);
     }
     return pieces;
+  }
+
+  static String _getImgName() {
+    Random rng = new Random();
+    String img = pieceImages[rng.nextInt(pieceImages.length)];
+    return img;
   }
 
   static int _getTimePart(int totalValue) {
@@ -165,7 +204,7 @@ class PieceGenerator {
     return neighbors;
   }
 
-  static List<Square> _getShape(int size, Color color) {
+  static List<Square> _getShape(int size, Color color, String imgSrc) {
     List<Square> shape = [];
 
     var rng = new Random();
@@ -173,6 +212,7 @@ class PieceGenerator {
     int startY = rng.nextInt(maxPieceLength - 1);
     Square startSquare = new Square.simple(startX, startY);
     startSquare.color = color;
+    startSquare.imgSrc = imgSrc;
     shape.add(startSquare);
     int lopps = 0;
     while (shape.length < size) {
@@ -189,6 +229,7 @@ class PieceGenerator {
       }
       shape.removeWhere((s) => s.x == newSquare.x && s.y == newSquare.y);
       newSquare.color = color;
+      newSquare.imgSrc = imgSrc;
       shape.add(newSquare);
     }
     return Utils.cropPiece(shape);
@@ -249,7 +290,7 @@ class PieceGenerator {
     return shape;
   }
 
-  static List<Square> _getShapeFromVisual(List<String> visual, Color color) {
+  static List<Square> _getShapeFromVisual(List<String> visual, Color color, String imgName) {
     List<Square> shape = [];
     for (int y = 0; y < visual.length; y++) {
       for (int x = 0; x < visual[y].length; x++) {
@@ -258,6 +299,7 @@ class PieceGenerator {
           int realX = ((x - 1) / 3).round();
           Square s = new Square.simple(realX, y);
           s.color = color;
+          s.imgSrc = imgName;
           shape.add(s);
         }
       }

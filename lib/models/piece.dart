@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:patchwork/constants.dart';
 import 'package:patchwork/models/square.dart';
 
 class Piece {
@@ -17,9 +18,10 @@ class Piece {
   int difficulty;
   String state; // active, selectable, unselectable, used
   int version;
+  String imgSrc;
 
   Piece(int id, List<Square> shape, int buttons, int cost, int time,
-      Color color, int costAdjustment) {
+      Color color, int costAdjustment, String imgSrc) {
     this.id = id;
     this.shape = shape;
     this.state = "active";
@@ -31,11 +33,12 @@ class Piece {
     this.costAdjustment = costAdjustment;
     this.selectable = false;
     this.version = 0;
+    this.imgSrc = imgSrc;
   }
 
   Piece.single(int id) {
     this.id = id;
-    Square s = new Square(0, 0, true, Colors.brown);
+    Square s = new Square(0, 0, true, Colors.brown, singlePiece);
     this.shape = [s];
     this.state = "active";
     this.size = shape.length;
@@ -46,6 +49,7 @@ class Piece {
     this.costAdjustment = 0;
     this.selectable = true;
     this.version = 0;
+    this.imgSrc = singlePiece;
   }
 
   List<String> getVisual() {

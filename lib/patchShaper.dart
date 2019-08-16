@@ -59,8 +59,8 @@ class PatchShaper extends CustomPainter {
     //Image img = Image.asset(assetName);
     //AssetImage img2 = new AssetImage(assetName);
     if (img != null) {
-      img.height=squareSize.round();
-      img.width=squareSize.round();
+      //img.height=squareSize.round();
+      //img.width=squareSize.round();
       canvas.drawImage(img, new Offset(0.0, 0.0), new Paint());
       //jag skulle kunna lägga till image som ett attribut i constans på alla default pieces.
       //och de

@@ -21,6 +21,7 @@ class DefaultGameMechanics implements PatchworkRuleEngine {
     int missingTiles =
         (player.board.cols * player.board.rows) - player.board.squares.length;
     int score = player.buttons - (missingTiles * 2);
+    if(player.hasSevenBySeven) score += 7;
     return score;
   }
 

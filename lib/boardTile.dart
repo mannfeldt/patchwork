@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:patchwork/models/board.dart';
 import 'package:patchwork/models/piece.dart';
 import 'package:patchwork/models/square.dart';
+import 'package:patchwork/patchwork_icons_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:patchwork/gamestate.dart';
 import 'package:patchwork/constants.dart';
@@ -14,35 +15,46 @@ class BoardTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final gameState = Provider.of<GameState>(context);
     Board currentBoard = gameState.getCurrentBoard();
+    double tileSize = gameState.getBoardTileSize();
     return DragTarget<Piece>(
         builder: (context, List<Piece> candidateData, rejectedData) {
-      return Container(
-        child: square.hasButton
+      if (square.filled) {
+        Widget buttonWidget = square.hasButton
             ? Icon(
-                Icons.radio_button_checked,
-                color: Colors.blue,
+                PatchworkIcons.button_icon,
+                color: Colors.blue.shade800.withOpacity(0.8),
+                size: tileSize,
               )
-            : null,
-        decoration: new BoxDecoration(
-            color: square.color,
-            border: !square.filled
-                ? new Border.all(color: currentBoard.player.color, width: boardTilePadding)
-                : null),
-        height: gameState.getBoardTileSize(),
-        width: gameState.getBoardTileSize(),
-      );
+            : Container();
+        return Stack(children: <Widget>[
+          Image.asset(
+            "assets/" + square.imgSrc,
+            width: tileSize,
+          ),
+          buttonWidget
+        ]);
+      } else {
+        return Container(
+          decoration: new BoxDecoration(
+              color: square.color,
+              border: new Border.all(
+                  color: currentBoard.player.color, width: boardTilePadding)),
+          height: tileSize,
+          width: tileSize,
+        );
+      }
     }, onWillAccept: (data) {
       bool accepted = true;
 
       List<Square> shadow = gameState.setHoveredBoardTile(square);
 
-       accepted = gameState.isValidPlacement(shadow);
+      accepted = gameState.isValidPlacement(shadow);
 
-      for (int i = 0; i < shadow.length; i++) {
-        Square s = shadow[i];
-        s.filled = true;
-        s.color = accepted ? data.color : Colors.red;
-      }
+      // for (int i = 0; i < shadow.length; i++) {
+      //   Square s = shadow[i];
+      //   s.filled = true;
+      //   s.color = accepted ? data.color : Colors.red;
+      // }
 
       return accepted;
     }, onLeave: (data) {
