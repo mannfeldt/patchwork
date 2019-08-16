@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
+import 'package:patchwork/gameBoard.dart';
+import 'package:patchwork/models/announcement.dart';
 import 'package:patchwork/models/board.dart';
 import 'package:patchwork/models/piece.dart';
 import 'package:patchwork/models/player.dart';
@@ -34,6 +36,10 @@ class GameState with ChangeNotifier {
   String _view;
   bool _didPass;
   double _bottomHeight;
+  Announcement _announcement;
+  GameBoard _currentGameBoard;
+  Player _previousPlayer;
+  int _turnCounter;
 
   GameState();
 
@@ -50,6 +56,10 @@ class GameState with ChangeNotifier {
   getBoardHoverShadow() => _boardHoverShadow;
   getCurrentBoard() => _currentBoard;
   getBottomHeight() => _bottomHeight;
+  getAnnouncement() => _announcement;
+  getCurrentGameBoard() => _currentGameBoard;
+  getPreviousPlayer() => _previousPlayer;
+  getTurnCounter() => _turnCounter;
 
   double getPatchSelectorHeight() {
     return _bottomHeight - (_boardTileSize * 1.8);
@@ -154,10 +164,28 @@ class GameState with ChangeNotifier {
     _timeBoard = _ruleEngine.initTimeBoard();
     _players = _ruleEngine.initPlayers(_players);
     _pieceMarkerIndex = 0;
+    _turnCounter = 0;
     _currentPlayer = _players[0];
+    _previousPlayer = _currentPlayer;
     _currentBoard = _currentPlayer.board;
+    _currentGameBoard = new GameBoard(board: _currentBoard);
     _extraPieceCollected = false;
     nextTurn();
+    notifyListeners();
+  }
+
+  void setAnnouncement(Announcement announcement) {
+    _announcement = announcement;
+    notifyListeners();
+  }
+
+  void makeAnnouncement(String title, String text, AnnouncementType type) {
+    //kanske ha ett announcement model om det är mer än ett meddelande? kanske ska den ha en tillgörande callback? osv
+    setAnnouncement(new Announcement(title, Text(text), type));
+  }
+
+  void clearAnnouncement() {
+    _announcement = null;
     notifyListeners();
   }
 
@@ -229,34 +257,27 @@ class GameState with ChangeNotifier {
   }
   //!todo 1
 
-//https://www.youtube.com/watch?v=s-ZG-jS5QHQ&list=PLjxrf2q8roU23XGwz3Km7sQZFTdB996iG&index=31 detta för att uppdetar feedback widgeten?
-
-//reordable listview är intressant? för pieceselector, kan vara en pwoer att ändra ordningen
-//använd indexedStack istället för en stack med visible widgets i. indexedStack ska behålla state osv men bara visa en i taget
-
 //https://flutter.dev/docs/development/ui/widgets/animation
-//https://flutter.dev/docs/development/ui/widgets hitta en widget för announcments
-
   //kolla in animatedcontainern animatedSwitcher(denna för animaera gameboard in och ut etx?) animated positioned föratt flytta saker. widge of the week
-
-  //
   //animatedlist är cool! använd för addPlayers, pieceSelector? få till så att man ser dismiss på de som försvinnera och de andra som läggs till?
   //behöver sägga till animatedlist vilket index som laggts till eller tagits bort så det animeras. enkelt flr pieceselectorn då alla under _pieceSelectorIndex ska bort behöver inte animera in?
+  //testa lägg in någon animation. typ när man paserar en button och får pengar. en animation där pengar flyger från boardtiles hasbuttons till cashikonen? typ pieceselector ställer om sig. gameBoard fadar/övergång till nästa spelare, gamepeices rör sig, piece placeras på board
   //i piceselectorn så ha en animated container runt varje patch också? kan den animera card elevation?
 //vad mer kan jag använda dessa animationer till? animatedlist för timeboardtiles? övergång för markörer?
 
-  //fixa en dialogruta för när en spelare får 7x7 ska kunna återanvändas till flera announcements. snackbar i värsta fall.
-  //om det ska initieras från ruleengine så måste metoden svara med en list<String> announcments? eller skicka med gameState och gameState har en announce()function, eller kan sätta announcement
-  //och gameplay eller någon widget läser upp dem i en dialog etc
-  //kolla filmer om animation in flutter, kolla flutter cookbook?
+  //BINGO kan ha en mindrek kolumn. så gameboard är 8x9 och den saknade kolumnen ersätts med lootboxes
+//börja med bing och lootboxes till höger kolumnen
+//animated postion för reveal av lootbox? eller ska det ske i en dialog som en acual lootbox där det scrollas och sen stannar på något som man får??
 
-  //testa lägg in någon animation. typ när man paserar en button och får pengar. en animation där pengar flyger från boardtiles hasbuttons till cashikonen? typ pieceselector ställer om sig. gameBoard fadar/övergång till nästa spelare, gamepeices rör sig, piece placeras på board
+//det blir mycket inblandata i gamestate och model som är specifkt för ett gamemode? skapa specifika modeler som ärver? för widgetar också?
+// bingoBoard extends board. bingoPlayer extens player etc.
 
   //börja bygg nya mechanics, börja med att lägga till lootboxes i survivalmode istället för några buttons/pieces. lootboxes kan ha pwoerups eller negativa. kan också enkelt vara +- position,buttons
   // en lootbox är vad man får när man får bingo också?
   //lägg till saxar positiva och negativa
   //ens powers används direkt eller sparas i inventory? som visas mellan selector och timeboard
 
+//reordable listview är intressant? för pieceselector, kan vara en pwoer att ändra ordningen
 //ska jag skriva ut hur många steg det är kvar i varje ruta av timeboarddTile? med opacity nere till hörnet varje ruta? förenklar att kolla hur långt fram det är till nästa seplare
 
   // onWillAccept bryt ut validPlacement till state och vidare till ruleengine. ibland kan det vara valid att överlappa. om man har extra power eller de som överlappar båda har knappar
@@ -322,10 +343,11 @@ class GameState with ChangeNotifier {
     _view = "finished";
     _players
         .forEach((player) => player.score = _ruleEngine.calculateScore(player));
+    _announcement = null;
     notifyListeners();
   }
 
-  void nextTurn() async {
+  void nextTurn() {
     //här kollar vi på om någon fått ihop 7x7
     //om personen har det och ingen annan har wonSevenBySeven så får den spelaren det
 
@@ -338,11 +360,18 @@ class GameState with ChangeNotifier {
     }
     Player newPlayer = _ruleEngine.getNextPlayer(_players, _currentPlayer);
     if (newPlayer.id != _currentPlayer.id && !_didPass) {
-      await sleep(1);
+      //await sleep(1);
+    }
+    if (newPlayer.id != _currentPlayer.id) {
+      _turnCounter += 1;
+      _previousPlayer = _currentPlayer;
+      //await sleep(1);
     }
     _didPass = false;
     _currentPlayer = newPlayer;
     _currentBoard = _currentPlayer.board;
+    _currentGameBoard = new GameBoard(board: _currentBoard);
+
     //det här neda hör ju också till reglerna?
     List<Piece> cut = _gamePieces.sublist(0, _pieceMarkerIndex);
     List<Piece> newStart = _gamePieces.sublist(_pieceMarkerIndex);
@@ -364,7 +393,6 @@ class GameState with ChangeNotifier {
     return new Future.delayed(const Duration(seconds: 1));
   }
 
-
   void movePlayerPosition(int moves) {
     int before = _currentPlayer.position;
     _currentPlayer.position += moves;
@@ -376,6 +404,13 @@ class GameState with ChangeNotifier {
 
     if (passedButton) {
       _currentPlayer.buttons += _currentBoard.buttons;
+      // setAnnouncement(new Announcement(
+      //     "",
+      //     Text(_currentPlayer.name +
+      //         " recieved " +
+      //         _currentBoard.buttons.toString() +
+      //         " buttons"),
+      //     AnnouncementType.simpleDialog));
     }
     if (passedPieceIndex > 0) {
       _extraPieceCollected = true;
@@ -400,6 +435,10 @@ class GameState with ChangeNotifier {
     if (after >= _timeBoard.goalIndex) {
       _currentPlayer.state = "finished";
       _currentPlayer.position = _timeBoard.goalIndex;
+      setAnnouncement(new Announcement(
+          "",
+          Text(_currentPlayer.name + " crossed the goal line"),
+          AnnouncementType.simpleDialog));
     }
     if (!_extraPieceCollected) {
       nextTurn();

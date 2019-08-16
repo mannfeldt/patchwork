@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:patchwork/constants.dart';
+import 'package:patchwork/dialogs.dart';
 import 'package:patchwork/footer.dart';
 import 'package:patchwork/gameBoard.dart';
+import 'package:patchwork/models/announcement.dart';
 import 'package:patchwork/models/player.dart';
 import 'package:patchwork/patchSelector.dart';
 import 'package:patchwork/timeGameBoard.dart';
@@ -12,9 +14,28 @@ class Gameplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final gameState = Provider.of<GameState>(context);
-    Player currentPlayer = gameState.getCurrentPlayer();
-// TODO se nedan
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      Announcement announcement = gameState.getAnnouncement();
 
+      if (announcement != null) {
+        switch (announcement.type) {
+          case AnnouncementType.snackbar:
+            Dialogs.snackbar(context, announcement);
+            break;
+          case AnnouncementType.simpleDialog:
+            Dialogs.simpleAnnouncement(context, announcement);
+            break;
+          case AnnouncementType.dialog:
+            Dialogs.announcement(context, announcement);
+            break;
+          default:
+            break;
+        }
+        gameState.clearAnnouncement();
+      }
+    });
+
+// TODO se nedan
     // refactorisera. nya widgetar. flytta metoder till rule engine, util osv? lägg till constanter istället för hårdkodade värden
 
     //2. lägg till fler game mechanics. försten till 7x7. skriv bara ut en alert eller dialog ruta. skapa en generell ruta för händelser
@@ -37,14 +58,30 @@ class Gameplay extends StatelessWidget {
         // constraints variable has the size info
         gameState.setConstraints(constraints.maxWidth, constraints.maxHeight);
         double boardTileSize = gameState.getBoardTileSize();
-
+        Player currentPlayer = gameState.getCurrentPlayer();
+        Player previousPlayer = gameState.getPreviousPlayer();
+        bool isEvenId = gameState.getTurnCounter().isEven;
         return Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Container(
-                padding: EdgeInsets.fromLTRB(gameBoardInset,gameBoardInset,gameBoardInset,0),
-                child: GameBoard(board: currentPlayer.board),
+                padding: EdgeInsets.fromLTRB(
+                    gameBoardInset, gameBoardInset, gameBoardInset, 0),
+                child: AnimatedCrossFade(
+                  firstChild: GameBoard(
+                    board:
+                        isEvenId ? currentPlayer.board : previousPlayer.board,
+                  ),
+                  secondChild: GameBoard(
+                    board:
+                        !isEvenId ? currentPlayer.board : previousPlayer.board,
+                  ),
+                  crossFadeState: isEvenId
+                      ? CrossFadeState.showFirst
+                      : CrossFadeState.showSecond,
+                  duration: Duration(seconds: 1),
+                ),
                 height: constraints.maxWidth,
               ),
               Container(
@@ -53,7 +90,7 @@ class Gameplay extends StatelessWidget {
               ),
               Container(
                 child: TimeGameBoard(),
-                height: boardTileSize != null ? boardTileSize/1.2 : 0,
+                height: boardTileSize != null ? boardTileSize / 1.2 : 0,
               ),
               Container(
                 child: Footer(),

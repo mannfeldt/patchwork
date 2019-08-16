@@ -3,7 +3,6 @@ import 'package:patchwork/boardTile.dart';
 import 'package:patchwork/models/board.dart';
 import 'package:patchwork/models/square.dart';
 import 'package:provider/provider.dart';
-import 'package:patchwork/gamestate.dart';
 
 class GameBoard extends StatelessWidget {
   List<Square> cells = [];
@@ -12,12 +11,8 @@ class GameBoard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final gameState = Provider.of<GameState>(context);
-    Board currentBoard = gameState.getCurrentBoard();
-    List<Square> shadow = gameState.getBoardHoverShadow();
-    cells = _computeCells(currentBoard, shadow);
-    return Table(children: _createGridCells(currentBoard));
-    // If the widget is visible, animate to 0.0 (invisible)
+    cells = _computeCells(board);
+    return Table(children: _createGridCells(board));
   }
 
   List<TableRow> _createGridCells(Board board) {
@@ -41,7 +36,7 @@ class GameBoard extends StatelessWidget {
     return row;
   }
 
-  List<Square> _computeCells(Board board, List<Square> shadow) {
+  List<Square> _computeCells(Board board) {
     List<Square> cells = <Square>[];
     for (int i = 0; i < board.squares.length; i++) {
       Square s = board.squares[i];
@@ -61,7 +56,8 @@ class GameBoard extends StatelessWidget {
 
     for (int y = 0; y < board.rows; y++) {
       for (int x = 0; x < board.cols; x++) {
-        Square square = new Square(x, y, false, board.player.color.withOpacity(0.2), null);
+        Square square =
+            new Square(x, y, false, board.player.color.withOpacity(0.2), null);
         bool exists = cells.any((s) => s.x == square.x && s.y == square.y);
         if (!exists) {
           cells.add(square);

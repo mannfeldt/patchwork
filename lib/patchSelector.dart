@@ -45,175 +45,161 @@ class PatchSelector extends StatelessWidget {
     //behöver helt enkelt kunna ändra något på objektet jag drar i medan jag drar
 
     //nu fungerar det typ! behöver bara få till repaint direkt.
-    return Stack(
+    return IndexedStack(
+      index: draggedPiece == null ? 0 : 1,
       children: <Widget>[
-        Visibility(
-            visible: draggedPiece == null,
-            maintainSize: true,
-            maintainAnimation: true,
-            maintainState: true,
-            maintainInteractivity: true,
-            child: Container(
-              child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: lazyLoadPieces,
-                  itemBuilder: (context, index) {
-                    Piece piece = pieces[index];
-                    bool draggable = index < 3 && piece.selectable;
-                    double tileSize = gameState.getBoardTileSize();
-                    return Container(
-                        width: MediaQuery.of(context).size.width / 3,
-                        alignment: Alignment.topCenter,
-                        child: Column(
-                          children: <Widget>[
-                            ConstrainedBox(
-                                constraints: new BoxConstraints(
-                                  minHeight: tileSize * 3,
-                                ),
-                                child: Card(
-                                  elevation: draggable ? 3 : 0,
-                                  child: Stack(
-                                    alignment: Alignment.center,
+        Container(
+          child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: lazyLoadPieces,
+              itemBuilder: (context, index) {
+                Piece piece = pieces[index];
+                bool draggable = index < 3 && piece.selectable;
+                double tileSize = gameState.getBoardTileSize();
+                return Container(
+                    width: MediaQuery.of(context).size.width / 3,
+                    alignment: Alignment.topCenter,
+                    child: Column(
+                      children: <Widget>[
+                        ConstrainedBox(
+                            constraints: new BoxConstraints(
+                              minHeight: tileSize * 3,
+                            ),
+                            child: Card(
+                              elevation: draggable ? 3 : 0,
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: <Widget>[
+                                  Center(
+                                    child: Patch(piece,
+                                        draggable: draggable,
+                                        patchSize: tileSize,
+                                        patchDragStartCallback:
+                                            gameState.setDraggedPiece,
+                                        patchDroppedCallback:
+                                            gameState.dropDraggedPiece,
+                                        img: gameState.getImg()),
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: <Widget>[
-                                      Center(
-                                        child: Patch(piece,
-                                            draggable: draggable,
-                                            patchSize: tileSize,
-                                            patchDragStartCallback:
-                                                gameState.setDraggedPiece,
-                                            patchDroppedCallback:
-                                                gameState.dropDraggedPiece,
-                                            img: gameState.getImg()),
+                                      IconButton(
+                                        iconSize:
+                                            gameState.getBoardTileSize() / 2,
+                                        icon: Icon(
+                                          Icons.rotate_left,
+                                        ),
+                                        onPressed: () {
+                                          gameState.rotatePiece(piece);
+                                        },
                                       ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: <Widget>[
-                                          IconButton(
-                                            iconSize:
-                                                gameState.getBoardTileSize() /
-                                                    2,
-                                            icon: Icon(
-                                              Icons.rotate_left,
-                                            ),
-                                            onPressed: () {
-                                              gameState.rotatePiece(piece);
-                                            },
-                                          ),
-                                          IconButton(
-                                            iconSize:
-                                                gameState.getBoardTileSize() /
-                                                    2,
-                                            icon: Icon(Icons.flip),
-                                            onPressed: () {
-                                              gameState.flipPiece(piece);
-                                            },
-                                          )
-                                        ],
+                                      IconButton(
+                                        iconSize:
+                                            gameState.getBoardTileSize() / 2,
+                                        icon: Icon(Icons.flip),
+                                        onPressed: () {
+                                          gameState.flipPiece(piece);
+                                        },
                                       )
                                     ],
-                                  ),
-                                )),
-                            Expanded(
-                              child: Container(
-                                child: Stack(
-                                  alignment: Alignment.topCenter,
+                                  )
+                                ],
+                              ),
+                            )),
+                        Expanded(
+                          child: Container(
+                            child: Stack(
+                              alignment: Alignment.topCenter,
+                              children: <Widget>[
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
                                   children: <Widget>[
                                     Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
                                       children: <Widget>[
-                                        Row(
-                                          children: <Widget>[
-                                            Icon(
-                                              Icons.attach_money,
-                                              color: piece.cost >
-                                                      currentPlayer.buttons
+                                        Icon(
+                                          Icons.attach_money,
+                                          color:
+                                              piece.cost > currentPlayer.buttons
                                                   ? Colors.red
                                                   : Colors.black87,
-                                              size: 18,
-                                            ),
-                                            Visibility(
-                                              visible:
-                                                  piece.costAdjustment != 0,
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.fromLTRB(
-                                                        0, 0, 2.0, 0),
-                                                child: Text(
-                                                  (piece.cost).toString(),
-                                                  style: TextStyle(
-                                                      color: piece.cost >
-                                                              currentPlayer
-                                                                  .buttons
-                                                          ? Colors.red
-                                                          : Colors.black87,
-                                                      decoration: TextDecoration
-                                                          .lineThrough,
-                                                      fontSize: 18),
-                                                ),
-                                              ),
-                                            ),
-                                            Text(
-                                              (piece.cost +
-                                                      piece.costAdjustment)
-                                                  .toString(),
+                                          size: 18,
+                                        ),
+                                        Visibility(
+                                          visible: piece.costAdjustment != 0,
+                                          child: Padding(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                0, 0, 2.0, 0),
+                                            child: Text(
+                                              (piece.cost).toString(),
                                               style: TextStyle(
                                                   color: piece.cost >
                                                           currentPlayer.buttons
                                                       ? Colors.red
                                                       : Colors.black87,
+                                                  decoration: TextDecoration
+                                                      .lineThrough,
                                                   fontSize: 18),
-                                            )
-                                          ],
-                                        ),
-                                        Row(
-                                          children: <Widget>[
-                                            Icon(
-                                              Icons.access_time,
                                             ),
-                                            Text(piece.time.toString()),
-                                          ],
+                                          ),
+                                        ),
+                                        Text(
+                                          (piece.cost + piece.costAdjustment)
+                                              .toString(),
+                                          style: TextStyle(
+                                              color: piece.cost >
+                                                      currentPlayer.buttons
+                                                  ? Colors.red
+                                                  : Colors.black87,
+                                              fontSize: 18),
                                         )
                                       ],
                                     ),
+                                    Row(
+                                      children: <Widget>[
+                                        Icon(
+                                          Icons.access_time,
+                                        ),
+                                        Text(piece.time.toString()),
+                                      ],
+                                    )
                                   ],
                                 ),
-                              ),
-                            )
-                          ],
-                        ));
-                  }),
-            )),
-        Visibility(
-          visible: draggedPiece != null,
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 0.0, vertical: 10.0),
-            width: MediaQuery.of(context).size.width,
-            alignment: Alignment.center,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                IconButton(
-                  iconSize: gameState.getBoardTileSize() * 2,
-                  icon: Icon(
-                    Icons.rotate_left,
-                  ),
-                  onPressed: () {
-                    gameState.rotatePiece(draggedPiece);
-                  },
+                              ],
+                            ),
+                          ),
+                        )
+                      ],
+                    ));
+              }),
+        ),
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 0.0, vertical: 10.0),
+          width: MediaQuery.of(context).size.width,
+          alignment: Alignment.center,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              IconButton(
+                iconSize: gameState.getBoardTileSize() * 2,
+                icon: Icon(
+                  Icons.rotate_left,
                 ),
-                IconButton(
-                  iconSize: gameState.getBoardTileSize() * 2,
-                  icon: Icon(Icons.flip),
-                  onPressed: () {
-                    gameState.flipPiece(draggedPiece);
-                  },
-                ),
-              ],
-            ),
+                onPressed: () {
+                  gameState.rotatePiece(draggedPiece);
+                },
+              ),
+              IconButton(
+                iconSize: gameState.getBoardTileSize() * 2,
+                icon: Icon(Icons.flip),
+                onPressed: () {
+                  gameState.flipPiece(draggedPiece);
+                },
+              ),
+            ],
           ),
-        )
+        ),
       ],
     );
   }

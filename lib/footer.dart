@@ -29,7 +29,7 @@ class Footer extends StatelessWidget {
           icon: Icon(Icons.skip_next),
           tooltip: "pass",
           onPressed: () {
-            if (gameState.getDraggedPiece() == null) {
+            if (gameState.getDraggedPiece() == null && gameState.getExtraPieceCollected() == false) {
               gameState.pass();
             }
           },

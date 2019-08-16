@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:patchwork/gamestate.dart';
+import 'package:patchwork/models/announcement.dart';
 import 'package:patchwork/models/piece.dart';
 import 'package:patchwork/models/square.dart';
 import 'package:patchwork/models/board.dart';
@@ -21,7 +22,7 @@ class DefaultGameMechanics implements PatchworkRuleEngine {
     int missingTiles =
         (player.board.cols * player.board.rows) - player.board.squares.length;
     int score = player.buttons - (missingTiles * 2);
-    if(player.hasSevenBySeven) score += 7;
+    if (player.hasSevenBySeven) score += 7;
     return score;
   }
 
@@ -79,15 +80,23 @@ class DefaultGameMechanics implements PatchworkRuleEngine {
     bool hasSevenBySeven = players.any((p) => p.hasSevenBySeven);
     if (!hasSevenBySeven) {
       //hämta detta från en konstant istället?
-      List<Square> initialShape = [];
+      List<Square> sevenBySeven = [];
       for (int x = 0; x < 7; x++) {
         for (int y = 0; y < 7; y++) {
           Square s = new Square.simple(x, y);
-          initialShape.add(s);
+          sevenBySeven.add(s);
         }
       }
-      currentPlayer.hasSevenBySeven =
-          Utils.hasPattern(initialShape, currentPlayer.board);
+      bool hasSevenBySeven =
+          Utils.hasPattern(sevenBySeven, currentPlayer.board);
+      if (hasSevenBySeven) {
+        currentPlayer.hasSevenBySeven = true;
+        gameState.makeAnnouncement(
+            "7x7 found",
+            currentPlayer.name +
+                " will recieve 7 points at the end of the game",
+            AnnouncementType.simpleDialog);
+      }
     }
   }
 }

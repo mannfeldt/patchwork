@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:patchwork/models/board.dart';
+
 class Player {
   int id;
   String name;
@@ -12,7 +13,7 @@ class Player {
   bool hasSevenBySeven;
   int score;
 
-  Player(int id, String name, Color color, bool isAi){
+  Player(int id, String name, Color color, bool isAi) {
     this.id = id;
     this.name = name;
     this.color = color;
