@@ -242,13 +242,13 @@ class GameState with ChangeNotifier {
   }
   //!todo 1
 
-//https://flutter.dev/docs/development/ui/widgets/animation
-  //kolla in animatedcontainern animatedSwitcher(denna för animaera gameboard in och ut etx?) animated positioned föratt flytta saker. widge of the week
-  //animatedlist är cool! använd för addPlayers, pieceSelector? få till så att man ser dismiss på de som försvinnera och de andra som läggs till?
-  //behöver sägga till animatedlist vilket index som laggts till eller tagits bort så det animeras. enkelt flr pieceselectorn då alla under _pieceSelectorIndex ska bort behöver inte animera in?
-  //testa lägg in någon animation. typ när man paserar en button och får pengar. en animation där pengar flyger från boardtiles hasbuttons till cashikonen? typ pieceselector ställer om sig. gameBoard fadar/övergång till nästa spelare, gamepeices rör sig, piece placeras på board
-  //i piceselectorn så ha en animated container runt varje patch också? kan den animera card elevation?
-//vad mer kan jag använda dessa animationer till? animatedlist för timeboardtiles? övergång för markörer?
+
+//animera lägg till ikoner för stitches så att man ser tydligare gränser mellan bitar
+//lägg in animation för att dela upp pengar till spelaren när den pacerar en button. får göras på liknande sätt som jag animerar scroll på patchselectorn?
+//alltså behöver kanske en sleep i gamestate? behöver iaf en buttonsToRecieve paramter
+//Får tänka som extrapiece vad som händer där. och göra på samma sätt för animationen. bara att den går vidare till nextTurn automatiskt efter x antal minuter.
+//tänk på vad som händer om man går förbi både pengar och bricka samtidigt. man ska gå vidare till att få sela extrabiten efter animationen eller ja animationen ska kunna seplas
+//medan extra biten visas helt enkelt
 
   //BINGO kan ha en mindrek kolumn. så gameboard är 8x9 och den saknade kolumnen ersätts med lootboxes
 //börja med bing och lootboxes till höger kolumnen
@@ -367,25 +367,20 @@ class GameState with ChangeNotifier {
       Piece p = _nextPieceList[i];
       p.selectable = _ruleEngine.canSelectPiece(p, _currentPlayer);
     }
-    //vill ha en sleep eller animation så man ser var piecen hamnar. sleepar jag bara här så har dne inte fått sin position
-
     notifyListeners();
   }
 
   void cleaPieceMarkerIndex(bool goSleep) async {
     if (goSleep) {
-      await sleep(1);
+      await sleep(500);
     }
     _pieceMarkerIndex = -1;
     _gamePieces = _nextPieceList;
     notifyListeners();
   }
 
-  Future sleep(int seconds) async {
-    for (int i = 0; i < seconds - 1; i++) {
-      await new Future.delayed(const Duration(seconds: 1));
-    }
-    return new Future.delayed(const Duration(seconds: 1));
+  Future sleep(int ms) async {
+    return new Future.delayed(Duration(milliseconds: ms));
   }
 
   void movePlayerPosition(int moves) {

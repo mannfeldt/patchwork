@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:patchwork/constants.dart';
 import 'package:patchwork/models/player.dart';
+import 'package:patchwork/patchwork_icons_icons.dart';
 
 class TimeBoardTile extends StatefulWidget {
   final bool hasButton;
@@ -15,6 +16,7 @@ class TimeBoardTile extends StatefulWidget {
   final bool isGoalLine;
   final double tileWidth;
   final bool isCrowded;
+  final int index;
 
   TimeBoardTile(
       {this.hasButton,
@@ -24,6 +26,7 @@ class TimeBoardTile extends StatefulWidget {
       this.isGoalLine,
       this.tileWidth,
       this.isCrowded,
+      this.index,
       this.currentPlayer});
 
   @override
@@ -41,7 +44,7 @@ class _TimeBoardTileState extends State<TimeBoardTile> {
     List<Widget> tileContent = [];
     List<Widget> avatars = [];
     if (widget.players.length > 0) {
-      double iconSize = 20;
+      double iconSize = widget.tileWidth / 3;
       double paddingLeft = ((tileWidth - iconSize) / widget.players.length);
       paddingLeft = min(paddingLeft, iconSize);
       for (int i = 0; i < widget.players.length; i++) {
@@ -61,8 +64,8 @@ class _TimeBoardTileState extends State<TimeBoardTile> {
     if (widget.hasButton) {
       tileContent.add(Center(
           child: Icon(
-        Icons.radio_button_checked,
-        color: Colors.blue.withOpacity(0.5),
+        PatchworkIcons.button_icon,
+        color: buttonColor.withOpacity(0.8),
       )));
     }
     if (widget.hasPiece) {
@@ -82,10 +85,19 @@ class _TimeBoardTileState extends State<TimeBoardTile> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: tileContent,
           ),
-          Stack(
-            children: avatars,
-            alignment: Alignment.centerLeft,
-          )
+          Center(
+            child: Stack(
+              children: avatars,
+              alignment: Alignment.centerLeft,
+            ),
+          ),
+          Container(
+              alignment: Alignment.bottomRight,
+              child: Text(
+                widget.index.toString(),
+                style: TextStyle(
+                    color: Colors.black12, fontSize: widget.tileWidth / 4),
+              ))
         ],
       ),
     );

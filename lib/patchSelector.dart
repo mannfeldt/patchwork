@@ -58,13 +58,13 @@ class _PatchSelectorState extends State<PatchSelector> {
 
     double patchItemSize = MediaQuery.of(context).size.width / 3;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      // alltfungerar bra förutom när man lägger en bit och får en extra bit. då hamnar inte selectorn på rätt index.. den tar inte
-      // den gör inte cuten alls
       if (pieceIndex > -1) {
+        // alltfungerar bra förutom när man lägger en bit och får en extra bit. då hamnar inte selectorn på rätt index.. den tar inte
+        // den gör inte cuten alls
         await _scrollController.animateTo(
           (patchItemSize * pieceIndex),
           curve: Curves.easeIn,
-          duration: const Duration(milliseconds: 990),
+          duration: const Duration(milliseconds: 400),
         );
         await gameState.cleaPieceMarkerIndex(true);
         _scrollController.jumpTo(0);

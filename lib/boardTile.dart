@@ -22,7 +22,7 @@ class BoardTile extends StatelessWidget {
         Widget buttonWidget = square.hasButton
             ? Icon(
                 PatchworkIcons.button_icon,
-                color: Colors.blue.shade800.withOpacity(0.8),
+                color: buttonColor.withOpacity(0.8),
                 size: tileSize,
               )
             : Container();

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:patchwork/constants.dart';
 import 'package:patchwork/dialogs.dart';
@@ -61,6 +63,8 @@ class Gameplay extends StatelessWidget {
         Player currentPlayer = gameState.getCurrentPlayer();
         Player previousPlayer = gameState.getPreviousPlayer();
         bool isEvenId = gameState.getTurnCounter().isEven;
+        Random rng = new Random();
+        print("NOTIFYED" + rng.nextInt(100).toString());
         return Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

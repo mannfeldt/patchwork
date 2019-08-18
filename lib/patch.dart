@@ -121,7 +121,7 @@ class _PatchState extends State<Patch> {
                                 width: patchSize / 2),
                             Icon(
                               PatchworkIcons.button_icon,
-                              color: Colors.blue.shade800.withOpacity(0.8),
+                              color: buttonColor.withOpacity(0.8),
                               size: patchSize / 2,
                             )
                           ],
@@ -204,7 +204,7 @@ class _PatchState extends State<Patch> {
                       Image.asset("assets/" + square.imgSrc, width: patchSize),
                       Icon(
                         PatchworkIcons.button_icon,
-                        color: Colors.blue.shade800.withOpacity(0.8),
+                        color: buttonColor.withOpacity(0.8),
                         size: patchSize,
                       )
                     ],
