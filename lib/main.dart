@@ -50,14 +50,18 @@ class HomePage extends StatelessWidget {
       child = EndScreen();
       showAppBar = false;
     }
-    var scaffold = Scaffold(
-      appBar: showAppBar
-          ? AppBar(
-              title: Text("Patchwork"),
-            )
-          : null,
-      body: child,
-    );
-    return scaffold;
+    return new WillPopScope(
+        onWillPop: () {
+          return new Future(() => false);
+        },
+        child: Scaffold(
+          appBar: showAppBar
+              ? AppBar(
+                  title: Text("Patchwork"),
+                )
+              : null,
+          body: child,
+        ));
+    ;
   }
 }

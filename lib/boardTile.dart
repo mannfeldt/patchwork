@@ -37,8 +37,8 @@ class BoardTile extends StatelessWidget {
         return Container(
           decoration: new BoxDecoration(
               color: square.color,
-              border: new Border.all(
-                  color: currentBoard.player.color, width: boardTilePadding)),
+              border:
+                  new Border.all(color: Colors.white, width: boardTilePadding)),
           height: tileSize,
           width: tileSize,
         );
@@ -46,7 +46,7 @@ class BoardTile extends StatelessWidget {
     }, onWillAccept: (data) {
       bool accepted = true;
 
-      List<Square> shadow = gameState.setHoveredBoardTile(square);
+      List<Square> shadow = gameState.getShadow(square);
 
       accepted = gameState.isValidPlacement(shadow);
 
@@ -57,12 +57,6 @@ class BoardTile extends StatelessWidget {
       // }
 
       return accepted;
-    }, onLeave: (data) {
-      gameState.cleaHoverBoardTile();
-
-      //!TEST
-      //gameState.rotatePiece(gameState.getDraggedPiece());
-      // jag måste kunna klicka på knapparna medan jag drar annars är det ingen ide att fixa resten. för steg två är att f till en repaint på piceshaper när man roterar osv
     }, onAccept: (data) {
       if (data.size == 1) {
         gameState.extraPiecePlaced(data, square.x, square.y);

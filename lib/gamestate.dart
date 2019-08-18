@@ -1,7 +1,5 @@
 import 'dart:async';
-import 'dart:io';
 import 'dart:math';
-import 'dart:typed_data';
 import 'package:patchwork/gameBoard.dart';
 import 'package:patchwork/models/announcement.dart';
 import 'package:patchwork/models/board.dart';
@@ -15,24 +13,20 @@ import 'package:patchwork/patchworkRuleEngine.dart';
 import 'package:patchwork/survivalGameMechanics.dart';
 import 'package:patchwork/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:ui' as ui;
 import 'package:patchwork/constants.dart';
-import 'package:rxdart/rxdart.dart';
 
 class GameState with ChangeNotifier {
   PatchworkRuleEngine _ruleEngine;
   double _boardTileSize;
-  ui.Image _image;
   Player _currentPlayer;
   Board _currentBoard;
   Piece _draggedPiece;
   bool _extraPieceCollected;
   int _pieceMarkerIndex;
-  Square _hoveredBoardTile;
-  List<Square> _boardHoverShadow;
   List<Player> _players = [];
   TimeBoard _timeBoard;
   List<Piece> _gamePieces;
+  List<Piece> _nextPieceList;
   String _view;
   bool _didPass;
   double _bottomHeight;
@@ -40,7 +34,6 @@ class GameState with ChangeNotifier {
   GameBoard _currentGameBoard;
   Player _previousPlayer;
   int _turnCounter;
-
   GameState();
 
   getView() => _view;
@@ -48,18 +41,16 @@ class GameState with ChangeNotifier {
   getCurrentPlayer() => _currentPlayer;
   getGamePieces() => _gamePieces;
   getPlayers() => _players;
-  getImg() => _image;
   getBoardTileSize() => _boardTileSize;
   getExtraPieceCollected() => _extraPieceCollected;
   getDraggedPiece() => _draggedPiece;
-  getHoveredBoardTile() => _hoveredBoardTile;
-  getBoardHoverShadow() => _boardHoverShadow;
   getCurrentBoard() => _currentBoard;
   getBottomHeight() => _bottomHeight;
   getAnnouncement() => _announcement;
   getCurrentGameBoard() => _currentGameBoard;
   getPreviousPlayer() => _previousPlayer;
   getTurnCounter() => _turnCounter;
+  getPieceMarkerIndex() => _pieceMarkerIndex;
 
   double getPatchSelectorHeight() {
     return _bottomHeight - (_boardTileSize * 1.8);
@@ -70,19 +61,11 @@ class GameState with ChangeNotifier {
     notifyListeners();
   }
 
-  List<Square> setHoveredBoardTile(Square boardTile) {
+  List<Square> getShadow(Square boardTile) {
     List<Square> shadow = Utils.getBoardShadow(_draggedPiece, boardTile);
-    _boardHoverShadow = shadow;
 
-    _hoveredBoardTile = boardTile;
-    notifyListeners();
-    return _boardHoverShadow;
-  }
-
-  void cleaHoverBoardTile() {
-    _hoveredBoardTile = null;
-    _boardHoverShadow = null;
-    notifyListeners();
+    //notifyListeners();
+    return shadow;
   }
 
   void setDraggedPiece(Piece p) {
@@ -161,6 +144,7 @@ class GameState with ChangeNotifier {
     }
     _view = "gameplay";
     _gamePieces = _ruleEngine.generatePieces(_players.length);
+    _nextPieceList = _gamePieces;
     _timeBoard = _ruleEngine.initTimeBoard();
     _players = _ruleEngine.initPlayers(_players);
     _pieceMarkerIndex = 0;
@@ -186,7 +170,7 @@ class GameState with ChangeNotifier {
 
   void clearAnnouncement() {
     _announcement = null;
-    notifyListeners();
+    //notifyListeners();
   }
 
   bool isValidPlacement(List<Square> placement) {
@@ -194,24 +178,22 @@ class GameState with ChangeNotifier {
     return isValid;
   }
 
-  void updateHoverBoard() {
-    if (_hoveredBoardTile != null && _draggedPiece != null) {
-      List<Square> shadow =
-          Utils.getBoardShadow(_draggedPiece, _hoveredBoardTile);
-      _boardHoverShadow = shadow;
-    }
-    notifyListeners();
-  }
+  // void updateHoverBoard() {
+  //   if (_hoveredBoardTile != null && _draggedPiece != null) {
+  //     List<Square> shadow =
+  //         Utils.getBoardShadow(_draggedPiece, _hoveredBoardTile);
+  //     _boardHoverShadow = shadow;
+  //   }
+  //   notifyListeners();
+  // }
 
   void rotatePiece(Piece piece) {
-    piece = Utils.rotatePiece(piece);
-    updateHoverBoard();
+    Utils.rotatePiece(piece);
     notifyListeners();
   }
 
   void flipPiece(Piece piece) {
-    piece = Utils.flipPiece(piece);
-    updateHoverBoard();
+    Utils.flipPiece(piece);
     notifyListeners();
   }
 
@@ -245,10 +227,13 @@ class GameState with ChangeNotifier {
       square.x += x;
       square.y += y;
     }
-    cleaHoverBoardTile();
+
     _currentBoard.addPiece(piece);
     _currentPlayer.buttons -= piece.cost;
     _pieceMarkerIndex = _gamePieces.indexWhere((p) => p.id == piece.id);
+
+    //https://androidkt.com/flutter-listview-animation/
+    // jag skapar inte upp keyn helt rätt till att börja med.
     _gamePieces.removeAt(_pieceMarkerIndex);
     _didPass = false;
     movePlayerPosition(piece.time);
@@ -331,12 +316,11 @@ class GameState with ChangeNotifier {
       square.x += x;
       square.y += y;
     }
-    cleaHoverBoardTile();
     _extraPieceCollected = false;
     _didPass = false;
     _currentBoard.addPiece(piece);
-
     nextTurn();
+    cleaPieceMarkerIndex(false);
   }
 
   void _finishGame() {
@@ -373,16 +357,27 @@ class GameState with ChangeNotifier {
     _currentGameBoard = new GameBoard(board: _currentBoard);
 
     //det här neda hör ju också till reglerna?
-    List<Piece> cut = _gamePieces.sublist(0, _pieceMarkerIndex);
-    List<Piece> newStart = _gamePieces.sublist(_pieceMarkerIndex);
-    newStart.addAll(cut);
-    _gamePieces = newStart;
+    if (_pieceMarkerIndex > -1) {
+      List<Piece> cut = _gamePieces.sublist(0, _pieceMarkerIndex);
+      List<Piece> newStart = _gamePieces.sublist(_pieceMarkerIndex);
+      newStart.addAll(cut);
+      _nextPieceList = newStart;
+    }
     for (int i = 0; i < 3; i++) {
-      Piece p = _gamePieces[i];
+      Piece p = _nextPieceList[i];
       p.selectable = _ruleEngine.canSelectPiece(p, _currentPlayer);
     }
     //vill ha en sleep eller animation så man ser var piecen hamnar. sleepar jag bara här så har dne inte fått sin position
 
+    notifyListeners();
+  }
+
+  void cleaPieceMarkerIndex(bool goSleep) async {
+    if (goSleep) {
+      await sleep(1);
+    }
+    _pieceMarkerIndex = -1;
+    _gamePieces = _nextPieceList;
     notifyListeners();
   }
 
@@ -443,7 +438,17 @@ class GameState with ChangeNotifier {
     if (!_extraPieceCollected) {
       nextTurn();
     } else {
-      notifyListeners();
+      if (_pieceMarkerIndex > -1) {
+        List<Piece> cut = _gamePieces.sublist(0, _pieceMarkerIndex);
+        List<Piece> newStart = _gamePieces.sublist(_pieceMarkerIndex);
+        newStart.addAll(cut);
+        _nextPieceList = newStart;
+      }
+      for (int i = 0; i < 3; i++) {
+        Piece p = _nextPieceList[i];
+        p.selectable = _ruleEngine.canSelectPiece(p, _currentPlayer);
+      }
+      cleaPieceMarkerIndex(false);
     }
 
     //om man inte fick en bit så är det nästa spelares tur
@@ -459,7 +464,7 @@ class GameState with ChangeNotifier {
         .position;
     int moves = (nextPlayersPosition - _currentPlayer.position) + 1;
     _currentPlayer.buttons += moves;
-    _pieceMarkerIndex = 0;
+    _pieceMarkerIndex = -1;
 
     //detta förändrar mycket jag kan då skicka in state och få ändra saker smidigt
     //typ är kan jag köra _ruleengine.pass(this) och inte behöva skicka med alla parametrar

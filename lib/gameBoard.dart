@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:patchwork/boardTile.dart';
 import 'package:patchwork/models/board.dart';
 import 'package:patchwork/models/square.dart';
-import 'package:provider/provider.dart';
 
 class GameBoard extends StatelessWidget {
   List<Square> cells = [];

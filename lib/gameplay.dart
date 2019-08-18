@@ -69,6 +69,8 @@ class Gameplay extends StatelessWidget {
                 padding: EdgeInsets.fromLTRB(
                     gameBoardInset, gameBoardInset, gameBoardInset, 0),
                 child: AnimatedCrossFade(
+                  firstCurve: Curves.easeIn,
+                  secondCurve: Curves.easeIn,
                   firstChild: GameBoard(
                     board:
                         isEvenId ? currentPlayer.board : previousPlayer.board,
