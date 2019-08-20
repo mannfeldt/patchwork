@@ -43,10 +43,10 @@ class _PatchState extends State<Patch> {
         child: _createPatch(widget.piece, widget.patchSize, widget.single),
         feedback: _createDraggedPatch(widget.piece, widget.patchSize),
         data: widget.piece,
-        onDragEnd: _handleDragEnded,
         ignoringFeedbackSemantics: true,
         maxSimultaneousDrags: 1,
         onDragCompleted: () {},
+        onDraggableCanceled: _handleDragEnded,
         onDragStarted: _handleDragStart,
         dragAnchor: DragAnchor.pointer,
         feedbackOffset: Offset(widget.patchSize / 2, widget.patchSize / 2),
@@ -56,7 +56,7 @@ class _PatchState extends State<Patch> {
     }
   }
 
-  void _handleDragEnded(DraggableDetails draggableDetails) {
+  void _handleDragEnded(Velocity v, Offset o) {
     if (widget.patchDroppedCallback != null) {
       widget.patchDroppedCallback();
     }
@@ -121,7 +121,7 @@ class _PatchState extends State<Patch> {
                                 width: patchSize / 2),
                             Icon(
                               PatchworkIcons.button_icon,
-                              color: buttonColor.withOpacity(0.8),
+                              color: buttonColor,
                               size: patchSize / 2,
                             )
                           ],
@@ -204,7 +204,7 @@ class _PatchState extends State<Patch> {
                       Image.asset("assets/" + square.imgSrc, width: patchSize),
                       Icon(
                         PatchworkIcons.button_icon,
-                        color: buttonColor.withOpacity(0.8),
+                        color: buttonColor,
                         size: patchSize,
                       )
                     ],

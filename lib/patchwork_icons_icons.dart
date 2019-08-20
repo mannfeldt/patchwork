@@ -21,5 +21,9 @@ class PatchworkIcons {
   static const _kFontFam = 'PatchworkIcons';
 
   static const IconData button_icon = const IconData(0xe803, fontFamily: _kFontFam);
-  static const IconData button_icon2 = const IconData(0xe809, fontFamily: _kFontFam);
+  static const IconData button__3_ = const IconData(0xe809, fontFamily: _kFontFam);
+  static const IconData thimble = const IconData(0xe80a, fontFamily: _kFontFam);
+  static const IconData clothing_stitches = const IconData(0xe80b, fontFamily: _kFontFam);
+  static const IconData image2vector__2_ = const IconData(0xe80c, fontFamily: _kFontFam);
+  static const IconData button = const IconData(0xe80d, fontFamily: _kFontFam);
 }

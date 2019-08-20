@@ -19,20 +19,48 @@ class BoardTile extends StatelessWidget {
     return DragTarget<Piece>(
         builder: (context, List<Piece> candidateData, rejectedData) {
       if (square.filled) {
-        Widget buttonWidget = square.hasButton
-            ? Icon(
-                PatchworkIcons.button_icon,
-                color: buttonColor.withOpacity(0.8),
-                size: tileSize,
-              )
-            : Container();
-        return Stack(children: <Widget>[
+        List<Widget> children = [
           Image.asset(
             "assets/" + square.imgSrc,
             width: tileSize,
-          ),
-          buttonWidget
-        ]);
+          )
+        ];
+        Widget buttonWidget = square.hasButton
+            ? Icon(
+                PatchworkIcons.button_icon,
+                color: buttonColor,
+                size: tileSize,
+              )
+            : Container();
+        children.add(buttonWidget);
+        //topposition = bottom: tilesize/2
+        //leftpostion =           right: tileSize/2, and rotatedBox
+        if (square.topStitching) {
+          Widget topStitch = Positioned(
+            bottom: tileSize / 2,
+            child: Icon(
+              PatchworkIcons.clothing_stitches,
+              size: tileSize,
+              color: stitchColor,
+            ),
+          );
+          children.add(topStitch);
+        }
+        if (square.leftStitching) {
+          Widget leftStitch = Positioned(
+            right: tileSize / 2,
+            child: RotatedBox(
+                quarterTurns: 1,
+                child: Icon(
+                  PatchworkIcons.clothing_stitches,
+                  size: tileSize,
+                  color: stitchColor,
+                )),
+          );
+          children.add(leftStitch);
+        }
+
+        return Stack(overflow: Overflow.visible, children: children);
       } else {
         return Container(
           decoration: new BoxDecoration(

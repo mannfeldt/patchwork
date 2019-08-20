@@ -10,6 +10,8 @@ class Square {
   Color color;
   bool filled;
   String imgSrc;
+  bool topStitching = false;
+  bool leftStitching = false;
 
   Square(int x, int y, bool filled, Color color, String imgSrc) {
     this.x = x;
@@ -19,10 +21,14 @@ class Square {
     this.filled = filled;
     this.imgSrc = imgSrc;
   }
-  Square.simple(int x, int y){
+  Square.simple(int x, int y) {
     this.x = x;
     this.y = y;
     this.hasButton = false;
     this.filled = false;
+  }
+
+  bool samePositionAs(Square square) {
+    return square.x == this.x && square.y == this.y;
   }
 }

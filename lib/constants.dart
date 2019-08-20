@@ -25,6 +25,7 @@ final Square _east = new Square.simple(1, 0);
 final Square _north = new Square.simple(0, -1);
 final Square _south = new Square.simple(0, 1);
 final buttonColor = Colors.blue.shade800;
+final stitchColor = Colors.black87;
 //lite statas från default pieces: 55% av cost är i buttons 45% i time. så buttons ska vara lite större chans att få mer cost än time
 //avarage buttons är strax över 1
 const int minimumPlayers = 2;
@@ -36,11 +37,19 @@ final List<String> pieceImages = [
   "b1.jpg",
   "dots.jpg",
   "dots2.jpg",
-  "plants.jpg",
   "plants2.jpg",
-  "stars.jpg",
   "stripes.jpg",
-  "10.png"
+  "10.png",
+  "planes.jpg", 
+  "flower.png",
+  "flower2.png",
+  "flag.jpg",
+  "flag2.jpg",
+  "blackwhite2.jpg",
+  "blackwhite3.jpg",
+  "blackwhite4.jpg",
+  "blackwhite5.jpg",
+  "blackwhite6.jpg",
 ];
 final String singlePiece = "single.png";
 final List<Color> pieceColors = [

@@ -57,7 +57,7 @@ class GameBoard extends StatelessWidget {
       for (int x = 0; x < board.cols; x++) {
         Square square =
             new Square(x, y, false, board.player.color.withOpacity(0.2), null);
-        bool exists = cells.any((s) => s.x == square.x && s.y == square.y);
+        bool exists = cells.any((s) => s.samePositionAs(square));
         if (!exists) {
           cells.add(square);
         }

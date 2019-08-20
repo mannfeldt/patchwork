@@ -34,6 +34,7 @@ class GameState with ChangeNotifier {
   GameBoard _currentGameBoard;
   Player _previousPlayer;
   int _turnCounter;
+  bool _recieveButtonsAnimation = false;
   GameState();
 
   getView() => _view;
@@ -51,6 +52,7 @@ class GameState with ChangeNotifier {
   getPreviousPlayer() => _previousPlayer;
   getTurnCounter() => _turnCounter;
   getPieceMarkerIndex() => _pieceMarkerIndex;
+  getButtonsAnimation() => _recieveButtonsAnimation;
 
   double getPatchSelectorHeight() {
     return _bottomHeight - (_boardTileSize * 1.8);
@@ -228,6 +230,7 @@ class GameState with ChangeNotifier {
       square.y += y;
     }
 
+    _draggedPiece = null;
     _currentBoard.addPiece(piece);
     _currentPlayer.buttons -= piece.cost;
     _pieceMarkerIndex = _gamePieces.indexWhere((p) => p.id == piece.id);
@@ -242,8 +245,7 @@ class GameState with ChangeNotifier {
   }
   //!todo 1
 
-
-//animera lägg till ikoner för stitches så att man ser tydligare gränser mellan bitar
+//lägg till lägg till ikoner för stitches så att man ser tydligare gränser mellan bitar
 //lägg in animation för att dela upp pengar till spelaren när den pacerar en button. får göras på liknande sätt som jag animerar scroll på patchselectorn?
 //alltså behöver kanske en sleep i gamestate? behöver iaf en buttonsToRecieve paramter
 //Får tänka som extrapiece vad som händer där. och göra på samma sätt för animationen. bara att den går vidare till nextTurn automatiskt efter x antal minuter.
@@ -317,6 +319,7 @@ class GameState with ChangeNotifier {
       square.y += y;
     }
     _extraPieceCollected = false;
+    _draggedPiece = null;
     _didPass = false;
     _currentBoard.addPiece(piece);
     nextTurn();
@@ -370,6 +373,11 @@ class GameState with ChangeNotifier {
     notifyListeners();
   }
 
+  void clearAnimationButtons(bool goSleep) async {
+    _recieveButtonsAnimation = false;
+    nextTurn();
+  }
+
   void cleaPieceMarkerIndex(bool goSleep) async {
     if (goSleep) {
       await sleep(500);
@@ -394,6 +402,31 @@ class GameState with ChangeNotifier {
 
     if (passedButton) {
       _currentPlayer.buttons += _currentBoard.buttons;
+      //jag kan göra en animation i denna dialog? stateful dialog. som tar playerobjekt utfrån det kan jag hämta board.buttons player.buttons player.name osv
+      _recieveButtonsAnimation = true;
+      //lyssna på denna som om det vore en announcement i gamePlayer
+      //och visa detta
+      //samma sätt kommer jag göra med lootboxes?
+      //det är bara visuellt. ingen effekt? ser det konstigt ut? för om man går förbi en och direkt får in det på cash nedan och sen kommer animationen
+      // jag vill ju helt ha att animationen är att buttons kommer från boardTiles som hasBUtton till spelaren kan jag göra det istället?
+      //gör det till spelarn på timeboardet
+      //kanske måste frysa tidne i väntan på animeringen är klar då? iståfall blir det en lösing liknande extrapiece/patchselectorn
+      //ULTIMATLY. tänk på hur jag vill göra med lootboxes för detta kan bli liknande? lootbox vill jag ha i en dialog. där är väl enkalst att göra nu också?
+      
+      //här!
+      // nu verkar det funera med button recieved alert. Men duger det? Testa lägg till en bingoAlert. går ju enkelt att göra då jag har logiken klar.
+      // hållbart sätt att hantera animationer o dialoger? om jag lägger Consumer widget runt saker ostället för provder of så blir inte hela widgeten nofifierad varje gång?
+      // använd en klick i dialogen eller på en knapp som action för att gå vidare. undvik sleep osv.toString()
+      // för buttonanimation reciever så använd animatedposition och animatedTextStyle? för någt coolt. lägg hela i en egen stateful widget? hur får jag till detta?
+      // kan hitta på en startpos och en slutpos men hur animerar jag det? en animationController? hur startar jag allt. initstate?
+      // googla på exempel på animationer som startar automatiskt
+      // JAG KAN GÖRA CONTROLLER.forward() direkt i builern
+      // https://www.youtube.com/watch?v=dNSteCm-cEY 39.00
+
+
+      //jag fr testa lite olika. börj amed att testa om jag kan animera position av iconer från boardtiles hasbuttons till en player. player ikons och namn och score visas över gameboard och buttons dras till pengarna somtickar uppåt
+      //alternativet är att ha en dialog där det
+
       // setAnnouncement(new Announcement(
       //     "",
       //     Text(_currentPlayer.name +
@@ -430,9 +463,7 @@ class GameState with ChangeNotifier {
           Text(_currentPlayer.name + " crossed the goal line"),
           AnnouncementType.simpleDialog));
     }
-    if (!_extraPieceCollected) {
-      nextTurn();
-    } else {
+    if (_extraPieceCollected) {
       if (_pieceMarkerIndex > -1) {
         List<Piece> cut = _gamePieces.sublist(0, _pieceMarkerIndex);
         List<Piece> newStart = _gamePieces.sublist(_pieceMarkerIndex);
@@ -444,6 +475,21 @@ class GameState with ChangeNotifier {
         p.selectable = _ruleEngine.canSelectPiece(p, _currentPlayer);
       }
       cleaPieceMarkerIndex(false);
+    } else if (_recieveButtonsAnimation) {
+      //denna kod är duplicerad på tre ställen... behövs den överallt?
+      if (_pieceMarkerIndex > -1) {
+        List<Piece> cut = _gamePieces.sublist(0, _pieceMarkerIndex);
+        List<Piece> newStart = _gamePieces.sublist(_pieceMarkerIndex);
+        newStart.addAll(cut);
+        _nextPieceList = newStart;
+      }
+      for (int i = 0; i < 3; i++) {
+        Piece p = _nextPieceList[i];
+        p.selectable = _ruleEngine.canSelectPiece(p, _currentPlayer);
+      }
+      notifyListeners();
+    } else {
+      nextTurn();
     }
 
     //om man inte fick en bit så är det nästa spelares tur

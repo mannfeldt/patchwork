@@ -26,7 +26,7 @@ class Utils {
     for (int i = 0; i < placement.length; i++) {
       Square square = placement[i];
       bool isUsed =
-          board.squares.any((s) => s.x == square.x && s.y == square.y);
+          board.squares.any((s) => s.samePositionAs(square));
       if (!isUsed) return false;
     }
     return true;

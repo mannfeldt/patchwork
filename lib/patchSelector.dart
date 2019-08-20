@@ -22,6 +22,7 @@ class _PatchSelectorState extends State<PatchSelector> {
     bool extraPieceCollected = gameState.getExtraPieceCollected();
     int pieceIndex = gameState.getPieceMarkerIndex();
     double tileSize = gameState.getBoardTileSize();
+    bool animatingButtons = gameState.getButtonsAnimation();
 
     if (extraPieceCollected) {
       Piece extraPiece = new Piece.single(0);
@@ -58,7 +59,7 @@ class _PatchSelectorState extends State<PatchSelector> {
 
     double patchItemSize = MediaQuery.of(context).size.width / 3;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (pieceIndex > -1) {
+      if (pieceIndex > -1 && !animatingButtons) {
         // alltfungerar bra förutom när man lägger en bit och får en extra bit. då hamnar inte selectorn på rätt index.. den tar inte
         // den gör inte cuten alls
         await _scrollController.animateTo(

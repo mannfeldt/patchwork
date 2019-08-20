@@ -23,12 +23,34 @@ class Board {
     this.pieces.add(piece);
     //viktigt att inte få dubletter till squares
     for (Square square in piece.shape) {
-      bool exists = this.squares.any((s) => s.x == square.x && s.y == square.y);
+      bool exists = this.squares.any((s) => s.samePositionAs(square));
       if (!exists) {
         this.squares.add(square);
       }
     }
 
     this.buttons += piece.buttons;
+    placeStitches();
+  }
+
+  void placeStitches() {
+    for (int i = 0; i < pieces.length; i++) {
+      Piece p = pieces[i];
+      List<Square> shape = p.shape;
+      List<Square> otherSquares =
+          squares.where((s) => !shape.contains(s)).toList();
+      for (Square s in shape) {
+        Square left = new Square.simple(s.x - 1, s.y);
+        Square top = new Square.simple(s.x, s.y - 1);
+        for (Square other in otherSquares) {
+          if (other.samePositionAs(left)) {
+            s.leftStitching = true;
+          }
+          if (other.samePositionAs(top)) {
+            s.topStitching = true;
+          }
+        }
+      }
+    }
   }
 }

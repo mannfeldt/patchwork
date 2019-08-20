@@ -147,7 +147,7 @@ class PieceGenerator {
     List<Square> multipleNeighbors = [];
     for (int i = 0; i < searchable.length; i++) {
       Square square = searchable[i];
-      bool exists = actual.any((s) => s.y == square.y && s.x == square.x);
+      bool exists = actual.any((s) => s.samePositionAs(square));
       if (!exists) {
         int neighbors = _countNeighbors(square, actual);
 
@@ -227,7 +227,7 @@ class PieceGenerator {
       if (_outOfBounds(newSquare)) {
         continue;
       }
-      shape.removeWhere((s) => s.x == newSquare.x && s.y == newSquare.y);
+      shape.removeWhere((s) => s.samePositionAs(newSquare));
       newSquare.color = color;
       newSquare.imgSrc = imgSrc;
       shape.add(newSquare);
