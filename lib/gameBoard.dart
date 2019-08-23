@@ -16,7 +16,7 @@ class GameBoard extends StatelessWidget {
 
   List<TableRow> _createGridCells(Board board) {
     List<TableRow> rows = <TableRow>[];
-    for (int row = 0; row < board.cols; row++) {
+    for (int row = 0; row < board.rows; row++) {
       rows.add(TableRow(children: [
         Row(
           children: getRow(row, board),
@@ -28,7 +28,7 @@ class GameBoard extends StatelessWidget {
 
   List<BoardTile> getRow(int rowIdx, Board board) {
     List<BoardTile> row = <BoardTile>[];
-    for (int col = 0; col < board.rows; col++) {
+    for (int col = 0; col < board.cols; col++) {
       Square square = cells.firstWhere((s) => s.x == col && s.y == rowIdx);
       row.add(BoardTile(square: square));
     }

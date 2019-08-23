@@ -16,4 +16,5 @@ abstract class PatchworkRuleEngine {
   List<Player> initPlayers(List<Player> players);
   bool validatePlacement(List<Square> placement, Board board);
   void endOfTurn(GameState gameState);
+  bool piecePlaced(GameState gameState);
 }

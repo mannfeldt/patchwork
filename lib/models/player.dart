@@ -12,6 +12,7 @@ class Player {
   Board board;
   bool hasSevenBySeven;
   int score;
+  List<int> bingos;
 
   Player(int id, String name, Color color, bool isAi) {
     this.id = id;
@@ -24,5 +25,6 @@ class Player {
     this.hasSevenBySeven = false;
     this.score = 0;
     this.board = new Board(this);
+    this.bingos = [];
   }
 }

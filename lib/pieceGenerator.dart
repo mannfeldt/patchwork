@@ -26,10 +26,10 @@ class PieceGenerator {
     return pieces;
   }
 
-  static List<Piece> getSurvivalModePieces(int amount) {
+  static List<Piece> getBingoModePieces(int amount) {
     List<String> imageSelection = [];
     Random rng = new Random();
-    while (imageSelection.length < min(4, pieceImages.length)) {
+    while (imageSelection.length < min(bingoModeNrOfDifferentImages, pieceImages.length)) {
       String img = pieceImages[rng.nextInt(pieceImages.length)];
       if (!imageSelection.contains(img)) {
         imageSelection.add(img);

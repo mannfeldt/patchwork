@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:patchwork/gameBoard.dart';
 import 'package:patchwork/models/announcement.dart';
 import 'package:patchwork/models/board.dart';
+import 'package:patchwork/models/lootBox.dart';
+import 'package:patchwork/models/lootPrice.dart';
 import 'package:patchwork/models/piece.dart';
 import 'package:patchwork/models/player.dart';
 import 'package:patchwork/models/square.dart';
@@ -10,7 +12,7 @@ import 'package:patchwork/models/timeBoard.dart';
 import 'package:flutter/material.dart';
 import 'package:patchwork/defaultGameMechanics.dart';
 import 'package:patchwork/patchworkRuleEngine.dart';
-import 'package:patchwork/survivalGameMechanics.dart';
+import 'package:patchwork/bingoGameMechanics.dart';
 import 'package:patchwork/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:patchwork/constants.dart';
@@ -35,6 +37,10 @@ class GameState with ChangeNotifier {
   Player _previousPlayer;
   int _turnCounter;
   bool _recieveButtonsAnimation = false;
+  Piece _stopedOnPiece;
+  bool _bingoAnimation = false;
+  LootBox _lootBox;
+  GameMode _gameMode;
   GameState();
 
   getView() => _view;
@@ -53,6 +59,13 @@ class GameState with ChangeNotifier {
   getTurnCounter() => _turnCounter;
   getPieceMarkerIndex() => _pieceMarkerIndex;
   getButtonsAnimation() => _recieveButtonsAnimation;
+  getBingoAnimation() => _bingoAnimation;
+  getLootBox() => _lootBox;
+  getGameMode()=> _gameMode;
+
+  void setBingoAnimation(bool bingoAnimation) {
+    _bingoAnimation = bingoAnimation;
+  }
 
   double getPatchSelectorHeight() {
     return _bottomHeight - (_boardTileSize * 1.8);
@@ -138,12 +151,13 @@ class GameState with ChangeNotifier {
       case GameMode.DEFAULT:
         _ruleEngine = new DefaultGameMechanics();
         break;
-      case GameMode.SURVIVAL:
-        _ruleEngine = new SurvivalGameMechanics();
+      case GameMode.BINGO:
+        _ruleEngine = new BingoGameMechanics();
         break;
       default:
         break;
     }
+    _gameMode = mode;
     _view = "gameplay";
     _gamePieces = _ruleEngine.generatePieces(_players.length);
     _nextPieceList = _gamePieces;
@@ -239,9 +253,75 @@ class GameState with ChangeNotifier {
     // jag skapar inte upp keyn helt rätt till att börja med.
     _gamePieces.removeAt(_pieceMarkerIndex);
     _didPass = false;
-    movePlayerPosition(piece.time);
+    bool stop = _ruleEngine.piecePlaced(this);
+    if (stop) {
+      _currentPlayer.buttons += piece.cost;
+      _stopedOnPiece = piece;
+      //behöver jag ha detta stop grej ens då handleBingo körs först?
+      print("STOP AFTER PIECEPLACES");
+      // notifyListeners();
+    } else {
+      movePlayerPosition(piece.time);
+    }
 
     //skipa nextTurn ifall att man får en extra tur med gratisbiten
+  }
+
+  void handleBingo(List<int> bingos) {
+    _bingoAnimation = true;
+    LootBox lootBox = Utils.getLootBox(bingos.length);
+    _currentPlayer.bingos.addAll(bingos);
+    _lootBox = lootBox;
+    //lootbox består av
+    //lista med priser (bättre priser ju högre bingos.length är)
+    //id på vilket pris man får
+    //sätt lootbox variable här som läses itället för bingoanmimation
+    //randoma vinsten från alla priser, randoma ett index mellan x och y och inserta den på den platasen i prislitan
+    //sätt sedan lootbox.winning = det indexet
+
+    //i animationen så utgår den ifrån winning id och listan med priser för att animera till vinsten
+    //det behöver inte vara direkt på vinsten utan kan animera till pixel inom vinstens constraints
+    // när animationen är klar (onforawrd.then) så kallas handleBingoAnimationEnd (döp om till lootbox)
+    //som tilldelar priset till spelaren och återgår till vanligt spel
+    notifyListeners();
+
+    print("HANDLEBINGO");
+  }
+
+  void handleBingoAnimationEnd() {
+    int moves = _stopedOnPiece.time;
+    _bingoAnimation = false;
+    LootPrice win =
+        _lootBox.prices.firstWhere((p) => p.id == _lootBox.winningLootId);
+    switch (win.type) {
+      case LootType.CASH:
+        _currentPlayer.buttons += win.amount * _lootBox.valueFactor;
+        break;
+      case LootType.TIME:
+        moves -= win.amount * _lootBox.valueFactor;
+        // _currentPlayer.position -= win.amount;
+        break;
+      default:
+    }
+    _currentPlayer.buttons -= _stopedOnPiece.cost;
+    _lootBox = null;
+    _stopedOnPiece = null;
+    //TODO 
+    // JUST NU FÅR MAN LOOT BARJE GÅNG MAN LÄGGER EN BIT. MÅSTE SE TILL SÅ ATT HANDLEBINGO BARA STARTAS OM MAN FÅR EN MER BINGO ÄN VAD MAN HADE InlineSpan
+    // HANTERA OCKSÅ DUBBELBINGO. FÅR BLI EN ANNAN STIL PÅ RUTAN: DET ÄR JU EN ANNAN LOOTBOX
+    // LÄGG TILL LOOTBOX VALUE PÅ MODELEN: DEN STYR VÄRDE PÅ PRICES OCH SÅVIDARE
+
+    // STEG 2: LÄGG TILL SÅ ATT SPELPLANEN ÄR 9x8 OCH HA LOOTBOXES LÄNGST UTE TILL HÖGER. IKONER. IKONERNA FÖRSVINNER NÄR MNA FÅR BINGO PÅ DEN RADERN
+    // LÄGG TILL DEM I ANIMATIONEN PÅ NÅGOT VIS. ATT DEN ÖPPNAS BARA KANSKE. ELLER FLYGER FRAM TILL DIALOGEN
+
+    //STEG 3: Lägg till animation för att ge ut knappar och tid? ANVÄND IconMovementAnimation
+    //regna nerfrån taket bara. eller supermario style att det skjuter upp från golvet och sen landar på golvet
+    //forward och reverse alltså
+    //för tiden så använd samma nimation fast det är klock-ikoner istället
+    //ett nästa steg vore att få till så att det är en klockas visare som snurrar tillbaka ett varv per amount
+    //använd callbacken och koppla den till animationcallback och räkna då hur många gånger den ska kallas precis som buttonanimation
+    //när den nått alla så är det bara den osynliga kvar som då slår över och stänger hela dialogen
+    movePlayerPosition(moves);
   }
   //!todo 1
 
@@ -375,7 +455,12 @@ class GameState with ChangeNotifier {
 
   void clearAnimationButtons(bool goSleep) async {
     _recieveButtonsAnimation = false;
-    nextTurn();
+    _currentPlayer.buttons += _currentBoard.buttons;
+    if (_extraPieceCollected) {
+      notifyListeners();
+    } else {
+      nextTurn();
+    }
   }
 
   void cleaPieceMarkerIndex(bool goSleep) async {
@@ -401,7 +486,6 @@ class GameState with ChangeNotifier {
         .firstWhere((b) => b <= after && b > before, orElse: () => -1);
 
     if (passedButton) {
-      _currentPlayer.buttons += _currentBoard.buttons;
       //jag kan göra en animation i denna dialog? stateful dialog. som tar playerobjekt utfrån det kan jag hämta board.buttons player.buttons player.name osv
       _recieveButtonsAnimation = true;
       //lyssna på denna som om det vore en announcement i gamePlayer
@@ -412,7 +496,7 @@ class GameState with ChangeNotifier {
       //gör det till spelarn på timeboardet
       //kanske måste frysa tidne i väntan på animeringen är klar då? iståfall blir det en lösing liknande extrapiece/patchselectorn
       //ULTIMATLY. tänk på hur jag vill göra med lootboxes för detta kan bli liknande? lootbox vill jag ha i en dialog. där är väl enkalst att göra nu också?
-      
+
       //här!
       // nu verkar det funera med button recieved alert. Men duger det? Testa lägg till en bingoAlert. går ju enkelt att göra då jag har logiken klar.
       // hållbart sätt att hantera animationer o dialoger? om jag lägger Consumer widget runt saker ostället för provder of så blir inte hela widgeten nofifierad varje gång?
@@ -422,7 +506,6 @@ class GameState with ChangeNotifier {
       // googla på exempel på animationer som startar automatiskt
       // JAG KAN GÖRA CONTROLLER.forward() direkt i builern
       // https://www.youtube.com/watch?v=dNSteCm-cEY 39.00
-
 
       //jag fr testa lite olika. börj amed att testa om jag kan animera position av iconer från boardtiles hasbuttons till en player. player ikons och namn och score visas över gameboard och buttons dras till pengarna somtickar uppåt
       //alternativet är att ha en dialog där det

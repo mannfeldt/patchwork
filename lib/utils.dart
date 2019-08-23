@@ -1,10 +1,99 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:patchwork/constants.dart';
 import 'package:patchwork/models/board.dart';
+import 'package:patchwork/models/lootBox.dart';
+import 'package:patchwork/models/lootPrice.dart';
 import 'package:patchwork/models/piece.dart';
 import 'package:patchwork/models/square.dart';
+import 'package:patchwork/patchwork_icons_icons.dart';
 
 class Utils {
+  static LootBox getLootBox(int value) {
+    //kanske kan hantera två lootboxes i dialogen iställetför att dubbla priseet? för det fungkar ju itne inte med två pieces
+    List<LootPrice> prices = [];
+    Random rng = new Random();
+
+    //plan B https://stackoverflow.com/questions/1972392/pick-a-random-value-from-an-enum
+    final List<LootType> types = LootType.values;
+    for (int i = 0; i < lootBoxPricesNr; i++) {
+      LootType type = types[rng.nextInt(types.length)];
+      int amount;
+      String data;
+      Color priceColor;
+      IconData icon;
+      switch (type) {
+        case LootType.CASH:
+          icon = PatchworkIcons.button_icon;
+          int nr = rng.nextInt(100);
+          if (nr < 20) {
+            amount = 2;
+            priceColor = lootCommonColor;
+          } else if (nr < 20 + 20) {
+            amount = 3;
+            priceColor = lootCommonColor;
+          } else if (nr < 40 + 20) {
+            amount = 4;
+            priceColor = lootCommonColor;
+          } else if (nr < 60 + 10) {
+            amount = 5;
+            priceColor = lootRareColor;
+          } else if (nr < 70 + 10) {
+            amount = 6;
+            priceColor = lootRareColor;
+          } else if (nr < 80 + 6) {
+            amount = 7;
+            priceColor = lootEpicColor;
+          } else if (nr < 86 + 6) {
+            amount = 8;
+            priceColor = lootEpicColor;
+          } else if (nr < 92 + 4) {
+            amount = 9;
+            priceColor = lootLegendaryColor;
+          } else {
+            amount = 10;
+            priceColor = lootLegendaryColor;
+          }
+          break;
+        case LootType.TIME:
+          icon = Icons.access_time;
+          int nr = rng.nextInt(100);
+          if (nr < 30) {
+            amount = 1;
+            priceColor = lootCommonColor;
+          } else if (nr < 30 + 30) {
+            amount = 2;
+            priceColor = lootCommonColor;
+          } else if (nr < 60 + 20) {
+            amount = 3;
+            priceColor = lootRareColor;
+          } else if (nr < 80 + 12) {
+            amount = 4;
+            priceColor = lootEpicColor;
+          } else {
+            amount = 5;
+            priceColor = lootLegendaryColor;
+          }
+          break;
+        default:
+          break;
+      }
+      LootPrice lootPrice = new LootPrice(type, amount, data, i, priceColor,icon);
+      prices.add(lootPrice);
+    }
+    LootPrice win = prices[rng.nextInt(prices.length)];
+    prices.removeWhere((x) => x.id == win.id);
+
+    int offsetIndex = rng.nextInt(5) + 5;
+    int newIndex = lootBoxPricesNr - offsetIndex;
+    prices.insert(newIndex, win);
+    LootBox lootBox = new LootBox(win.id, prices, win, value);
+    return lootBox;
+
+//vill placera in winning loot (win) någonstanns i slutet. antingen näst sists eller 33 sists kanske? behöver inte var amer omplex
+  }
+
   static bool hasRoom(List<Square> placement, Board board) {
     for (int i = 0; i < board.squares.length; i++) {
       Square inUse = board.squares[i];
@@ -25,8 +114,7 @@ class Utils {
   static bool isFilled(List<Square> placement, Board board) {
     for (int i = 0; i < placement.length; i++) {
       Square square = placement[i];
-      bool isUsed =
-          board.squares.any((s) => s.samePositionAs(square));
+      bool isUsed = board.squares.any((s) => s.samePositionAs(square));
       if (!isUsed) return false;
     }
     return true;
@@ -40,16 +128,24 @@ class Utils {
     int maxY = pattern.reduce((a, b) => a.y > b.y ? a : b).y;
     int maxX = pattern.reduce((a, b) => a.x > b.x ? a : b).x;
 
-    for (int x = 0; x < board.cols - maxX; x++) {
-      for (int y = 0; y < board.rows - maxY; y++) {
-        pattern.forEach((s) {
-          s.x += x;
-          s.y += y;
-        });
+    int diffY = board.rows - maxY;
+    int diffX = board.cols - maxX;
+
+    for (int x = 0; x < diffX; x++) {
+      for (int y = 0; y < diffY; y++) {
         if (isFilled(pattern, board)) {
           return true;
         }
+        pattern.forEach((s) {
+          s.y += 1;
+        });
       }
+      pattern.forEach((s) {
+        s.x += 1;
+      });
+      pattern.forEach((s) {
+        s.y -= diffY;
+      });
     }
     return false;
 
@@ -62,33 +158,27 @@ class Utils {
     return complete;
   }
 
-  static bool hasBingo(Board board) {
-    for (Color color in pieceColors) {
-      List<Square> coloredSquares =
-          board.squares.where((s) => s.color == color).toList();
-      List<int> yPositions = coloredSquares.map((s) => s.y).toList();
+  static List<int> getBingoRows(Board board) {
+    List<int> bingos = [];
+    for (String imageSrc in pieceImages) {
+      List<Square> matchingSquares =
+          board.squares.where((s) => s.imgSrc == imageSrc).toList();
+      List<int> yPositions = matchingSquares.map((s) => s.y).toList();
       for (int i = 0; i < board.cols; i++) {
         if (board.cols == yPositions.where((x) => x == i).toList().length) {
           //det finns 9 olika squares i samma färg och ligger på samma rad. vågrätt bingo
-          return true;
-        }
-      }
-      List<int> xPositions = coloredSquares.map((s) => s.x).toList();
-      for (int i = 0; i < board.rows; i++) {
-        if (board.rows == xPositions.where((x) => x == i).toList().length) {
-          //det finns 9 olika squares i samma färg och ligger på samma kolumn. lodrätt bingo
-          return true;
+          bingos.add(i);
         }
       }
     }
-    return false;
+    return bingos;
   }
 
   static List<Square> getBoardShadow(Piece piece, Square boardTile) {
     List<Square> shadow = piece.shape
-        .map((s) =>
-            new Square(s.x + boardTile.x, s.y + boardTile.y, true, piece.color, s.imgSrc)
-              ..hasButton = s.hasButton)
+        .map((s) => new Square(
+            s.x + boardTile.x, s.y + boardTile.y, true, piece.color, s.imgSrc)
+          ..hasButton = s.hasButton)
         .toList();
     return shadow;
   }

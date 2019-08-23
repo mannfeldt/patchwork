@@ -9,17 +9,23 @@ const double patchUnitSizeWithPadding = patchUnitSize + 1.0;
 const double boardTilePadding = 1.0;
 typedef PatchPlacedCallback = void Function(Piece piece);
 
-enum GameMode { DEFAULT, SURVIVAL }
+enum GameMode { DEFAULT, BINGO }
 const Map<GameMode, String> gameModeName = {
   GameMode.DEFAULT: "Default",
-  GameMode.SURVIVAL: "Survival"
+  GameMode.BINGO: "Bingo"
 };
-
+const int bingoModeNrOfDifferentImages = 3;
+const int bingoStartButtons = 15;
 const double timeBoardTileHeight = 30.0;
 const double timeBoardTileWidth = 90.0;
 const double boardInset = 5.0;
 const int maxPieceSize = 10;
 const int maxPieceLength = 6;
+const int lootBoxPricesNr = 50;
+const Color lootCommonColor = Colors.grey;
+const Color lootRareColor = Colors.blue;
+const Color lootEpicColor = Colors.purple;
+const Color lootLegendaryColor = Colors.orange;
 final Square _west = new Square.simple(-1, 0);
 final Square _east = new Square.simple(1, 0);
 final Square _north = new Square.simple(0, -1);

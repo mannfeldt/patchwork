@@ -51,15 +51,6 @@ class Dialogs {
               onPressed: () => Navigator.of(context).pop(),
               child: const Text('Ok'),
             ),
-            RaisedButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text(
-                'Ok',
-                style: TextStyle(
-                  color: Colors.white,
-                ),
-              ),
-            ),
           ],
         );
       },

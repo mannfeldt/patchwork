@@ -95,8 +95,13 @@ class DefaultGameMechanics implements PatchworkRuleEngine {
             "7x7 found",
             currentPlayer.name +
                 " will recieve 7 points at the end of the game",
-            AnnouncementType.simpleDialog);
+            AnnouncementType.dialog);
       }
     }
+  }
+
+  @override
+  bool piecePlaced(GameState gameState) {
+    return false;
   }
 }
