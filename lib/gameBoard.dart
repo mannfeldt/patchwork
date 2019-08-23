@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:patchwork/boardTile.dart';
+import 'package:patchwork/constants.dart';
 import 'package:patchwork/models/board.dart';
 import 'package:patchwork/models/square.dart';
+import 'package:patchwork/patchwork_icons_icons.dart';
 
 class GameBoard extends StatelessWidget {
   List<Square> cells = [];
   final Board board;
-  GameBoard({this.board});
+  final bool useLootboxes;
+  final double tileSize;
+  GameBoard({this.board, this.useLootboxes, this.tileSize});
 
   @override
   Widget build(BuildContext context) {
@@ -26,11 +30,25 @@ class GameBoard extends StatelessWidget {
     return rows;
   }
 
-  List<BoardTile> getRow(int rowIdx, Board board) {
-    List<BoardTile> row = <BoardTile>[];
+  List<Widget> getRow(int rowIdx, Board board) {
+    List<Widget> row = <Widget>[];
     for (int col = 0; col < board.cols; col++) {
       Square square = cells.firstWhere((s) => s.x == col && s.y == rowIdx);
       row.add(BoardTile(square: square));
+    }
+    if (useLootboxes) {
+      bool isBingo = board.player.bingos.contains(rowIdx);
+      //sista kolumnen
+      Widget lootbox = Container(
+          decoration: new BoxDecoration(
+              color: Colors.white,
+              border:
+                  new Border.all(color: Colors.white, width: boardTilePadding)),
+          height: tileSize,
+          width: tileSize,
+          child:
+              Icon(isBingo ? Icons.check_box : Icons.check_box_outline_blank, color: lootBoxColor,));
+      row.add(lootbox);
     }
     return row;
   }

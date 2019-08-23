@@ -69,6 +69,7 @@ class BingoGameMechanics implements PatchworkRuleEngine {
   @override
   List<Player> initPlayers(List<Player> players) {
     players.forEach((p) => p.buttons = bingoStartButtons);
+    players.forEach((p) => p.board.cols = 8);
 
     return players;
   }

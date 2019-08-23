@@ -14,6 +14,7 @@ const Map<GameMode, String> gameModeName = {
   GameMode.DEFAULT: "Default",
   GameMode.BINGO: "Bingo"
 };
+const int defaultGameBoardCols = 9;
 const int bingoModeNrOfDifferentImages = 3;
 const int bingoStartButtons = 15;
 const double timeBoardTileHeight = 30.0;
@@ -26,6 +27,7 @@ const Color lootCommonColor = Colors.grey;
 const Color lootRareColor = Colors.blue;
 const Color lootEpicColor = Colors.purple;
 const Color lootLegendaryColor = Colors.orange;
+final Color lootBoxColor = Colors.yellow.shade700;
 final Square _west = new Square.simple(-1, 0);
 final Square _east = new Square.simple(1, 0);
 final Square _north = new Square.simple(0, -1);

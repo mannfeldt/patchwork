@@ -104,14 +104,14 @@ class PieceGenerator {
     //alltså om det är ett högt medel på befntliga så lutar vi mer åt att skapa en lägre och lika åt andra hållet
     var rng = new Random();
     int num = rng.nextInt(100);
-    if (num < 7) return 2;
-    if (num < 7 + 11) return 3;
-    if (num < 18 + 16) return 4;
-    if (num < 34 + 17) return 5;
-    if (num < 51 + 15) return 6;
-    if (num < 66 + 13) return 7;
-    if (num < 79 + 11) return 8;
-    if (num < 90 + 7) return 9;
+    if (num < 8) return 2;
+    if (num < 8 + 13) return 3;
+    if (num < 21 + 19) return 4;
+    if (num < 40 + 17) return 5;
+    if (num < 57 + 15) return 6;
+    if (num < 72 + 12) return 7;
+    if (num < 84 + 9) return 8;
+    if (num < 93 + 5) return 9;
     return 10;
   }
 
@@ -154,7 +154,7 @@ class PieceGenerator {
         if (neighbors == 1) difficulty += 1;
         if (neighbors == 2) difficulty += (5 + shape.length / 3).round();
         if (neighbors == 3) difficulty += (10 + shape.length / 3).round();
-        if (neighbors == 4) difficulty += (26 + shape.length / 3).round();
+        if (neighbors == 4) difficulty += (46 + shape.length / 3).round();
 
         if (neighbors > 1) {
           multipleNeighbors.add(square);

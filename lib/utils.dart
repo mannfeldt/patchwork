@@ -164,7 +164,7 @@ class Utils {
       List<Square> matchingSquares =
           board.squares.where((s) => s.imgSrc == imageSrc).toList();
       List<int> yPositions = matchingSquares.map((s) => s.y).toList();
-      for (int i = 0; i < board.cols; i++) {
+      for (int i = 0; i < board.rows; i++) {
         if (board.cols == yPositions.where((x) => x == i).toList().length) {
           //det finns 9 olika squares i samma färg och ligger på samma rad. vågrätt bingo
           bingos.add(i);

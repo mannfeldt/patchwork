@@ -14,7 +14,6 @@ class BoardTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final gameState = Provider.of<GameState>(context);
-    Board currentBoard = gameState.getCurrentBoard();
     double tileSize = gameState.getBoardTileSize();
     return DragTarget<Piece>(
         builder: (context, List<Piece> candidateData, rejectedData) {

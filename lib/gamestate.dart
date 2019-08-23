@@ -127,7 +127,8 @@ class GameState with ChangeNotifier {
   void setConstraints(double screenWidth, double screenHeight) {
     //varje boardTile ska ha en padding
     double boardTileSpace = screenWidth - (gameBoardInset * 2);
-    _boardTileSize = boardTileSpace / _currentBoard.cols;
+    _boardTileSize = boardTileSpace / defaultGameBoardCols;
+    
 
     _bottomHeight = screenHeight - (screenWidth + (gameBoardInset * 1));
 

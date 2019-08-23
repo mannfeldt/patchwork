@@ -50,23 +50,11 @@ class Gameplay extends StatelessWidget {
           context: context,
           barrierDismissible: true,
           builder: (BuildContext context) {
-            return LootBoxAnimation(lootBox, gameState.getBoardTileSize());
-
-            // return GestureDetector(
-            //         onTap: () {
-            //           Navigator.pop(context);
-            //         },
-            //         child: SimpleDialog(
-            //           contentPadding: EdgeInsets.all(15.0),
-            //           children: <Widget>[
-            //             Container(
-            //                 width: 400,
-            //                 child: LootBoxAnimation(
-            //                     lootBox, gameState.getBoardTileSize()))
-            //           ],
-            //           title: Text("titleeee"),
-            //           titlePadding: EdgeInsets.all(15.0),
-            //         ));
+            return GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: LootBoxAnimation(lootBox, gameState.getBoardTileSize()));
           },
         );
 
@@ -126,6 +114,7 @@ class Gameplay extends StatelessWidget {
         bool isEvenId = gameState.getTurnCounter().isEven;
         Random rng = new Random();
         print("NOTIFYED" + rng.nextInt(100).toString());
+        bool useLootboxes = gameState.getGameMode() == GameMode.BINGO;
         return Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -137,13 +126,16 @@ class Gameplay extends StatelessWidget {
                   firstCurve: Curves.easeIn,
                   secondCurve: Curves.easeIn,
                   firstChild: GameBoard(
-                    board:
-                        isEvenId ? currentPlayer.board : previousPlayer.board,
-                  ),
+                      board:
+                          isEvenId ? currentPlayer.board : previousPlayer.board,
+                      useLootboxes: useLootboxes,
+                      tileSize: boardTileSize),
                   secondChild: GameBoard(
-                    board:
-                        !isEvenId ? currentPlayer.board : previousPlayer.board,
-                  ),
+                      board: !isEvenId
+                          ? currentPlayer.board
+                          : previousPlayer.board,
+                      useLootboxes: useLootboxes,
+                      tileSize: boardTileSize),
                   crossFadeState: isEvenId
                       ? CrossFadeState.showFirst
                       : CrossFadeState.showSecond,

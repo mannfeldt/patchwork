@@ -317,6 +317,7 @@ class _LootBoxAnimationState extends State<LootBoxAnimation>
                         width: lootPriceSize * 3,
                         height: lootPriceSize,
                         child: ListView.builder(
+                            physics: const NeverScrollableScrollPhysics(),
                             scrollDirection: Axis.horizontal,
                             itemCount: prices.length,
                             controller: _controller,
@@ -340,7 +341,7 @@ class _LootBoxAnimationState extends State<LootBoxAnimation>
                                         price.amount.toString(),
                                         style: TextStyle(
                                             color: price.color,
-                                            fontSize: widget.tileSize/2),
+                                            fontSize: widget.tileSize / 2),
                                       )
                                     ],
                                   ),
@@ -353,7 +354,7 @@ class _LootBoxAnimationState extends State<LootBoxAnimation>
                       height: lootPriceSize + 8.0,
                       child: Container(
                         width: 3.0,
-                        color: Colors.yellow.shade700,
+                        color: lootBoxColor,
                       ),
                     )
                   ],
