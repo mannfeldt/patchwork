@@ -37,8 +37,8 @@ class PieceGenerator {
     }
 
     List<Piece> pieces = [];
-    for (int i = 0; i < amount; i++) {
-      int id = i;
+    while (pieces.length < amount) {
+      int id = pieces.length;
       int size = _getSize();
       int buttons = _getButtons(size);
       Color color = _getColor();
@@ -53,15 +53,18 @@ class PieceGenerator {
       int costAdjustment = _getCostAdjustment(cost);
       Piece p = new Piece(
           id, shape, buttons, cost, time, color, costAdjustment, imgName);
-      pieces.add(p);
+      int num = rng.nextInt(difficulty);
+      if (num < 20 + (difficulty / 4)) {
+        pieces.add(p);
+      }
     }
     return pieces;
   }
 
   static List<Piece> getRandomPieces(int amount) {
     List<Piece> pieces = [];
-    for (int i = 0; i < amount; i++) {
-      int id = i;
+    while (pieces.length < amount) {
+      int id = pieces.length;
       int size = _getSize();
       int buttons = _getButtons(size);
       Color color = _getColor();
@@ -69,6 +72,7 @@ class PieceGenerator {
       List<Square> shape =
           _placeButtons(_getShape(size, color, imgName), buttons);
       int difficulty = _getDifficulty(shape);
+
       int totalValue = _getTotalValue(buttons, size, difficulty);
       int time = _getTimePart(totalValue);
       int cost = totalValue - time;
