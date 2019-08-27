@@ -33,6 +33,27 @@ class Board {
     placeStitches();
   }
 
+  void cutSquare(Square square) {
+    //loppa alla square och ta bort den
+    //behöver jag ta bort den från piece.shape?
+    this.squares.removeWhere((s) => s.samePositionAs(square));
+    for (int i = 0; i < pieces.length; i++) {
+      Piece p = pieces[i];
+      List<Square> shape = p.shape;
+      int shapeLen = shape.length;
+      for (int j = 0; j < shapeLen; j++) {
+        Square s = shape[j];
+        if (s.samePositionAs(square)) {
+          if (s.hasButton) buttons -= 1;
+          shape.remove(s);
+          break;
+        }
+      }
+    }
+    player.bingos.removeWhere((b) => b == square.y);
+    placeStitches();
+  }
+
   void placeStitches() {
     for (int i = 0; i < pieces.length; i++) {
       Piece p = pieces[i];
@@ -40,6 +61,8 @@ class Board {
       List<Square> otherSquares =
           squares.where((s) => !shape.contains(s)).toList();
       for (Square s in shape) {
+        s.leftStitching = false;
+        s.topStitching = false;
         Square left = new Square.simple(s.x - 1, s.y);
         Square top = new Square.simple(s.x, s.y - 1);
         for (Square other in otherSquares) {

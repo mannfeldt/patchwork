@@ -54,10 +54,11 @@ class GameBoard extends StatelessWidget {
 
   List<Square> _computeCells(Board board) {
     List<Square> cells = <Square>[];
-    for (int i = 0; i < board.squares.length; i++) {
-      Square s = board.squares[i];
-      cells.add(s);
-    }
+    cells.addAll(board.squares);
+    // for (int i = 0; i < board.squares.length; i++) {
+    //   Square s = board.squares[i];
+    //   cells.add(s);
+    // }
     //ta fram denna för att få en skugga. lägg till onAccept på boardtile för att få rödmarkerat vid fel placering
 
     // if (shadow != null && shadow[0].color==Colors.red) {

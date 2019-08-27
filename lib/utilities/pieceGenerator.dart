@@ -28,7 +28,8 @@ class PieceGenerator {
   static List<Piece> getBingoModePieces(int amount) {
     List<String> imageSelection = [];
     Random rng = new Random();
-    while (imageSelection.length < min(bingoModeNrOfDifferentImages, pieceImages.length)) {
+    while (imageSelection.length <
+        min(bingoModeNrOfDifferentImages, pieceImages.length)) {
       String img = pieceImages[rng.nextInt(pieceImages.length)];
       if (!imageSelection.contains(img)) {
         imageSelection.add(img);
@@ -42,9 +43,11 @@ class PieceGenerator {
       int buttons = _getButtons(size);
       Color color = _getColor();
       String imgName = imageSelection[rng.nextInt(imageSelection.length)];
-      List<Square> shape = _placeButtons(_getShape(size, color, imgName), buttons);
+      List<Square> shape =
+          _placeButtons(_getShape(size, color, imgName), buttons);
       int difficulty = _getDifficulty(shape);
       int totalValue = _getTotalValue(buttons, size, difficulty);
+      totalValue -= buttons;
       int time = _getTimePart(totalValue);
       int cost = totalValue - time;
       int costAdjustment = _getCostAdjustment(cost);
@@ -63,7 +66,8 @@ class PieceGenerator {
       int buttons = _getButtons(size);
       Color color = _getColor();
       String imgName = _getImgName();
-      List<Square> shape = _placeButtons(_getShape(size, color, imgName), buttons);
+      List<Square> shape =
+          _placeButtons(_getShape(size, color, imgName), buttons);
       int difficulty = _getDifficulty(shape);
       int totalValue = _getTotalValue(buttons, size, difficulty);
       int time = _getTimePart(totalValue);
@@ -289,7 +293,8 @@ class PieceGenerator {
     return shape;
   }
 
-  static List<Square> _getShapeFromVisual(List<String> visual, Color color, String imgName) {
+  static List<Square> _getShapeFromVisual(
+      List<String> visual, Color color, String imgName) {
     List<Square> shape = [];
     for (int y = 0; y < visual.length; y++) {
       for (int x = 0; x < visual[y].length; x++) {

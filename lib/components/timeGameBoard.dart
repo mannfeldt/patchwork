@@ -41,6 +41,7 @@ class _TimeGameBoardState extends State<TimeGameBoard> {
           itemCount: timeBoard.goalIndex + 1,
           itemBuilder: (context, index) {
             bool hasExtraPiece = timeBoard.pieceIndexes.contains(index);
+            bool hasScissor = timeBoard.scissorIndexes.contains(index);
             bool hasButton = timeBoard.buttonIndexes.contains(index);
             bool isGoalLine = timeBoard.goalIndex == index;
             bool isStartTile = index == 0;
@@ -62,6 +63,7 @@ class _TimeGameBoardState extends State<TimeGameBoard> {
                   isStartTile: isStartTile,
                   tileWidth: tileSize,
                   isCrowded: isCrowded,
+                  hasScissor: hasScissor,
                   hasPiece: hasExtraPiece),
             );
           }),

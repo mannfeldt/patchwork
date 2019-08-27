@@ -46,13 +46,9 @@ class Gameplay extends StatelessWidget {
         gameState.setBingoAnimation(false);
         await showDialog(
           context: context,
-          barrierDismissible: true,
+          barrierDismissible: false,
           builder: (BuildContext context) {
-            return GestureDetector(
-                onTap: () {
-                  Navigator.pop(context);
-                },
-                child: LootBoxAnimation(lootBox, gameState.getBoardTileSize()));
+            return LootBoxAnimation(lootBox, gameState.getBoardTileSize());
           },
         );
 

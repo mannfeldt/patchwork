@@ -78,10 +78,9 @@ class BingoGameMechanics implements PatchworkRuleEngine {
     //gör om detta med bingo!! samma färg. BYT UT FÄRG TILL IMAGESRC?
     Player currentPlayer = gameState.getCurrentPlayer();
     List<int> bingos = Utils.getBingoRows(currentPlayer.board);
-    if (bingos.length > currentPlayer.bingos.length) {
-      List<int> newBingos =
-          bingos.where((b) => !currentPlayer.bingos.contains(b)).toList();
-
+    List<int> newBingos =
+        bingos.where((b) => !currentPlayer.bingos.contains(b)).toList();
+    if (newBingos.length > 0) {
       //det här ska vara en speciel dialog som är lootbox
       //istället för flera lootboxes så om man får dubbelbingo, alltså bingo på två rader samtidigt så får man en bättre lootbox
       // ska skicka in raden till dialogen så att den kan ta lootboxen från rätt position. öppna upp den på något vis

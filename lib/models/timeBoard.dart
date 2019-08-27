@@ -2,6 +2,7 @@ class TimeBoard {
   List<int> buttonIndexes;
   List<int> pieceIndexes;
   List<int> wildCardIndexes;
+  List<int> scissorIndexes;
   int goalIndex;
 
   TimeBoard() {
@@ -10,9 +11,9 @@ class TimeBoard {
     this.pieceIndexes = [26, 32, 38, 44, 50];
   }
   TimeBoard.bingo() {
-    this.goalIndex = 60;
-    this.buttonIndexes = [4, 10, 16, 22, 30, 38, 46, 54];
-    this.pieceIndexes = [26, 34, 42, 50];
-    this.wildCardIndexes = [20, 36];
+    this.goalIndex = 40;
+    this.buttonIndexes = [4, 10, 16, 22, 30, 38];
+    this.pieceIndexes = [];
+    this.scissorIndexes = [13, 20, 26, 34];
   }
 }

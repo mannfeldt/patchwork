@@ -1,6 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:patchwork/components/scissor.dart';
+import 'package:patchwork/models/square.dart';
 import 'package:patchwork/utilities/constants.dart';
 import 'package:patchwork/models/piece.dart';
 import 'package:patchwork/models/player.dart';
@@ -22,6 +24,8 @@ class _PatchSelectorState extends State<PatchSelector> {
     Player currentPlayer = gameState.getCurrentPlayer();
     List<Piece> pieces = gameState.getGamePieces();
     bool extraPieceCollected = gameState.getExtraPieceCollected();
+    bool scissorCollected = gameState.getScissorCollected();
+
     int pieceIndex = gameState.getPieceMarkerIndex();
     double tileSize = gameState.getBoardTileSize();
     bool animatingButtons = gameState.getButtonsAnimation();
@@ -43,6 +47,26 @@ class _PatchSelectorState extends State<PatchSelector> {
               patchDragStartCallback: gameState.setDraggedPiece,
               patchDroppedCallback: gameState.dropDraggedPiece,
               patchSize: tileSize)
+        ],
+      );
+    }
+    if (scissorCollected) {
+      Piece scissor = new Piece.single(0);
+      scissor.state = "scissor";
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: <Widget>[
+          Text(
+            "Use scissor",
+            style: TextStyle(
+              fontSize: 20,
+            ),
+          ),
+          Scissor(
+              scissor: scissor,
+              patchDragStartCallback: gameState.setDraggedPiece,
+              patchDroppedCallback: gameState.dropDraggedPiece,
+              size: tileSize)
         ],
       );
     }
@@ -69,7 +93,7 @@ class _PatchSelectorState extends State<PatchSelector> {
           curve: Curves.easeIn,
           duration: const Duration(milliseconds: 400),
         );
-        await gameState.cleaPieceMarkerIndex(true);
+        await gameState.clearPieceMarkerIndex(true);
         _scrollController.jumpTo(0);
       }
     });

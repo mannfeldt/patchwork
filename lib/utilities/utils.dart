@@ -112,6 +112,11 @@ class Utils {
     return outOfBounds;
   }
 
+  static bool validateScissorPlacement(Square scissor, Board board) {
+    bool valid = !hasRoom([scissor], board);
+    return valid;
+  }
+
   static bool isFilled(List<Square> placement, Board board) {
     for (int i = 0; i < placement.length; i++) {
       Square square = placement[i];

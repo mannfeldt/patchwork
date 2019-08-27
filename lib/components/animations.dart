@@ -245,7 +245,7 @@ class _LootBoxAnimationState extends State<LootBoxAnimation>
       });
     } else {
       //om vi vill automatiskt stänga dialogen efter en viss tid, bestämms av Duration closeDialog nedan
-      //Navigator.pop(context);
+      Navigator.pop(context);
     }
 
     //delay this a bit. använd två animationcallbacks och först på den andra så popar jag. typ som buttonAnimation?
@@ -264,7 +264,7 @@ class _LootBoxAnimationState extends State<LootBoxAnimation>
     double lootPriceSize = widget.tileSize * 2;
     double winPos = lootPriceSize * winIndex;
     Random rng = new Random();
-    int randomOffset = rng.nextInt((lootPriceSize * 0.8).round());
+    int randomOffset = rng.nextInt((lootPriceSize * 0.7).round());
     double offset = (lootPriceSize / 2) + randomOffset;
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -277,11 +277,9 @@ class _LootBoxAnimationState extends State<LootBoxAnimation>
             )
             .whenComplete(animationCallback);
       }
-
-      //animationCallback();
     });
 
-    Duration closeDialog = Duration(milliseconds: 10000);
+    Duration closeDialog = Duration(seconds: 7);
 
     return SimpleDialog(
         title: Text(widget.lootBox.getName()),
@@ -300,15 +298,6 @@ class _LootBoxAnimationState extends State<LootBoxAnimation>
                     ],
                   ),
                 ),
-                Visibility(
-                    visible: scrollDone,
-                    maintainSize: true,
-                    maintainAnimation: true,
-                    maintainState: true,
-                    child: Text("You win " +
-                        win.amount.toString() +
-                        " " +
-                        win.type.toString())),
                 Stack(
                   overflow: Overflow.visible,
                   children: <Widget>[
@@ -327,7 +316,7 @@ class _LootBoxAnimationState extends State<LootBoxAnimation>
                                 width: lootPriceSize,
                                 child: new Card(
                                   elevation:
-                                      scrollDone && index == winIndex ? 3 : 1,
+                                      scrollDone && index == winIndex ? 3 : 0,
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: <Widget>[

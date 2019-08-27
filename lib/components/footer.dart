@@ -33,7 +33,8 @@ class Footer extends StatelessWidget {
           tooltip: "pass",
           onPressed: () {
             if (gameState.getDraggedPiece() == null &&
-                gameState.getExtraPieceCollected() == false) {
+                gameState.getExtraPieceCollected() == false &&
+                gameState.getScissorCollected() == false) {
               gameState.pass();
             }
           },

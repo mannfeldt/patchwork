@@ -24,6 +24,7 @@ class GameState with ChangeNotifier {
   Board _currentBoard;
   Piece _draggedPiece;
   bool _extraPieceCollected;
+  bool _scissorCollected;
   int _pieceMarkerIndex;
   List<Player> _players = [];
   TimeBoard _timeBoard;
@@ -49,6 +50,7 @@ class GameState with ChangeNotifier {
   getPlayers() => _players;
   getBoardTileSize() => _boardTileSize;
   getExtraPieceCollected() => _extraPieceCollected;
+  getScissorCollected() => _scissorCollected;
   getDraggedPiece() => _draggedPiece;
   getCurrentBoard() => _currentBoard;
   getBottomHeight() => _bottomHeight;
@@ -150,6 +152,7 @@ class GameState with ChangeNotifier {
     _previousPlayer = _currentPlayer;
     _currentBoard = _currentPlayer.board;
     _extraPieceCollected = false;
+    _scissorCollected = false;
     nextTurn();
     notifyListeners();
   }
@@ -170,6 +173,11 @@ class GameState with ChangeNotifier {
 
   bool isValidPlacement(List<Square> placement) {
     bool isValid = _ruleEngine.validatePlacement(placement, _currentBoard);
+    return isValid;
+  }
+
+  bool isValidScissorPlacement(Square placement) {
+    bool isValid = Utils.validateScissorPlacement(placement, _currentBoard);
     return isValid;
   }
 
@@ -246,7 +254,16 @@ class GameState with ChangeNotifier {
     _didPass = false;
     _currentBoard.addPiece(piece);
     nextTurn();
-    cleaPieceMarkerIndex(false);
+    clearPieceMarkerIndex(false);
+  }
+
+  void scissorPlaced(Square scissor) {
+    _draggedPiece = null;
+    _didPass = false;
+    _scissorCollected = false;
+    _currentBoard.cutSquare(scissor);
+    nextTurn();
+    clearPieceMarkerIndex(false);
   }
 
   void _finishGame() {
@@ -296,14 +313,14 @@ class GameState with ChangeNotifier {
   void clearAnimationButtons(bool goSleep) async {
     _recieveButtonsAnimation = false;
     _currentPlayer.buttons += _currentBoard.buttons;
-    if (_extraPieceCollected) {
+    if (_extraPieceCollected  || _scissorCollected) {
       notifyListeners();
     } else {
       nextTurn();
     }
   }
 
-  void cleaPieceMarkerIndex(bool goSleep) async {
+  void clearPieceMarkerIndex(bool goSleep) async {
     if (goSleep) {
       await sleep(500);
     }
@@ -324,6 +341,8 @@ class GameState with ChangeNotifier {
         _timeBoard.buttonIndexes.any((b) => b <= after && b > before);
     int passedPieceIndex = _timeBoard.pieceIndexes
         .firstWhere((b) => b <= after && b > before, orElse: () => -1);
+    int passedScissor = _timeBoard.scissorIndexes
+        .firstWhere((b) => b <= after && b > before, orElse: () => -1);
 
     if (passedButton) {
       _recieveButtonsAnimation = true;
@@ -331,6 +350,10 @@ class GameState with ChangeNotifier {
     if (passedPieceIndex > 0) {
       _extraPieceCollected = true;
       _timeBoard.pieceIndexes.removeWhere((p) => p == passedPieceIndex);
+    }
+    if (passedScissor > 0) {
+      _scissorCollected = true;
+      _timeBoard.scissorIndexes.removeWhere((p) => p == passedScissor);
     }
 
     if (after >= _timeBoard.goalIndex) {
@@ -341,9 +364,9 @@ class GameState with ChangeNotifier {
           Text(_currentPlayer.name + " crossed the goal line"),
           AnnouncementType.simpleDialog));
     }
-    if (_extraPieceCollected) {
+    if (_extraPieceCollected || _scissorCollected) {
       placePieceMarker();
-      cleaPieceMarkerIndex(false);
+      clearPieceMarkerIndex(false);
     } else if (_recieveButtonsAnimation) {
       placePieceMarker();
       notifyListeners();

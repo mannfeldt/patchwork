@@ -76,13 +76,19 @@ class BoardTile extends StatelessWidget {
       }
     }, onWillAccept: (data) {
       bool accepted = true;
+      if (data.state == "scissor") {
+        accepted = gameState.isValidScissorPlacement(square);
+      } else {
+        List<Square> shadow = gameState.getShadow(square);
 
-      List<Square> shadow = gameState.getShadow(square);
+        accepted = gameState.isValidPlacement(shadow);
+      }
 
-      accepted = gameState.isValidPlacement(shadow);
       return accepted;
     }, onAccept: (data) {
-      if (data.size == 1) {
+      if (data.state == "scissor") {
+        gameState.scissorPlaced(square);
+      } else if (data.size == 1) {
         gameState.extraPiecePlaced(data, square.x, square.y);
       } else {
         gameState.putPiece(data, square.x, square.y);
