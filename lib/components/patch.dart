@@ -2,9 +2,9 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:patchwork/models/piece.dart';
-import 'package:patchwork/constants.dart';
+import 'package:patchwork/utilities/constants.dart';
 import 'package:patchwork/models/square.dart';
-import 'package:patchwork/patchwork_icons_icons.dart';
+import 'package:patchwork/utilities/patchwork_icons_icons.dart';
 
 typedef PatchDroppedCallback = void Function();
 typedef PatchDragStartCallback = void Function(Piece piece);
@@ -81,9 +81,15 @@ class _PatchState extends State<Patch> {
           width: patchSize,
           height: patchSize,
           child: Center(
-            child: Image.asset("assets/" + piece.shape[0].imgSrc,
-                width: patchSize),
-          ));
+              child: Container(
+                  width: patchSize,
+                  height: patchSize,
+                  child: FittedBox(
+                    child: Image.asset(
+                      "assets/" + piece.shape[0].imgSrc,
+                    ),
+                    fit: BoxFit.fill,
+                  ))));
     }
 
     return Card(
@@ -117,8 +123,15 @@ class _PatchState extends State<Patch> {
                       } else if (square != null && square.hasButton) {
                         patchImage = Stack(
                           children: <Widget>[
-                            Image.asset("assets/" + square.imgSrc,
-                                width: patchSize / 2),
+                            Container(
+                                width: patchSize / 2,
+                                height: patchSize / 2,
+                                child: FittedBox(
+                                  child: Image.asset(
+                                    "assets/" + square.imgSrc,
+                                  ),
+                                  fit: BoxFit.fill,
+                                )),
                             Icon(
                               PatchworkIcons.button_icon,
                               color: buttonColor,
@@ -127,8 +140,15 @@ class _PatchState extends State<Patch> {
                           ],
                         );
                       } else {
-                        patchImage = Image.asset("assets/" + square.imgSrc,
-                            width: patchSize / 2);
+                        patchImage = Container(
+                            width: patchSize / 2,
+                            height: patchSize / 2,
+                            child: FittedBox(
+                              child: Image.asset(
+                                "assets/" + square.imgSrc,
+                              ),
+                              fit: BoxFit.fill,
+                            ));
                       }
                       return Center(child: patchImage);
                     }),
@@ -201,7 +221,15 @@ class _PatchState extends State<Patch> {
                 } else if (square != null && square.hasButton) {
                   patchImage = Stack(
                     children: <Widget>[
-                      Image.asset("assets/" + square.imgSrc, width: patchSize),
+                      Container(
+                          width: patchSize,
+                          height: patchSize,
+                          child: FittedBox(
+                            child: Image.asset(
+                              "assets/" + square.imgSrc,
+                            ),
+                            fit: BoxFit.fill,
+                          )),
                       Icon(
                         PatchworkIcons.button_icon,
                         color: buttonColor,
@@ -210,8 +238,15 @@ class _PatchState extends State<Patch> {
                     ],
                   );
                 } else {
-                  patchImage =
-                      Image.asset("assets/" + square.imgSrc, width: patchSize);
+                  patchImage = Container(
+                      width: patchSize,
+                      height: patchSize,
+                      child: FittedBox(
+                        child: Image.asset(
+                          "assets/" + square.imgSrc,
+                        ),
+                        fit: BoxFit.fill,
+                      ));
                 }
                 return Center(child: patchImage);
               }),

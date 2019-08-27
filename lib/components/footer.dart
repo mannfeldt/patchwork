@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:patchwork/models/player.dart';
 import 'package:provider/provider.dart';
-import 'package:patchwork/gamestate.dart';
+import 'package:patchwork/logic/gamestate.dart';
 
 class Footer extends StatelessWidget {
   @override
@@ -16,7 +16,10 @@ class Footer extends StatelessWidget {
             currentPlayer.isAi ? Icons.android : Icons.person,
             color: currentPlayer.color,
           ),
-          Text(currentPlayer.name)
+          Text(
+            currentPlayer.name,
+            style: TextStyle(fontSize: 20),
+          )
         ]),
         Row(children: <Widget>[
           Icon(Icons.attach_money),
@@ -29,7 +32,8 @@ class Footer extends StatelessWidget {
           icon: Icon(Icons.skip_next),
           tooltip: "pass",
           onPressed: () {
-            if (gameState.getDraggedPiece() == null && gameState.getExtraPieceCollected() == false) {
+            if (gameState.getDraggedPiece() == null &&
+                gameState.getExtraPieceCollected() == false) {
               gameState.pass();
             }
           },

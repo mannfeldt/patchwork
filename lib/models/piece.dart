@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:patchwork/constants.dart';
+import 'package:patchwork/utilities/constants.dart';
 import 'package:patchwork/models/square.dart';
 
 class Piece {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:patchwork/models/player.dart';
 import 'package:provider/provider.dart';
-import 'package:patchwork/gamestate.dart';
+import 'package:patchwork/logic/gamestate.dart';
 
 class EndScreen extends StatelessWidget {
   @override
@@ -10,9 +10,8 @@ class EndScreen extends StatelessWidget {
     List<Player> players = gameState.getPlayers();
     players.sort((a, b) => b.score.compareTo(a.score));
 
-    return SafeArea(
-        child: Center(
-            child: Column(
+    return Center(
+        child: Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         Padding(
@@ -58,6 +57,6 @@ class EndScreen extends StatelessWidget {
           child: Text("New game"),
         )
       ],
-    )));
+    ));
   }
 }

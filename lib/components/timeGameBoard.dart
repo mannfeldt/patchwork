@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:patchwork/timeBoardTile.dart';
-import 'package:patchwork/constants.dart';
-import 'package:patchwork/models/piece.dart';
+import 'package:patchwork/components/timeBoardTile.dart';
+import 'package:patchwork/utilities/constants.dart';
 import 'package:patchwork/models/player.dart';
 import 'package:patchwork/models/timeBoard.dart';
-import 'package:patchwork/patch.dart';
 import 'package:provider/provider.dart';
-import 'package:patchwork/gamestate.dart';
+import 'package:patchwork/logic/gamestate.dart';
 
 class TimeGameBoard extends StatefulWidget {
   @override
@@ -28,14 +26,11 @@ class _TimeGameBoardState extends State<TimeGameBoard> {
     if (currentPlayer.position > 0) scrollPos += tileSize;
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      // alltfungerar bra förutom när man lägger en bit och får en extra bit. då hamnar inte selectorn på rätt index.. den tar inte
-      // den gör inte cuten alls
       await _scrollController.animateTo(
         (scrollPos),
         curve: Curves.easeIn,
         duration: const Duration(milliseconds: 400),
       );
-      //_scrollController.jumpTo(currentPlayer.position.toDouble());
     });
 
     return Container(
@@ -46,7 +41,6 @@ class _TimeGameBoardState extends State<TimeGameBoard> {
           controller: _scrollController,
           itemCount: timeBoard.goalIndex + 1,
           itemBuilder: (context, index) {
-            //if (currentPlayer.position > index) return Container();
             bool hasExtraPiece = timeBoard.pieceIndexes.contains(index);
             bool hasButton = timeBoard.buttonIndexes.contains(index);
             bool isGoalLine = timeBoard.goalIndex == index;

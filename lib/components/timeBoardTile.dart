@@ -1,11 +1,9 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:patchwork/constants.dart';
+import 'package:patchwork/utilities/constants.dart';
 import 'package:patchwork/models/player.dart';
-import 'package:patchwork/patchwork_icons_icons.dart';
+import 'package:patchwork/utilities/patchwork_icons_icons.dart';
 
 class TimeBoardTile extends StatefulWidget {
   final bool hasButton;

@@ -1,4 +1,4 @@
-import 'package:patchwork/gamestate.dart';
+import 'package:patchwork/logic/gamestate.dart';
 import 'package:patchwork/models/piece.dart';
 import 'package:patchwork/models/board.dart';
 import 'package:patchwork/models/player.dart';

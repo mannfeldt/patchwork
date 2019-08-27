@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:patchwork/boardTile.dart';
-import 'package:patchwork/constants.dart';
+import 'package:patchwork/components/boardTile.dart';
+import 'package:patchwork/utilities/constants.dart';
 import 'package:patchwork/models/board.dart';
 import 'package:patchwork/models/square.dart';
-import 'package:patchwork/patchwork_icons_icons.dart';
 
 class GameBoard extends StatelessWidget {
   List<Square> cells = [];
@@ -15,7 +14,7 @@ class GameBoard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     cells = _computeCells(board);
-    return Table(children: _createGridCells(board));
+    return Table(children: _createGridCells(board),defaultColumnWidth: FixedColumnWidth(tileSize*9),);
   }
 
   List<TableRow> _createGridCells(Board board) {

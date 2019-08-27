@@ -1,14 +1,13 @@
-import 'package:patchwork/constants.dart';
-import 'package:patchwork/gamestate.dart';
-import 'package:patchwork/models/announcement.dart';
+import 'package:patchwork/utilities/constants.dart';
+import 'package:patchwork/logic/gamestate.dart';
 import 'package:patchwork/models/piece.dart';
 import 'package:patchwork/models/board.dart';
 import 'package:patchwork/models/player.dart';
 import 'package:patchwork/models/square.dart';
 import 'package:patchwork/models/timeBoard.dart';
-import 'package:patchwork/pieceGenerator.dart';
-import 'package:patchwork/patchworkRuleEngine.dart';
-import 'package:patchwork/utils.dart';
+import 'package:patchwork/utilities/pieceGenerator.dart';
+import 'package:patchwork/logic/patchworkRuleEngine.dart';
+import 'package:patchwork/utilities/utils.dart';
 
 class BingoGameMechanics implements PatchworkRuleEngine {
   @override

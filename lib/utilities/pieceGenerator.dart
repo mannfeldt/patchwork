@@ -1,10 +1,9 @@
-import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:patchwork/models/square.dart';
-import 'package:patchwork/constants.dart';
+import 'package:patchwork/utilities/constants.dart';
 import 'package:patchwork/models/piece.dart';
-import 'package:patchwork/utils.dart';
+import 'package:patchwork/utilities/utils.dart';
 
 class PieceGenerator {
   static List<Piece> getDefaultPieces() {

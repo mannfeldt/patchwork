@@ -1,13 +1,12 @@
-import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:patchwork/constants.dart';
+import 'package:patchwork/utilities/constants.dart';
 import 'package:patchwork/models/lootBox.dart';
 import 'package:patchwork/models/lootPrice.dart';
 import 'package:patchwork/models/player.dart';
 import 'package:patchwork/models/square.dart';
-import 'package:patchwork/patchwork_icons_icons.dart';
+import 'package:patchwork/utilities/patchwork_icons_icons.dart';
 
 class ButtonAnimation extends StatefulWidget {
   final Player player;

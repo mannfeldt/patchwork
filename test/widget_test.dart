@@ -9,7 +9,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:patchwork/main.dart';
+//https://flutter.dev/docs/testing
+//1 unit test for Util och engines, models kanske
+//2. widget test för alla widgets vet inte hur lätt detta är med samband med gamestate
+//3. integration test som testar vanliga usecase, alltså spela spelet. testa så att man får rätt antal knappar,
+//  player.buttons och player.position blir rätt alltid. score blir rätt i slutet. test bara lägg ner en bit och sen passa hela vägen
 
+
+//
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.

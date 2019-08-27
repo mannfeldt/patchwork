@@ -1,10 +1,12 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
-import 'package:patchwork/constants.dart';
+import 'package:patchwork/utilities/constants.dart';
 import 'package:patchwork/models/piece.dart';
 import 'package:patchwork/models/player.dart';
-import 'package:patchwork/patch.dart';
+import 'package:patchwork/components/patch.dart';
 import 'package:provider/provider.dart';
-import 'package:patchwork/gamestate.dart';
+import 'package:patchwork/logic/gamestate.dart';
 
 class PatchSelector extends StatefulWidget {
   @override
@@ -104,7 +106,6 @@ class _PatchSelectorState extends State<PatchSelector> {
                   Icons.rotate_left,
                 ),
                 onPressed: () {
-                  //detta kan göras i util? behöver ote notifiera alla. retunrera nya roterade och stt lika med darggpicee eller bara rotera den i metoden?
                   gameState.rotatePiece(draggedPiece);
                 },
               ),
@@ -112,7 +113,6 @@ class _PatchSelectorState extends State<PatchSelector> {
                 iconSize: tileSize * 2,
                 icon: Icon(Icons.flip),
                 onPressed: () {
-                  //detta kan göras i util? behöver ote notifiera alla. retunrera nya roterade och stt lika med darggpicee eller bara rotera den i metoden?
                   gameState.flipPiece(draggedPiece);
                 },
               ),
@@ -141,7 +141,7 @@ class PatchListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final gameState = Provider.of<GameState>(context);
-
+    double fontSize = max(18, tileSize / 3);
     return Container(
         width: MediaQuery.of(context).size.width / 3,
         alignment: Alignment.topCenter,
@@ -165,7 +165,7 @@ class PatchListItem extends StatelessWidget {
                   alignment: Alignment.topCenter,
                   children: <Widget>[
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: <Widget>[
                         Row(
                           children: <Widget>[
@@ -174,7 +174,7 @@ class PatchListItem extends StatelessWidget {
                               color: piece.cost > currentPlayer.buttons
                                   ? Colors.red
                                   : Colors.black87,
-                              size: 18,
+                              size: fontSize,
                             ),
                             Visibility(
                               visible: piece.costAdjustment != 0,
@@ -188,7 +188,7 @@ class PatchListItem extends StatelessWidget {
                                           ? Colors.red
                                           : Colors.black87,
                                       decoration: TextDecoration.lineThrough,
-                                      fontSize: 18),
+                                      fontSize: fontSize),
                                 ),
                               ),
                             ),
@@ -198,7 +198,7 @@ class PatchListItem extends StatelessWidget {
                                   color: piece.cost > currentPlayer.buttons
                                       ? Colors.red
                                       : Colors.black87,
-                                  fontSize: 18),
+                                  fontSize: fontSize),
                             )
                           ],
                         ),
@@ -206,8 +206,12 @@ class PatchListItem extends StatelessWidget {
                           children: <Widget>[
                             Icon(
                               Icons.access_time,
+                              size: fontSize,
                             ),
-                            Text(piece.time.toString()),
+                            Text(
+                              piece.time.toString(),
+                              style: TextStyle(fontSize: fontSize),
+                            ),
                           ],
                         )
                       ],

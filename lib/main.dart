@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:patchwork/endScreen.dart';
-import 'package:patchwork/mainMenu.dart';
-import 'package:patchwork/gameplay.dart';
-import 'package:patchwork/setup.dart';
+import 'package:patchwork/pages/endScreen.dart';
+import 'package:patchwork/pages/mainMenu.dart';
+import 'package:patchwork/pages/gameplay.dart';
+import 'package:patchwork/pages/setup.dart';
 import 'package:provider/provider.dart';
-import 'package:patchwork/gamestate.dart';
+import 'package:patchwork/logic/gamestate.dart';
 import 'package:flutter/services.dart';
 
 void main() => runApp(MyApp());
@@ -37,6 +37,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final gameState = Provider.of<GameState>(context);
     final view = gameState.getView();
+    //gameState.setConstraints(screenWidth, screenHeight)
     Widget child;
     bool showAppBar = true;
     if (view == null) {
@@ -49,19 +50,27 @@ class HomePage extends StatelessWidget {
     } else if (view == "finished") {
       child = EndScreen();
       showAppBar = false;
+    } else {
+      //loading animation
+      child = Text("Loading...");
     }
     return new WillPopScope(
         onWillPop: () {
           return new Future(() => false);
         },
         child: Scaffold(
-          appBar: showAppBar
-              ? AppBar(
-                  title: Text("Patchwork"),
-                )
-              : null,
-          body: child,
-        ));
+            appBar: showAppBar
+                ? AppBar(
+                    title: Text("Patchwork"),
+                  )
+                : null,
+            body: SafeArea(
+              child: new LayoutBuilder(
+                  builder: (BuildContext context, BoxConstraints constraints) {
+                    gameState.setConstraints(constraints.maxWidth, constraints.maxHeight);
+                return child;
+              }),
+            )));
     ;
   }
 }

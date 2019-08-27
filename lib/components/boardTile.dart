@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:patchwork/models/board.dart';
 import 'package:patchwork/models/piece.dart';
 import 'package:patchwork/models/square.dart';
-import 'package:patchwork/patchwork_icons_icons.dart';
+import 'package:patchwork/utilities/patchwork_icons_icons.dart';
 import 'package:provider/provider.dart';
-import 'package:patchwork/gamestate.dart';
-import 'package:patchwork/constants.dart';
+import 'package:patchwork/logic/gamestate.dart';
+import 'package:patchwork/utilities/constants.dart';
 
 class BoardTile extends StatelessWidget {
   final Square square;
@@ -19,10 +18,15 @@ class BoardTile extends StatelessWidget {
         builder: (context, List<Piece> candidateData, rejectedData) {
       if (square.filled) {
         List<Widget> children = [
-          Image.asset(
-            "assets/" + square.imgSrc,
-            width: tileSize,
-          )
+          Container(
+              width: tileSize,
+              height: tileSize,
+              child: FittedBox(
+                child: Image.asset(
+                  "assets/" + square.imgSrc,
+                ),
+                fit: BoxFit.fill,
+              ))
         ];
         Widget buttonWidget = square.hasButton
             ? Icon(
@@ -76,13 +80,6 @@ class BoardTile extends StatelessWidget {
       List<Square> shadow = gameState.getShadow(square);
 
       accepted = gameState.isValidPlacement(shadow);
-
-      // for (int i = 0; i < shadow.length; i++) {
-      //   Square s = shadow[i];
-      //   s.filled = true;
-      //   s.color = accepted ? data.color : Colors.red;
-      // }
-
       return accepted;
     }, onAccept: (data) {
       if (data.size == 1) {
