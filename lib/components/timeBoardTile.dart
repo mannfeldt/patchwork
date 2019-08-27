@@ -35,10 +35,13 @@ class _TimeBoardTileState extends State<TimeBoardTile> {
   @override
   Widget build(BuildContext context) {
     double tileWidth = widget.tileWidth;
+
     if (widget.isGoalLine) {
-      tileWidth = MediaQuery.of(context).size.width - timeBoardTileWidth;
+      tileWidth = MediaQuery.of(context).size.width - tileWidth;
     }
-    if (widget.isStartTile) tileWidth *= 2;
+    if (widget.isStartTile) {
+      tileWidth *= 2;
+    }
     List<Widget> tileContent = [];
     List<Widget> avatars = [];
     if (widget.players.length > 0) {
@@ -59,7 +62,7 @@ class _TimeBoardTileState extends State<TimeBoardTile> {
       }
     }
 
-    if (widget.hasButton) {
+    if (widget.hasButton && !widget.isGoalLine) {
       tileContent.add(Center(
           child: Icon(
         PatchworkIcons.button_icon,
@@ -77,6 +80,15 @@ class _TimeBoardTileState extends State<TimeBoardTile> {
 
     return Container(
       width: tileWidth,
+      decoration: widget.isGoalLine
+          ? BoxDecoration(
+              image: DecorationImage(
+                  image: AssetImage("assets/goalline.jpg"),
+                  colorFilter: new ColorFilter.mode(
+                      Colors.black.withOpacity(0.3), BlendMode.dstATop),
+                  repeat: ImageRepeat.repeat),
+            )
+          : null,
       child: Stack(
         children: <Widget>[
           Row(
@@ -89,13 +101,6 @@ class _TimeBoardTileState extends State<TimeBoardTile> {
               alignment: Alignment.centerLeft,
             ),
           ),
-          Container(
-              alignment: Alignment.bottomRight,
-              child: Text(
-                widget.index.toString(),
-                style: TextStyle(
-                    color: Colors.black12, fontSize: widget.tileWidth / 4),
-              ))
         ],
       ),
     );

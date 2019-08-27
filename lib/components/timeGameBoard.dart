@@ -34,7 +34,6 @@ class _TimeGameBoardState extends State<TimeGameBoard> {
     });
 
     return Container(
-      decoration: BoxDecoration(color: Colors.black12),
       padding: EdgeInsets.symmetric(horizontal: 0.0, vertical: 0.0),
       child: ListView.builder(
           scrollDirection: Axis.horizontal,
@@ -53,7 +52,7 @@ class _TimeGameBoardState extends State<TimeGameBoard> {
               alignment: Alignment.center,
               decoration: new BoxDecoration(
                   border: new Border.all(
-                      color: Colors.black87, width: boardTilePadding)),
+                      color: Colors.black26, width: boardTilePadding)),
               child: TimeBoardTile(
                   currentPlayer: currentPlayer,
                   players: positionedPlayers,
