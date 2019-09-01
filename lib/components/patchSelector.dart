@@ -2,11 +2,11 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:patchwork/components/scissor.dart';
-import 'package:patchwork/models/square.dart';
 import 'package:patchwork/utilities/constants.dart';
 import 'package:patchwork/models/piece.dart';
 import 'package:patchwork/models/player.dart';
 import 'package:patchwork/components/patch.dart';
+import 'package:patchwork/utilities/patchwork_icons_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:patchwork/logic/gamestate.dart';
 
@@ -57,7 +57,7 @@ class _PatchSelectorState extends State<PatchSelector> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           Text(
-            "Use scissor",
+            "Cut a square with the scissor",
             style: TextStyle(
               fontSize: 20,
             ),
@@ -194,10 +194,10 @@ class PatchListItem extends StatelessWidget {
                         Row(
                           children: <Widget>[
                             Icon(
-                              Icons.attach_money,
+                              PatchworkIcons.button_icon,
                               color: piece.cost > currentPlayer.buttons
                                   ? Colors.red
-                                  : Colors.black87,
+                                  : buttonColor,
                               size: fontSize,
                             ),
                             Visibility(

@@ -75,18 +75,12 @@ class _ButtonAnimationState extends State<ButtonAnimation>
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text("\$" + buttonsnr.toString()),
-            Visibility(
-              maintainSize: true,
-              maintainAnimation: true,
-              maintainState: true,
-              visible: showIcon,
-              child: Icon(
-                PatchworkIcons.button_icon,
-                color: buttonColor,
-                size: widget.tileSize,
-              ),
-            )
+            Text(buttonsnr.toString()),
+            Icon(
+              PatchworkIcons.button_icon,
+              color: buttonColor,
+              size: widget.tileSize,
+            ),
           ],
         ),
       ],

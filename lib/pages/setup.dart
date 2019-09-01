@@ -20,9 +20,19 @@ class SetupState extends State<Setup> {
   TextEditingController nameController = TextEditingController();
   bool _isAi = false;
   GameMode _gameMode;
+  bool _playTutorial;
+
   @override
   Widget build(BuildContext context) {
     final gameState = Provider.of<GameState>(context);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (_playTutorial == null) {
+        bool firstGame = await gameState.isFirstGame();
+        setState(() {
+          _playTutorial = firstGame;
+        });
+      }
+    });
     List<Player> players = gameState.getPlayers();
     List<Color> usedColors = players.map((p) => p.color).toList();
     List<Color> availableColors =
@@ -49,7 +59,19 @@ class SetupState extends State<Setup> {
                     return new DropdownMenuItem<GameMode>(
                         value: mode, child: new Text(gameModeName[mode]));
                   }).toList()),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Switch(
+                    activeColor: Colors.green.shade700,
+                    onChanged: _onSwitchChanged,
+                    value: _playTutorial ?? false,
+                  ),
+                  Text("Show Tutorial"),
+                ],
+              ),
               RaisedButton(
+                color: buttonColor,
                 onPressed: () {
                   FocusScope.of(context).requestFocus(new FocusNode());
                   Scaffold.of(context).hideCurrentSnackBar();
@@ -62,10 +84,13 @@ class SetupState extends State<Setup> {
                     Scaffold.of(context).showSnackBar(
                         SnackBar(content: Text("Need to select a game mode")));
                   } else {
-                    gameState.startGame(_gameMode);
+                    gameState.startGame(_gameMode, _playTutorial);
                   }
                 },
-                child: Text("Start"),
+                child: Text(
+                  "Start",
+                  style: TextStyle(color: Colors.white),
+                ),
               )
             ],
           ),
@@ -185,6 +210,10 @@ class SetupState extends State<Setup> {
         ],
       ),
     );
+  }
+
+  void _onSwitchChanged(bool value) {
+    setState(() => _playTutorial = value);
   }
 
   void changeColor(Color value) {

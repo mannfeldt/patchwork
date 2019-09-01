@@ -41,6 +41,7 @@ class GameState with ChangeNotifier {
   bool _bingoAnimation = false;
   LootBox _lootBox;
   GameMode _gameMode;
+  bool _playTutorial;
   GameState();
 
   getView() => _view;
@@ -62,8 +63,9 @@ class GameState with ChangeNotifier {
   getBingoAnimation() => _bingoAnimation;
   getLootBox() => _lootBox;
   getGameMode() => _gameMode;
+  isPlayTutorial() => _playTutorial;
   double getPatchSelectorHeight() {
-    return _bottomHeight - (_boardTileSize * 1.8);
+    return _bottomHeight - (_boardTileSize*1.8);
   }
 
   void setBingoAnimation(bool bingoAnimation) {
@@ -113,9 +115,7 @@ class GameState with ChangeNotifier {
     double boardTileSpace = maxSize - (gameBoardInset * 2);
     _boardTileSize = boardTileSpace / defaultGameBoardCols;
 
-    _bottomHeight = screenHeight -
-        (maxSize + (gameBoardInset * 1)) -
-        (_boardTileSize * 1.8);
+    _bottomHeight = screenHeight - (maxSize + (gameBoardInset * 1));
   }
 
   void startQuickPlay() {
@@ -126,10 +126,10 @@ class GameState with ChangeNotifier {
         playerColors.where((c) => c != _players[0].color).toList();
     addPlayer("Player 2",
         availablieColors[rng.nextInt(availablieColors.length)], false);
-    startGame(GameMode.DEFAULT);
+    startGame(GameMode.DEFAULT, false);
   }
 
-  void startGame(GameMode mode) {
+  void startGame(GameMode mode, bool playTutorial) {
     switch (mode) {
       case GameMode.DEFAULT:
         _ruleEngine = new DefaultGameMechanics();
@@ -153,7 +153,9 @@ class GameState with ChangeNotifier {
     _currentBoard = _currentPlayer.board;
     _extraPieceCollected = false;
     _scissorCollected = false;
+    _playTutorial = playTutorial;
     nextTurn();
+    saveHasPlayed();
     notifyListeners();
   }
 
@@ -313,7 +315,7 @@ class GameState with ChangeNotifier {
   void clearAnimationButtons(bool goSleep) async {
     _recieveButtonsAnimation = false;
     _currentPlayer.buttons += _currentBoard.buttons;
-    if (_extraPieceCollected  || _scissorCollected) {
+    if (_extraPieceCollected || _scissorCollected) {
       notifyListeners();
     } else {
       nextTurn();
@@ -389,6 +391,13 @@ class GameState with ChangeNotifier {
     movePlayerPosition(moves);
   }
 
+  void saveHasPlayed() async {
+    bool firstGame = await isFirstGame();
+    if (firstGame) {
+      _saveToPrefs("hasplayed", "true");
+    }
+  }
+
   void _saveToPrefs(String key, String value) async {
     //https://pusher.com/tutorials/local-data-flutter
     final prefs = await SharedPreferences.getInstance();
@@ -396,9 +405,10 @@ class GameState with ChangeNotifier {
     print('saved $value');
   }
 
-  void _readFromPrefs(String key) async {
+  Future<bool> isFirstGame() async {
     final prefs = await SharedPreferences.getInstance();
-    final value = prefs.getString(key) ?? null;
+    final value = prefs.getString("hasplayed") ?? null;
+    return value == null;
     // _playerKey = value;
 
     //det är async så kan inte bara returnera rakt av. antingen sättar jag state här när det är klart

@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:patchwork/models/player.dart';
+import 'package:patchwork/utilities/constants.dart';
+import 'package:patchwork/utilities/patchwork_icons_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:patchwork/logic/gamestate.dart';
+import 'package:showcaseview/showcaseview.dart';
 
 class Footer extends StatelessWidget {
+  final GlobalKey passKey;
+  final GlobalKey cashKey;
+  final GlobalKey nameKey;
+
+  Footer({this.passKey, this.cashKey, this.nameKey});
   @override
   Widget build(BuildContext context) {
     final gameState = Provider.of<GameState>(context);
@@ -11,34 +19,59 @@ class Footer extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
-        Row(children: <Widget>[
-          Icon(
-            currentPlayer.isAi ? Icons.android : Icons.person,
-            color: currentPlayer.color,
-          ),
-          Text(
-            currentPlayer.name,
-            style: TextStyle(fontSize: 20),
-          )
-        ]),
-        Row(children: <Widget>[
-          Icon(Icons.attach_money),
-          Text(
-            currentPlayer.buttons.toString(),
-            style: TextStyle(fontSize: 20),
-          ),
-        ]),
-        IconButton(
-          icon: Icon(Icons.skip_next),
-          tooltip: "pass",
-          onPressed: () {
-            if (gameState.getDraggedPiece() == null &&
-                gameState.getExtraPieceCollected() == false &&
-                gameState.getScissorCollected() == false) {
-              gameState.pass();
-            }
-          },
-        )
+        Showcase(
+            key: nameKey,
+            title: "Player",
+            description: 'Here you can see whos turn it is to play',
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(children: <Widget>[
+                Icon(
+                  currentPlayer.isAi ? Icons.android : Icons.person,
+                  color: currentPlayer.color,
+                  size: 28,
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(5.0, 0, 0, 0),
+                  child: Text(
+                    currentPlayer.name,
+                    style: TextStyle(fontSize: 20),
+                  ),
+                )
+              ]),
+            )),
+        Showcase(
+            key: cashKey,
+            title: "Buttons",
+            description: 'This is the amount of buttons you can spend',
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(children: <Widget>[
+                Text(
+                  currentPlayer.buttons.toString(),
+                  style: TextStyle(fontSize: 20),
+                ),
+                Icon(
+                  PatchworkIcons.button_icon,
+                  color: buttonColor,
+                ),
+              ]),
+            )),
+        Showcase(
+            key: passKey,
+            title: "Pass",
+            description: 'Tap this to pass your turn',
+            child: IconButton(
+              icon: Icon(Icons.skip_next),
+              tooltip: "pass",
+              onPressed: () {
+                if (gameState.getDraggedPiece() == null &&
+                    gameState.getExtraPieceCollected() == false &&
+                    gameState.getScissorCollected() == false) {
+                  gameState.pass();
+                }
+              },
+            ))
       ],
     );
   }

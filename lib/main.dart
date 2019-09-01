@@ -6,6 +6,7 @@ import 'package:patchwork/pages/setup.dart';
 import 'package:provider/provider.dart';
 import 'package:patchwork/logic/gamestate.dart';
 import 'package:flutter/services.dart';
+import 'package:showcaseview/showcase_widget.dart';
 
 void main() => runApp(MyApp());
 // TODO Animations. coola animeringar övergångar osv. snyggt vore om när man gör put piece så läggs den ner.
@@ -45,7 +46,7 @@ class HomePage extends StatelessWidget {
     } else if (view == "setup") {
       child = Setup();
     } else if (view == "gameplay") {
-      child = Gameplay();
+      child = ShowCaseWidget(child: Gameplay());
       showAppBar = false;
     } else if (view == "finished") {
       child = EndScreen();
@@ -67,7 +68,8 @@ class HomePage extends StatelessWidget {
             body: SafeArea(
               child: new LayoutBuilder(
                   builder: (BuildContext context, BoxConstraints constraints) {
-                    gameState.setConstraints(constraints.maxWidth, constraints.maxHeight);
+                gameState.setConstraints(
+                    constraints.maxWidth, constraints.maxHeight);
                 return child;
               }),
             )));

@@ -11,9 +11,10 @@ typedef PatchPlacedCallback = void Function(Piece piece);
 
 enum GameMode { DEFAULT, BINGO }
 const Map<GameMode, String> gameModeName = {
-  GameMode.DEFAULT: "Default",
+  GameMode.DEFAULT: "Standard",
   GameMode.BINGO: "Bingo"
 };
+
 const int defaultGameBoardCols = 9;
 const int bingoModeNrOfDifferentImages = 3;
 const int bingoStartButtons = 15;
@@ -48,7 +49,7 @@ final List<String> pieceImages = [
   "plants2.jpg",
   "stripes.jpg",
   "10.png",
-  "planes.jpg", 
+  "planes.jpg",
   "flower.png",
   "flower2.png",
   "flag.jpg",
