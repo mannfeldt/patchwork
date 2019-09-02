@@ -112,6 +112,11 @@ class Utils {
     return outOfBounds;
   }
 
+  static int emptyBoardSpaces(Board board){
+    int emptySpaces = (board.cols * board.rows) - board.squares.length;
+    return emptySpaces;
+  }
+
   static bool validateScissorPlacement(Square scissor, Board board) {
     bool valid = !hasRoom([scissor], board);
     return valid;

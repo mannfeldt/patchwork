@@ -129,6 +129,8 @@ class _GameplayState extends State<Gameplay> {
           Showcase(
             key: _gameBoardTutorialKey,
             title: "Game board",
+            textColor: Colors.white,
+            showcaseBackgroundColor: buttonColor,
             description: useLootboxes
                 ? 'This is where you place your patches.\nCompleting a row in same color awards you with a lootbox.'
                 : 'This is where you place your patches',
@@ -162,6 +164,8 @@ class _GameplayState extends State<Gameplay> {
             child: Container(
               child: Showcase(
                 key: _patchesTutorialKey,
+                textColor: Colors.white,
+                showcaseBackgroundColor: buttonColor,
                 title: "Patches",
                 description:
                     'Here you select a patch to drag and drop onto your game board.\nYou can rotate and flip the patches. \nEach patch costs buttons and time.',
@@ -172,6 +176,8 @@ class _GameplayState extends State<Gameplay> {
           ),
           Showcase(
             key: _timeBoardTutorialKey,
+            textColor: Colors.white,
+            showcaseBackgroundColor: buttonColor,
             title: "Timeline",
             description:
                 'This displays players positions and upcomming events.',

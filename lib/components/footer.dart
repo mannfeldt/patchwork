@@ -21,6 +21,8 @@ class Footer extends StatelessWidget {
       children: <Widget>[
         Showcase(
             key: nameKey,
+            textColor: Colors.white,
+            showcaseBackgroundColor: buttonColor,
             title: "Player",
             description: 'Here you can see whos turn it is to play',
             child: Padding(
@@ -42,6 +44,8 @@ class Footer extends StatelessWidget {
             )),
         Showcase(
             key: cashKey,
+            textColor: Colors.white,
+            showcaseBackgroundColor: buttonColor,
             title: "Buttons",
             description: 'This is the amount of buttons you can spend',
             child: Padding(
@@ -59,6 +63,8 @@ class Footer extends StatelessWidget {
             )),
         Showcase(
             key: passKey,
+            textColor: Colors.white,
+            showcaseBackgroundColor: buttonColor,
             title: "Pass",
             description: 'Tap this to pass your turn',
             child: IconButton(

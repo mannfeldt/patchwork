@@ -17,8 +17,7 @@ class BingoGameMechanics implements PatchworkRuleEngine {
 
   @override
   int calculateScore(Player player) {
-    int missingTiles =
-        (player.board.cols * player.board.rows) - player.board.squares.length;
+    int missingTiles = Utils.emptyBoardSpaces(player.board);
     int score = player.buttons - (missingTiles * 2);
     return score;
   }
