@@ -19,7 +19,6 @@ class ButtonAnimation extends StatefulWidget {
 
 class _ButtonAnimationState extends State<ButtonAnimation>
     with TickerProviderStateMixin {
-  //AnimationController _ac;
   int buttonsnr;
   bool showIcon;
 
@@ -28,7 +27,6 @@ class _ButtonAnimationState extends State<ButtonAnimation>
     buttonsnr = widget.player.buttons;
     showIcon = false;
     super.initState();
-    //_ac = AnimationController(vsync: this, duration: Duration(seconds: 3));
   }
 
   @override
@@ -46,16 +44,10 @@ class _ButtonAnimationState extends State<ButtonAnimation>
         showIcon = true;
       });
     }
-    //TODO 1
-
-    //skippa recieve button vid goalline? eller hantera dubbla dialoger bättre. gäller också sevenBySeven
-    //och kommande med lootboxes. köa dialogerna?
   }
 
   @override
   Widget build(BuildContext context) {
-    //_ac.forward().then((x) => Navigator.pop(context));
-
     List<Square> buttonSquares =
         widget.player.board.squares.where((s) => s.hasButton).toList();
     List<Widget> children = [];
@@ -110,8 +102,6 @@ class _ButtonAnimationState extends State<ButtonAnimation>
       double endTop = widget.tileSize / 1.5;
       double endLeft = widget.tileSize / 1.5;
 
-      Random rng = new Random();
-      int rngMs = rng.nextInt(200);
       int closestXposToDialog = 4;
       int xDuration = ((s.x - closestXposToDialog).abs() * 100).round();
       int yDuration = ((s.y - breakY).abs() * 100).round();
@@ -121,15 +111,6 @@ class _ButtonAnimationState extends State<ButtonAnimation>
       int finalDur = durationMs + 250;
       if (finalDur > longestDurationMs) longestDurationMs = finalDur;
       Duration duration = Duration(milliseconds: finalDur);
-      // if (startLeft > 0) {
-      //   startLeft -= widget.tileSize;
-      // } else if (startLeft < 0) {
-      //   startLeft += widget.tileSize;
-      // }
-
-      //kolla så det är rätt kanske måste ta minus en halv tilesize eller något? tänkta på padding?
-
-      //lite randomnez till det.
       Icon icon = Icon(PatchworkIcons.button_icon,
           color: buttonColor, size: widget.tileSize);
 
@@ -215,7 +196,6 @@ class LootBoxAnimation extends StatefulWidget {
 
 class _LootBoxAnimationState extends State<LootBoxAnimation>
     with TickerProviderStateMixin {
-  //AnimationController _ac;
   bool scrollDone;
   bool revealDone;
   ScrollController _controller = new ScrollController();
@@ -224,7 +204,6 @@ class _LootBoxAnimationState extends State<LootBoxAnimation>
   void initState() {
     scrollDone = false;
     super.initState();
-    //_ac = AnimationController(vsync: this, duration: Duration(seconds: 3));
   }
 
   @override
@@ -238,20 +217,12 @@ class _LootBoxAnimationState extends State<LootBoxAnimation>
         scrollDone = true;
       });
     } else {
-      //om vi vill automatiskt stänga dialogen efter en viss tid, bestämms av Duration closeDialog nedan
       Navigator.pop(context);
     }
-
-    //delay this a bit. använd två animationcallbacks och först på den andra så popar jag. typ som buttonAnimation?
-    //jag kan ha ytterligare en nivå av animation som skickarvidare denna callback.
-    //första animation är för scrollgrejen. när den är klar så forward.then så starta nästa animation med winsten.
-    //skicka denna callback vidare till den animationen och den kallar tillbaka hela vägen hit som när den är klar popar hela dialogen.
   }
 
   @override
   Widget build(BuildContext context) {
-    //_ac.forward().then((x) => Navigator.pop(context));
-
     LootPrice win = widget.lootBox.win;
     List<LootPrice> prices = widget.lootBox.prices;
     int winIndex = prices.indexOf(win);

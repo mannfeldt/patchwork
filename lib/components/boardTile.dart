@@ -36,8 +36,6 @@ class BoardTile extends StatelessWidget {
               )
             : Container();
         children.add(buttonWidget);
-        //topposition = bottom: tilesize/2
-        //leftpostion =           right: tileSize/2, and rotatedBox
         if (square.topStitching) {
           Widget topStitch = Positioned(
             bottom: tileSize / 2,
@@ -76,8 +74,8 @@ class BoardTile extends StatelessWidget {
       }
     }, onWillAccept: (data) {
       bool accepted = true;
-      if (data.state == "scissor") {
-        accepted = gameState.isValidScissorPlacement(square);
+      if (data.state == "scissors") {
+        accepted = gameState.isValidScissorsPlacement(square);
       } else {
         List<Square> shadow = gameState.getShadow(square);
 
@@ -86,9 +84,9 @@ class BoardTile extends StatelessWidget {
 
       return accepted;
     }, onAccept: (data) {
-      if (data.state == "scissor") {
-        gameState.scissorPlaced(square);
-      } else if (data.size == 1) {
+      if (data.state == "scissors") {
+        gameState.scissorsPlaced(square);
+      } else if (data.shape.length == 1) {
         gameState.extraPiecePlaced(data, square.x, square.y);
       } else {
         gameState.putPiece(data, square.x, square.y);

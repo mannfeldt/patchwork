@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:patchwork/components/scissor.dart';
+import 'package:patchwork/components/scissors.dart';
 import 'package:patchwork/utilities/constants.dart';
 import 'package:patchwork/models/piece.dart';
 import 'package:patchwork/models/player.dart';
@@ -24,7 +24,7 @@ class _PatchSelectorState extends State<PatchSelector> {
     Player currentPlayer = gameState.getCurrentPlayer();
     List<Piece> pieces = gameState.getGamePieces();
     bool extraPieceCollected = gameState.getExtraPieceCollected();
-    bool scissorCollected = gameState.getScissorCollected();
+    bool scissorsCollected = gameState.getScissorsCollected();
 
     int pieceIndex = gameState.getPieceMarkerIndex();
     double tileSize = gameState.getBoardTileSize();
@@ -50,20 +50,20 @@ class _PatchSelectorState extends State<PatchSelector> {
         ],
       );
     }
-    if (scissorCollected) {
-      Piece scissor = new Piece.single(0);
-      scissor.state = "scissor";
+    if (scissorsCollected) {
+      Piece scissors = new Piece.single(0);
+      scissors.state = "scissors";
       return Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           Text(
-            "Cut a square with the scissor",
+            "Cut a square with the scissors",
             style: TextStyle(
               fontSize: 20,
             ),
           ),
-          Scissor(
-              scissor: scissor,
+          Scissors(
+              scissors: scissors,
               patchDragStartCallback: gameState.setDraggedPiece,
               patchDroppedCallback: gameState.dropDraggedPiece,
               size: tileSize)
@@ -71,23 +71,9 @@ class _PatchSelectorState extends State<PatchSelector> {
       );
     }
     Piece draggedPiece = gameState.getDraggedPiece();
-
-    // TODO frågan är om det är så enkelt att rotera biten samtidigt som den dras?
-    // funktionellt så fungerar det. visuellt så är det bara hovereffecken som roteras.
-    //objetet jag drar i roteras inte, antar att ingen repaint körs? debugga och kolla det.
-    //NOPE det sker ingen repaint i patchShaper.dart det måste det göra vid rotation..
-    //kolla hur jag kan få till det. lägg in gamestate i patch/patchshaper så den mål om varje gång notify körs i state?
-
-    //googla på "flutter draggable update color while dragging" eller liknande
-    //behöver helt enkelt kunna ändra något på objektet jag drar i medan jag drar
-
-    //nu fungerar det typ! behöver bara få till repaint direkt.
-
     double patchItemSize = MediaQuery.of(context).size.width / 3;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (pieceIndex > -1 && !animatingButtons) {
-        // alltfungerar bra förutom när man lägger en bit och får en extra bit. då hamnar inte selectorn på rätt index.. den tar inte
-        // den gör inte cuten alls
         await _scrollController.animateTo(
           (patchItemSize * pieceIndex),
           curve: Curves.easeIn,

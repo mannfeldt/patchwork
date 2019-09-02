@@ -17,7 +17,7 @@ class Footer extends StatelessWidget {
     final gameState = Provider.of<GameState>(context);
     Player currentPlayer = gameState.getCurrentPlayer();
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: <Widget>[
         Showcase(
             key: nameKey,
@@ -73,7 +73,7 @@ class Footer extends StatelessWidget {
               onPressed: () {
                 if (gameState.getDraggedPiece() == null &&
                     gameState.getExtraPieceCollected() == false &&
-                    gameState.getScissorCollected() == false) {
+                    gameState.getScissorsCollected() == false) {
                   gameState.pass();
                 }
               },

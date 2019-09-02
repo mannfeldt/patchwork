@@ -11,11 +11,8 @@ import 'package:patchwork/utilities/patchwork_icons_icons.dart';
 
 class Utils {
   static LootBox getLootBox(int value) {
-    //kanske kan hantera två lootboxes i dialogen iställetför att dubbla priseet? för det fungkar ju itne inte med två pieces
     List<LootPrice> prices = [];
     Random rng = new Random();
-
-    //plan B https://stackoverflow.com/questions/1972392/pick-a-random-value-from-an-enum
     final List<LootType> types = LootType.values;
     for (int i = 0; i < lootBoxPricesNr; i++) {
       LootType type = types[rng.nextInt(types.length)];
@@ -91,8 +88,6 @@ class Utils {
     prices.insert(newIndex, win);
     LootBox lootBox = new LootBox(win.id, prices, win, value);
     return lootBox;
-
-//vill placera in winning loot (win) någonstanns i slutet. antingen näst sists eller 33 sists kanske? behöver inte var amer omplex
   }
 
   static bool hasRoom(List<Square> placement, Board board) {
@@ -112,13 +107,13 @@ class Utils {
     return outOfBounds;
   }
 
-  static int emptyBoardSpaces(Board board){
+  static int emptyBoardSpaces(Board board) {
     int emptySpaces = (board.cols * board.rows) - board.squares.length;
     return emptySpaces;
   }
 
-  static bool validateScissorPlacement(Square scissor, Board board) {
-    bool valid = !hasRoom([scissor], board);
+  static bool validateScissorsPlacement(Square placement, Board board) {
+    bool valid = !hasRoom([placement], board);
     return valid;
   }
 
@@ -159,9 +154,6 @@ class Utils {
       });
     }
     return false;
-
-    //om man har lika många y positions av samma värde som board.cols så har man en bingo vågrätt
-    //om man har lika många x positions av samma värde som board.rows så har man en bingo lodrätt
   }
 
   static bool isBoardComplete(Board board) {
@@ -187,9 +179,9 @@ class Utils {
 
   static List<Square> getBoardShadow(Piece piece, Square boardTile) {
     List<Square> shadow = piece.shape
-        .map((s) => new Square(
-            s.x + boardTile.x, s.y + boardTile.y, true, piece.color, s.imgSrc)
-          ..hasButton = s.hasButton)
+        .map((s) =>
+            new Square(s.x + boardTile.x, s.y + boardTile.y, true, s.imgSrc)
+              ..hasButton = s.hasButton)
         .toList();
     return shadow;
   }
@@ -281,6 +273,5 @@ class Utils {
     }
     piece.shape = cropPiece(shape);
     return piece;
-    //positionera om squares
   }
 }

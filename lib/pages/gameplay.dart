@@ -90,8 +90,8 @@ class _GameplayState extends State<Gameplay> {
         );
 
         doneanimation = true;
-        //skicka tillbaka resultatet från lootboxen här? och hantera det i gamestate?
-        await gameState.handleBingoAnimationEnd();
+        //useless await?
+        gameState.handleBingoAnimationEnd();
         doneanimation = false;
       }
       if (isButtonsAnimation && !doneanimation) {
@@ -113,7 +113,8 @@ class _GameplayState extends State<Gameplay> {
           );
         }
         doneanimation = true;
-        await gameState.clearAnimationButtons(true);
+        //useless await?
+        gameState.clearAnimationButtons(true);
         doneanimation = false;
       }
     });

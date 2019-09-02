@@ -69,7 +69,6 @@ class _PatchState extends State<Patch> {
   }
 
   Widget _createPatch(Piece piece, double patchSize, bool single) {
-    //den här ska innehålla knappar för rotera och flippa
     int pHeight = piece.shape.reduce((a, b) => a.y > b.y ? a : b).y + 1;
     int pWidth = piece.shape.reduce((a, b) => a.x > b.x ? a : b).x + 1;
     double containerHeight = patchSize * (pHeight / 2);
@@ -103,11 +102,8 @@ class _PatchState extends State<Patch> {
                   width: containerWidth,
                   height: containerHeight,
                   child: GridView.count(
-                    // Create a grid with 2 columns. If you change the scrollDirection to
-                    // horizontal, this produces 2 rows.
                     physics: ScrollPhysics(),
                     crossAxisCount: pWidth,
-                    // Generate 100 widgets that display their index in the List.
                     children: List.generate(pWidth * pHeight, (index) {
                       int x = index % pWidth;
                       int y = (index / pWidth).floor();
@@ -166,8 +162,6 @@ class _PatchState extends State<Patch> {
                       Icons.rotate_left,
                     ),
                     onPressed: () {
-                      //detta kan göras i util? behöver ote notifiera alla. retunrera nya roterade och stt lika med darggpicee eller bara rotera den i metoden?
-
                       widget.rotateCallback(piece);
                     },
                   ),
@@ -175,7 +169,6 @@ class _PatchState extends State<Patch> {
                     iconSize: patchSize / 2,
                     icon: Icon(Icons.flip),
                     onPressed: () {
-                      //detta kan göras i util? behöver ote notifiera alla. retunrera nya roterade och stt lika med darggpicee eller bara rotera den i metoden?
                       widget.flipCallback(piece);
                     },
                   )
@@ -184,12 +177,9 @@ class _PatchState extends State<Patch> {
         ],
       ),
     );
-
-    ;
   }
 
   Widget _createDraggedPatch(Piece piece, double patchSize) {
-    //denna ska vara något större kanske?iaf matcha storleken av boardet. och lite opacity
     int pHeight = piece.shape.reduce((a, b) => a.y > b.y ? a : b).y + 1;
     int pWidth = piece.shape.reduce((a, b) => a.x > b.x ? a : b).x + 1;
     double containerHeight = patchSize * pHeight;
@@ -253,13 +243,6 @@ class _PatchState extends State<Patch> {
             ))
           ],
         ));
-  }
-
-  double _getPatchContainerWidth(Piece piece) {
-    //hurfungerar dessa. tetsa stora bitar!!
-    double width = widget.patchSize;
-    int maxWidth = piece.shape.reduce((a, b) => a.x > b.x ? a : b).x + 1;
-    return width * maxWidth;
   }
 
   double _getPatchContainerHeight(Piece piece) {

@@ -9,10 +9,6 @@ import 'package:flutter/services.dart';
 import 'package:showcaseview/showcase_widget.dart';
 
 void main() => runApp(MyApp());
-// TODO Animations. coola animeringar övergångar osv. snyggt vore om när man gör put piece så läggs den ner.
-// och knapparna räknas bort i en animation, sen flippas det automatiskt till timeboard-vyn där spelarens piece rör sig steg framåt
-//när den stannat och antingen fått en extra piece eller är nästa spelares tur så swapar den tillbaka till game-vyn
-//pieceSelectorn ska också animeras så att den snyggt plockar bort pieces och glider till vänster
 
 class MyApp extends StatelessWidget {
   @override
@@ -38,7 +34,6 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final gameState = Provider.of<GameState>(context);
     final view = gameState.getView();
-    //gameState.setConstraints(screenWidth, screenHeight)
     Widget child;
     bool showAppBar = true;
     if (view == null) {
@@ -52,7 +47,6 @@ class HomePage extends StatelessWidget {
       child = EndScreen();
       showAppBar = false;
     } else {
-      //loading animation
       child = Text("Loading...");
     }
     return new WillPopScope(
@@ -73,6 +67,5 @@ class HomePage extends StatelessWidget {
                 return child;
               }),
             )));
-    ;
   }
 }

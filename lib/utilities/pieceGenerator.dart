@@ -13,13 +13,12 @@ class PieceGenerator {
       int buttons = piece['buttons'];
       int cost = piece['cost'];
       int time = piece['time'];
-      Color color = _getColor();
       String imgName = _getImgName();
-      List<Square> shape = _getShapeFromVisual(piece['visual'], color, imgName);
+      List<Square> shape = _getShapeFromVisual(piece['visual'], imgName);
       shape = _placeButtons(shape, buttons);
 
       int id = pieces.length;
-      Piece p = new Piece(id, shape, buttons, cost, time, color, 0, imgName);
+      Piece p = new Piece(id, shape, buttons, cost, time, 0, imgName);
       pieces.add(p);
     }
     return pieces;
@@ -52,7 +51,7 @@ class PieceGenerator {
       int cost = totalValue - time;
       int costAdjustment = _getCostAdjustment(cost);
       Piece p = new Piece(
-          id, shape, buttons, cost, time, color, costAdjustment, imgName);
+          id, shape, buttons, cost, time, costAdjustment, imgName);
       int num = rng.nextInt(difficulty);
       if (num < 20 + (difficulty / 4)) {
         pieces.add(p);
@@ -78,7 +77,7 @@ class PieceGenerator {
       int cost = totalValue - time;
       int costAdjustment = _getCostAdjustment(cost);
       Piece p = new Piece(
-          id, shape, buttons, cost, time, color, costAdjustment, imgName);
+          id, shape, buttons, cost, time, costAdjustment, imgName);
       pieces.add(p);
     }
     return pieces;
@@ -107,8 +106,6 @@ class PieceGenerator {
   }
 
   static int _getSize() {
-    //skulle kunna ta in befintliga peices och avgöra chanserna lite baserat på det.
-    //alltså om det är ett högt medel på befntliga så lutar vi mer åt att skapa en lägre och lika åt andra hållet
     var rng = new Random();
     int num = rng.nextInt(100);
     if (num < 8) return 2;
@@ -125,7 +122,7 @@ class PieceGenerator {
   static int _getButtons(int size) {
     var rng = new Random();
     int num = rng.nextInt(100);
-    int max = size - 2; //behöver två rutor för att skriva ut kostnaden
+    int max = size - 2;
     if (num < 38) return 0;
     if (num < 38 + 28) return 1;
     if (num < 66 + 21) return min(max, 2);
@@ -218,7 +215,6 @@ class PieceGenerator {
     int startX = rng.nextInt(maxPieceLength - 1);
     int startY = rng.nextInt(maxPieceLength - 1);
     Square startSquare = new Square.simple(startX, startY);
-    startSquare.color = color;
     startSquare.imgSrc = imgSrc;
     shape.add(startSquare);
     int lopps = 0;
@@ -235,7 +231,6 @@ class PieceGenerator {
         continue;
       }
       shape.removeWhere((s) => s.samePositionAs(newSquare));
-      newSquare.color = color;
       newSquare.imgSrc = imgSrc;
       shape.add(newSquare);
     }
@@ -298,7 +293,7 @@ class PieceGenerator {
   }
 
   static List<Square> _getShapeFromVisual(
-      List<String> visual, Color color, String imgName) {
+      List<String> visual, String imgName) {
     List<Square> shape = [];
     for (int y = 0; y < visual.length; y++) {
       for (int x = 0; x < visual[y].length; x++) {
@@ -306,7 +301,6 @@ class PieceGenerator {
         if (char == "X") {
           int realX = ((x - 1) / 3).round();
           Square s = new Square.simple(realX, y);
-          s.color = color;
           s.imgSrc = imgName;
           shape.add(s);
         }

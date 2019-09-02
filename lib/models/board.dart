@@ -34,8 +34,6 @@ class Board {
   }
 
   void cutSquare(Square square) {
-    //loppa alla square och ta bort den
-    //behöver jag ta bort den från piece.shape?
     this.squares.removeWhere((s) => s.samePositionAs(square));
     for (int i = 0; i < pieces.length; i++) {
       Piece p = pieces[i];

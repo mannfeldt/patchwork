@@ -2,30 +2,27 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:patchwork/models/piece.dart';
-import 'package:patchwork/utilities/constants.dart';
-import 'package:patchwork/models/square.dart';
-import 'package:patchwork/utilities/patchwork_icons_icons.dart';
 
 typedef PatchDroppedCallback = void Function();
 typedef PatchDragStartCallback = void Function(Piece piece);
 
-class Scissor extends StatefulWidget {
+class Scissors extends StatefulWidget {
   final PatchDroppedCallback patchDroppedCallback;
   final PatchDragStartCallback patchDragStartCallback;
   final double size;
-  final Piece scissor;
+  final Piece scissors;
 
-  Scissor(
-      {this.scissor,
+  Scissors(
+      {this.scissors,
       this.patchDroppedCallback,
       this.patchDragStartCallback,
       this.size});
 
   @override
-  _ScissorState createState() => _ScissorState();
+  _ScissorsState createState() => _ScissorsState();
 }
 
-class _ScissorState extends State<Scissor> {
+class _ScissorsState extends State<Scissors> {
   @override
   Widget build(BuildContext context) {
     return Draggable<Piece>(
@@ -40,7 +37,7 @@ class _ScissorState extends State<Scissor> {
           width: widget.size * 2,
           height: widget.size * 2,
           child: Center(child: Icon(Icons.content_cut, size: widget.size))),
-      data: widget.scissor,
+      data: widget.scissors,
       ignoringFeedbackSemantics: true,
       maxSimultaneousDrags: 1,
       onDragCompleted: () {},
@@ -58,7 +55,7 @@ class _ScissorState extends State<Scissor> {
 
   void _handleDragStart() {
     if (widget.patchDragStartCallback != null) {
-      widget.patchDragStartCallback(widget.scissor);
+      widget.patchDragStartCallback(widget.scissors);
     }
   }
 }

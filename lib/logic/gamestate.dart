@@ -24,14 +24,13 @@ class GameState with ChangeNotifier {
   Board _currentBoard;
   Piece _draggedPiece;
   bool _extraPieceCollected;
-  bool _scissorCollected;
+  bool _scissorsCollected;
   int _pieceMarkerIndex;
   List<Player> _players = [];
   TimeBoard _timeBoard;
   List<Piece> _gamePieces;
   List<Piece> _nextPieceList;
   String _view;
-  bool _didPass;
   double _bottomHeight;
   Announcement _announcement;
   Player _previousPlayer;
@@ -51,7 +50,7 @@ class GameState with ChangeNotifier {
   getPlayers() => _players;
   getBoardTileSize() => _boardTileSize;
   getExtraPieceCollected() => _extraPieceCollected;
-  getScissorCollected() => _scissorCollected;
+  getScissorsCollected() => _scissorsCollected;
   getDraggedPiece() => _draggedPiece;
   getCurrentBoard() => _currentBoard;
   getBottomHeight() => _bottomHeight;
@@ -111,10 +110,8 @@ class GameState with ChangeNotifier {
 
   void setConstraints(double screenWidth, double screenHeight) {
     double maxSize = min(screenHeight * 0.6, screenWidth);
-
     double boardTileSpace = maxSize - (gameBoardInset * 2);
     _boardTileSize = boardTileSpace / defaultGameBoardCols;
-
     _bottomHeight = screenHeight - (maxSize + (gameBoardInset * 1));
   }
 
@@ -152,7 +149,7 @@ class GameState with ChangeNotifier {
     _previousPlayer = _currentPlayer;
     _currentBoard = _currentPlayer.board;
     _extraPieceCollected = false;
-    _scissorCollected = false;
+    _scissorsCollected = false;
     _playTutorial = playTutorial;
     nextTurn();
     saveHasPlayed();
@@ -178,8 +175,8 @@ class GameState with ChangeNotifier {
     return isValid;
   }
 
-  bool isValidScissorPlacement(Square placement) {
-    bool isValid = Utils.validateScissorPlacement(placement, _currentBoard);
+  bool isValidScissorsPlacement(Square placement) {
+    bool isValid = Utils.validateScissorsPlacement(placement, _currentBoard);
     return isValid;
   }
 
@@ -206,7 +203,6 @@ class GameState with ChangeNotifier {
     _pieceMarkerIndex = _gamePieces.indexWhere((p) => p.id == piece.id);
 
     _gamePieces.removeAt(_pieceMarkerIndex);
-    _didPass = false;
     bool stop = _ruleEngine.piecePlaced(this);
     if (stop) {
       _currentPlayer.buttons += piece.cost;
@@ -235,7 +231,6 @@ class GameState with ChangeNotifier {
         break;
       case LootType.TIME:
         moves -= win.amount * _lootBox.valueFactor;
-        // _currentPlayer.position -= win.amount;
         break;
       default:
     }
@@ -253,17 +248,15 @@ class GameState with ChangeNotifier {
     }
     _extraPieceCollected = false;
     _draggedPiece = null;
-    _didPass = false;
     _currentBoard.addPiece(piece);
     nextTurn();
     clearPieceMarkerIndex(false);
   }
 
-  void scissorPlaced(Square scissor) {
+  void scissorsPlaced(Square placement) {
     _draggedPiece = null;
-    _didPass = false;
-    _scissorCollected = false;
-    _currentBoard.cutSquare(scissor);
+    _scissorsCollected = false;
+    _currentBoard.cutSquare(placement);
     nextTurn();
     clearPieceMarkerIndex(false);
   }
@@ -289,12 +282,9 @@ class GameState with ChangeNotifier {
       _turnCounter += 1;
       _previousPlayer = _currentPlayer;
     }
-    _didPass = false;
     _currentPlayer = newPlayer;
     _currentBoard = _currentPlayer.board;
 
-    //bryt ut ifsatsen nedan till en metod, finns på 3 ställen
-    //
     placePieceMarker();
     notifyListeners();
   }
@@ -315,7 +305,7 @@ class GameState with ChangeNotifier {
   void clearAnimationButtons(bool goSleep) async {
     _recieveButtonsAnimation = false;
     _currentPlayer.buttons += _currentBoard.buttons;
-    if (_extraPieceCollected || _scissorCollected) {
+    if (_extraPieceCollected || _scissorsCollected) {
       notifyListeners();
     } else {
       nextTurn();
@@ -343,7 +333,7 @@ class GameState with ChangeNotifier {
         _timeBoard.buttonIndexes.any((b) => b <= after && b > before);
     int passedPieceIndex = _timeBoard.pieceIndexes
         .firstWhere((b) => b <= after && b > before, orElse: () => -1);
-    int passedScissor = _timeBoard.scissorIndexes
+    int passedScissors = _timeBoard.scissorsIndexes
         .firstWhere((b) => b <= after && b > before, orElse: () => -1);
 
     if (passedButton) {
@@ -353,9 +343,9 @@ class GameState with ChangeNotifier {
       _extraPieceCollected = true;
       _timeBoard.pieceIndexes.removeWhere((p) => p == passedPieceIndex);
     }
-    if (passedScissor > 0) {
-      _scissorCollected = true;
-      _timeBoard.scissorIndexes.removeWhere((p) => p == passedScissor);
+    if (passedScissors > 0) {
+      _scissorsCollected = true;
+      _timeBoard.scissorsIndexes.removeWhere((p) => p == passedScissors);
     }
 
     if (after >= _timeBoard.goalIndex) {
@@ -366,7 +356,7 @@ class GameState with ChangeNotifier {
           Text(_currentPlayer.name + " crossed the goal line"),
           AnnouncementType.simpleDialog));
     }
-    if (_extraPieceCollected || _scissorCollected) {
+    if (_extraPieceCollected || _scissorsCollected) {
       placePieceMarker();
       clearPieceMarkerIndex(false);
     } else if (_recieveButtonsAnimation) {
@@ -385,9 +375,6 @@ class GameState with ChangeNotifier {
     int moves = (nextPlayersPosition - _currentPlayer.position) + 1;
     _currentPlayer.buttons += moves;
     _pieceMarkerIndex = -1;
-
-    _didPass = true;
-
     movePlayerPosition(moves);
   }
 
@@ -399,7 +386,6 @@ class GameState with ChangeNotifier {
   }
 
   void _saveToPrefs(String key, String value) async {
-    //https://pusher.com/tutorials/local-data-flutter
     final prefs = await SharedPreferences.getInstance();
     prefs.setString(key, value);
     print('saved $value');
@@ -409,8 +395,5 @@ class GameState with ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     final value = prefs.getString("hasplayed") ?? null;
     return value == null;
-    // _playerKey = value;
-
-    //det är async så kan inte bara returnera rakt av. antingen sättar jag state här när det är klart
   }
 }

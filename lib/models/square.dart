@@ -13,7 +13,7 @@ class Square {
   bool topStitching = false;
   bool leftStitching = false;
 
-  Square(int x, int y, bool filled, Color color, String imgSrc) {
+  Square(int x, int y, bool filled, String imgSrc) {
     this.x = x;
     this.y = y;
     this.hasButton = false;

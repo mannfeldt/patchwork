@@ -74,27 +74,11 @@ class BingoGameMechanics implements PatchworkRuleEngine {
 
   @override
   bool piecePlaced(GameState gameState) {
-    //gör om detta med bingo!! samma färg. BYT UT FÄRG TILL IMAGESRC?
     Player currentPlayer = gameState.getCurrentPlayer();
     List<int> bingos = Utils.getBingoRows(currentPlayer.board);
     List<int> newBingos =
         bingos.where((b) => !currentPlayer.bingos.contains(b)).toList();
     if (newBingos.length > 0) {
-      //det här ska vara en speciel dialog som är lootbox
-      //istället för flera lootboxes så om man får dubbelbingo, alltså bingo på två rader samtidigt så får man en bättre lootbox
-      // ska skicka in raden till dialogen så att den kan ta lootboxen från rätt position. öppna upp den på något vis
-      //starta den här lootbox animeringen som är som cs:go, använd kanske en lista med loots och placera i animatedList
-      //använd animateTo random int. med någon snygg curve. när animeringen är klar. alltså on forward.then
-
-      //då kallar vi på en metod i state liknande som för buttonAnimeringen som återgår till spelet.
-      //skillnaden är att den metoden i state tar emot vilken loot det resulterade i och applicerar det direkt eller
-      //sparar undan det till playern. player kommer ha en player.powerups etc?
-      //power ups får visa som en inventory typ. som man kna klicka på som då visar en lista med sina power ups som man kan klicka på för att aktivera
-      //kanske bara en buttonlist som i setup med gamemode i enklaste fall? fast vill gärna ha något mer som riktigt inventory
-      //med bra och dåliga saker sorterade
-
-      //ska frysa spelet så inte nextturn körs. detta bingo grejs ska ju inte ligga efter varje turn utan efter varje piecePlaced
-      //
       gameState.handleBingo(newBingos);
       return true;
     }

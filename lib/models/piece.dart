@@ -1,54 +1,43 @@
-import 'package:flutter/material.dart';
 import 'package:patchwork/utilities/constants.dart';
 import 'package:patchwork/models/square.dart';
 
 class Piece {
   int id;
-  int size;
   int buttons;
   List<Square> shape;
   int cost;
   int time;
   int costAdjustment;
-  Color color;
   Square anchorPosition;
   bool selectable;
   Square
       boardPosition; // leftTopMostposition that the piece is located on the board
   int difficulty;
   String state; // active, selectable, unselectable, used
-  int version;
   String imgSrc;
 
-  Piece(int id, List<Square> shape, int buttons, int cost, int time,
-      Color color, int costAdjustment, String imgSrc) {
+  Piece(int id, List<Square> shape, int buttons, int cost, int time, int costAdjustment, String imgSrc) {
     this.id = id;
     this.shape = shape;
     this.state = "active";
-    this.size = shape.length;
     this.buttons = buttons;
     this.cost = cost;
     this.time = time;
-    this.color = color;
     this.costAdjustment = costAdjustment;
     this.selectable = false;
-    this.version = 0;
     this.imgSrc = imgSrc;
   }
 
   Piece.single(int id) {
     this.id = id;
-    Square s = new Square(0, 0, true, Colors.brown, singlePiece);
+    Square s = new Square(0, 0, true, singlePiece);
     this.shape = [s];
     this.state = "active";
-    this.size = shape.length;
     this.buttons = 0;
     this.cost = 0;
     this.time = 0;
-    this.color = Colors.brown;
     this.costAdjustment = 0;
     this.selectable = true;
-    this.version = 0;
     this.imgSrc = singlePiece;
   }
 

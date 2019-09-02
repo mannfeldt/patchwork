@@ -68,29 +68,6 @@ final List<Color> pieceColors = [
   Colors.deepOrange
 ];
 final List<Color> playerColors = Colors.primaries;
-// final List<Color> playerColors = [
-//   Colors.blue.shade700,
-//   Colors.red.shade700,
-//   Colors.orange.shade700,
-//   Colors.green.shade700,
-//   Colors.yellow.shade700,
-//   Colors.purple.shade700,
-//   Colors.teal.shade700,
-//   Colors.pink.shade700,
-//   Colors.black87,
-//   Colors.blueAccent.shade700,
-//   Colors.brown.shade700,
-//   Colors.cyan.shade700,
-//   Colors.cyanAccent.shade700,
-//   Colors.deepOrange.shade700,
-//   Colors.deepOrangeAccent.shade700,
-//   Colors.deepPurple.shade700,
-//   Colors.deepPurpleAccent.shade700,
-//   Colors.greenAccent.shade700,
-//   Colors.indigo.shade700,
-//   Colors.indigoAccent.shade700,
-//   Colors.blueGrey.shade700,
-// ];
 final Map<String, double> costAdjustments = {
   "SALE30": -0.3,
   "SALE20": -0.2,

@@ -15,7 +15,7 @@ class TimeBoardTile extends StatefulWidget {
   final double tileWidth;
   final bool isCrowded;
   final int index;
-  final bool hasScissor;
+  final bool hasScissors;
 
   TimeBoardTile(
       {this.hasButton,
@@ -27,7 +27,7 @@ class TimeBoardTile extends StatefulWidget {
       this.isCrowded,
       this.index,
       this.currentPlayer,
-      this.hasScissor});
+      this.hasScissors});
 
   @override
   _TimeBoardTileState createState() => _TimeBoardTileState();
@@ -79,7 +79,7 @@ class _TimeBoardTileState extends State<TimeBoardTile> {
                 "assets/single.png",
               ))));
     }
-    if (widget.hasScissor) {
+    if (widget.hasScissors) {
       tileContent.add(Center(
           child: Icon(
         Icons.content_cut,
