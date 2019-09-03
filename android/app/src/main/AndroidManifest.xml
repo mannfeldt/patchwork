@@ -8,7 +8,7 @@
          FlutterApplication and put your custom class here. -->
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="patchwork"
+        android:label="patchwork 2.0"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
