@@ -7,7 +7,6 @@ class Piece {
   List<Square> shape;
   int cost;
   int time;
-  int costAdjustment;
   Square anchorPosition;
   bool selectable;
   Square
@@ -16,14 +15,13 @@ class Piece {
   String state; // active, selectable, unselectable, used
   String imgSrc;
 
-  Piece(int id, List<Square> shape, int buttons, int cost, int time, int costAdjustment, String imgSrc) {
+  Piece(int id, List<Square> shape, int buttons, int cost, int time, String imgSrc) {
     this.id = id;
     this.shape = shape;
     this.state = "active";
     this.buttons = buttons;
     this.cost = cost;
     this.time = time;
-    this.costAdjustment = costAdjustment;
     this.selectable = false;
     this.imgSrc = imgSrc;
   }
@@ -36,7 +34,6 @@ class Piece {
     this.buttons = 0;
     this.cost = 0;
     this.time = 0;
-    this.costAdjustment = 0;
     this.selectable = true;
     this.imgSrc = singlePiece;
   }

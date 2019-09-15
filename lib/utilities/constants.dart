@@ -68,15 +68,15 @@ final List<Color> pieceColors = [
   Colors.deepOrange
 ];
 final List<Color> playerColors = Colors.primaries;
-final Map<String, double> costAdjustments = {
-  "SALE30": -0.3,
-  "SALE20": -0.2,
-  "SALE10": -0.1,
-  "OVER10": 0.1,
-  "OVER20": 0.2,
-  "OVER30": 0.3,
-  "NONE": 0.0
-};
+// final Map<String, double> costAdjustments = {
+//   "SALE30": -0.3,
+//   "SALE20": -0.2,
+//   "SALE10": -0.1,
+//   "OVER10": 0.1,
+//   "OVER20": 0.2,
+//   "OVER30": 0.3,
+//   "NONE": 0.0
+// };
 
 final List<List<String>> spicyPieces = [
   [

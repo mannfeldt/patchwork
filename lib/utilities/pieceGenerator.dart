@@ -18,7 +18,7 @@ class PieceGenerator {
       shape = _placeButtons(shape, buttons);
 
       int id = pieces.length;
-      Piece p = new Piece(id, shape, buttons, cost, time, 0, imgName);
+      Piece p = new Piece(id, shape, buttons, cost, time, imgName);
       pieces.add(p);
     }
     return pieces;
@@ -49,9 +49,7 @@ class PieceGenerator {
       totalValue -= buttons;
       int time = _getTimePart(totalValue);
       int cost = totalValue - time;
-      int costAdjustment = _getCostAdjustment(cost);
-      Piece p = new Piece(
-          id, shape, buttons, cost, time, costAdjustment, imgName);
+      Piece p = new Piece(id, shape, buttons, cost, time, imgName);
       int num = rng.nextInt(difficulty);
       if (num < 20 + (difficulty / 4)) {
         pieces.add(p);
@@ -75,9 +73,7 @@ class PieceGenerator {
       int totalValue = _getTotalValue(buttons, size, difficulty);
       int time = _getTimePart(totalValue);
       int cost = totalValue - time;
-      int costAdjustment = _getCostAdjustment(cost);
-      Piece p = new Piece(
-          id, shape, buttons, cost, time, costAdjustment, imgName);
+      Piece p = new Piece(id, shape, buttons, cost, time, imgName);
       pieces.add(p);
     }
     return pieces;
@@ -254,27 +250,6 @@ class PieceGenerator {
     return totalCost;
   }
 
-  static int _getCostAdjustment(int before) {
-    Random rng = new Random();
-    int num = rng.nextInt(100);
-    String costAdjustment = "NONE";
-    if (num < 3)
-      costAdjustment = "SALE30";
-    else if (num < 3 + 4)
-      costAdjustment = "SALE20";
-    else if (num < 8 + 6)
-      costAdjustment = "SALE10";
-    else if (num < 15 + 5)
-      costAdjustment = "OVER10";
-    else if (num < 21 + 3)
-      costAdjustment = "OVER20";
-    else if (num < 25 + 2) costAdjustment = "OVER30";
-
-    double adjustmentRate = costAdjustments[costAdjustment];
-    int extraButtons = (before * adjustmentRate).floor();
-    return extraButtons;
-  }
-
   static bool _outOfBounds(Square square) {
     int min = 0;
     int max = maxPieceLength - 1;
@@ -292,8 +267,7 @@ class PieceGenerator {
     return shape;
   }
 
-  static List<Square> _getShapeFromVisual(
-      List<String> visual, String imgName) {
+  static List<Square> _getShapeFromVisual(List<String> visual, String imgName) {
     List<Square> shape = [];
     for (int y = 0; y < visual.length; y++) {
       for (int x = 0; x < visual[y].length; x++) {

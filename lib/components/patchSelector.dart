@@ -186,24 +186,8 @@ class PatchListItem extends StatelessWidget {
                                   : buttonColor,
                               size: fontSize,
                             ),
-                            Visibility(
-                              visible: piece.costAdjustment != 0,
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.fromLTRB(0, 0, 2.0, 0),
-                                child: Text(
-                                  (piece.cost).toString(),
-                                  style: TextStyle(
-                                      color: piece.cost > currentPlayer.buttons
-                                          ? Colors.red
-                                          : Colors.black87,
-                                      decoration: TextDecoration.lineThrough,
-                                      fontSize: fontSize),
-                                ),
-                              ),
-                            ),
                             Text(
-                              (piece.cost + piece.costAdjustment).toString(),
+                              (piece.cost).toString(),
                               style: TextStyle(
                                   color: piece.cost > currentPlayer.buttons
                                       ? Colors.red
