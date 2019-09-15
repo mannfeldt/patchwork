@@ -90,7 +90,7 @@ class _PatchSelectorState extends State<PatchSelector> {
         Container(
           child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: lazyLoadPieces,
+              itemCount: min(pieces.length, lazyLoadPieces),
               controller: _scrollController,
               itemBuilder: (context, index) {
                 Piece piece = pieces[index];
