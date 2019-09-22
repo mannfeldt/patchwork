@@ -30,11 +30,7 @@ class BingoGameMechanics implements PatchworkRuleEngine {
 
   @override
   List<Piece> generatePieces(int noOfPlayers) {
-    List<Piece> pieces = [];
-    int stacksOfPieces = (noOfPlayers / 2).round();
-    for (int i = 0; i < stacksOfPieces; i++) {
-      pieces.addAll(PieceGenerator.getBingoModePieces(40));
-    }
+    List<Piece> pieces = PieceGenerator.getBingoModePieces(20 * noOfPlayers);
     pieces.shuffle();
     return pieces;
   }

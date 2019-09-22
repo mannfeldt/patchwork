@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:patchwork/components/highscoreTable.dart';
+import 'package:patchwork/logic/sessionstate.dart';
+import 'package:patchwork/models/highscore.dart';
 import 'package:patchwork/pages/endScreen.dart';
 import 'package:patchwork/pages/mainMenu.dart';
 import 'package:patchwork/pages/gameplay.dart';
@@ -16,15 +19,23 @@ class MyApp extends StatelessWidget {
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: ChangeNotifierProvider<GameState>(
-        builder: (_) => GameState(),
-        child: HomePage(),
-      ),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(builder: (_) => GameState()),
+        ChangeNotifierProvider(builder: (_) => SessionState()),
+      ],
+      child: MaterialApp(
+          title: 'Flutter Demo',
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+          ),
+          home: MultiProvider(
+            providers: [
+              ChangeNotifierProvider(builder: (_) => GameState()),
+              ChangeNotifierProvider(builder: (_) => SessionState()),
+            ],
+            child: HomePage(),
+          )),
     );
   }
 }

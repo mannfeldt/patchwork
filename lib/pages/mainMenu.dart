@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:patchwork/components/highscoreTable.dart';
 import 'package:patchwork/logic/gamestate.dart';
+import 'package:patchwork/logic/sessionstate.dart';
 import 'package:provider/provider.dart';
 
 class MainMenu extends StatelessWidget {
@@ -20,6 +22,20 @@ class MainMenu extends StatelessWidget {
             gameState.setView("setup");
           },
           child: Text("New game"),
+        ),
+        RaisedButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => Scaffold(
+                      appBar: AppBar(
+                        title: Text("Patchwork"),
+                      ),
+                      body: SafeArea(child: HighscoreTable()))),
+            );
+          },
+          child: Text("Highscore"),
         )
       ]),
     );

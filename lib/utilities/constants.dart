@@ -49,7 +49,7 @@ final List<String> pieceImages = [
   "blue_sunflowers.jpg",
   "blue_tile.jpg",
   "brown_dots.png",
-  "brown_tile.jpg",
+  "brown_tile.png",
   "esher.jpg",
   "green_buds.png",
   "orange_sunflowers.jpg",
