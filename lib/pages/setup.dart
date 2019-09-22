@@ -50,6 +50,7 @@ class SetupState extends State<Setup> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
               DropdownButton<GameMode>(
+                //TODO this should come as an input from the mainMenu selector
                   value: _gameMode,
                   hint: Text("Select game mode"),
                   onChanged: (GameMode newValue) {
