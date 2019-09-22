@@ -76,7 +76,7 @@ class _TimeBoardTileState extends State<TimeBoardTile> {
           child: Container(
               padding: EdgeInsets.all(tileWidth / 10),
               child: Image.asset(
-                "assets/single.png",
+                "assets/sun.png",
               ))));
     }
     if (widget.hasScissors) {

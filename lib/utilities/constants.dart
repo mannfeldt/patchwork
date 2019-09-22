@@ -42,25 +42,26 @@ const int maximumPlayers = 10;
 const int lazyLoadPieces = 12;
 final List<Square> directions = [_west, _east, _north, _south];
 final List<String> pieceImages = [
-  "arrows.jpg",
-  "b1.jpg",
-  "dots.jpg",
-  "dots2.jpg",
-  "plants2.jpg",
-  "stripes.jpg",
-  "10.png",
-  "planes.jpg",
-  "flower.png",
-  "flower2.png",
-  "flag.jpg",
-  "flag2.jpg",
-  "blackwhite2.jpg",
-  "blackwhite3.jpg",
-  "blackwhite4.jpg",
-  "blackwhite5.jpg",
-  "blackwhite6.jpg",
+  "anchors.jpg",
+  "black_white_tile.png",
+  "blue_knots.png",
+  "blue_stripes.jpg",
+  "blue_sunflowers.jpg",
+  "blue_tile.jpg",
+  "brown_dots.png",
+  "brown_tile.jpg",
+  "esher.jpg",
+  "green_buds.png",
+  "orange_sunflowers.jpg",
+  "orange_tile.png",
+  "purple_cross.jpg",
+  "red_tile.jpg",
+  "sun.png",
+  "teal_tile.jpg",
+  "white_flower.jpg",
+  "yellow_flower.jpg"
 ];
-final String singlePiece = "single.png";
+final String singlePiece = "sun.png";
 final List<Color> pieceColors = [
   Colors.indigo,
   Colors.lightGreen,
