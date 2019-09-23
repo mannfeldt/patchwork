@@ -9,6 +9,8 @@ import 'package:flutter_colorpicker/utils.dart';
 import 'package:patchwork/models/player.dart';
 
 class Setup extends StatefulWidget {
+  final GameMode gameMode;
+  Setup({this.gameMode});
   @override
   SetupState createState() {
     return SetupState();
@@ -19,7 +21,6 @@ class SetupState extends State<Setup> {
   Color _pickerColor;
   TextEditingController nameController = TextEditingController();
   bool _isAi = false;
-  GameMode _gameMode;
   bool _playTutorial;
 
   @override
@@ -44,7 +45,7 @@ class SetupState extends State<Setup> {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text("New Game"),
+          title: Text("New " + gameModeName[widget.gameMode] + " Game"),
         ),
         body: Center(
           child: Column(
@@ -53,17 +54,7 @@ class SetupState extends State<Setup> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
-                  DropdownButton<GameMode>(
-                      //TODO this should come as an input from the mainMenu selector
-                      value: _gameMode,
-                      hint: Text("Select game mode"),
-                      onChanged: (GameMode newValue) {
-                        setState(() => _gameMode = newValue);
-                      },
-                      items: GameMode.values.map((GameMode mode) {
-                        return new DropdownMenuItem<GameMode>(
-                            value: mode, child: new Text(gameModeName[mode]));
-                      }).toList()),
+
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
@@ -85,11 +76,8 @@ class SetupState extends State<Setup> {
                             content: Text("Needs at least " +
                                 minimumPlayers.toString() +
                                 " players to start")));
-                      } else if (_gameMode == null) {
-                        Scaffold.of(context).showSnackBar(SnackBar(
-                            content: Text("Need to select a game mode")));
                       } else {
-                        gameState.startGame(_gameMode, _playTutorial);
+                        gameState.startGame(widget.gameMode, _playTutorial);
                       }
                     },
                     child: Text(

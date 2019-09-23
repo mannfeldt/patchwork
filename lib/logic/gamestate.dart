@@ -123,12 +123,12 @@ class GameState with ChangeNotifier {
         playerColors.where((c) => c != _players[0].color).toList();
     addPlayer("Player 2",
         availablieColors[rng.nextInt(availablieColors.length)], false);
-    startGame(GameMode.DEFAULT, false);
+    startGame(GameMode.CLASSIC, false);
   }
 
   void startGame(GameMode mode, bool playTutorial) {
     switch (mode) {
-      case GameMode.DEFAULT:
+      case GameMode.CLASSIC:
         _ruleEngine = new DefaultGameMechanics();
         break;
       case GameMode.BINGO:
