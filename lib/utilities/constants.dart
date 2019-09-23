@@ -9,9 +9,9 @@ const double patchUnitSizeWithPadding = patchUnitSize + 1.0;
 const double boardTilePadding = 1.0;
 typedef PatchPlacedCallback = void Function(Piece piece);
 
-enum GameMode { DEFAULT, BINGO }
+enum GameMode { CLASSIC, BINGO }
 const Map<GameMode, String> gameModeName = {
-  GameMode.DEFAULT: "Standard",
+  GameMode.CLASSIC: "Classic",
   GameMode.BINGO: "Bingo"
 };
 

@@ -3,6 +3,7 @@ import 'package:patchwork/components/highscoreTable.dart';
 import 'package:patchwork/logic/gamestate.dart';
 import 'package:patchwork/logic/sessionstate.dart';
 import 'package:patchwork/pages/setup.dart';
+import 'package:patchwork/utilities/constants.dart';
 import 'package:provider/provider.dart';
 
 class MainMenu extends StatelessWidget {
@@ -22,10 +23,19 @@ class MainMenu extends StatelessWidget {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => Setup()),
+              MaterialPageRoute(builder: (context) => Setup(gameMode: GameMode.CLASSIC)),
             );
           },
-          child: Text("New game"),
+          child: Text("Classic"),
+        ),
+        RaisedButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => Setup(gameMode: GameMode.BINGO)),
+            );
+          },
+          child: Text("BINGO!!!!!!"),
         ),
         RaisedButton(
           onPressed: () {
