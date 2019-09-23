@@ -64,7 +64,7 @@ class GameState with ChangeNotifier {
   getGameMode() => _gameMode;
   isPlayTutorial() => _playTutorial;
   double getPatchSelectorHeight() {
-    return _bottomHeight - (_boardTileSize*1.8);
+    return _bottomHeight - (_boardTileSize * 1.8);
   }
 
   void setBingoAnimation(bool bingoAnimation) {

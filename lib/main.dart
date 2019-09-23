@@ -49,8 +49,6 @@ class HomePage extends StatelessWidget {
     bool showAppBar = true;
     if (view == null) {
       child = MainMenu();
-    } else if (view == "setup") {
-      child = Setup();
     } else if (view == "gameplay") {
       child = ShowCaseWidget(child: Gameplay());
       showAppBar = false;

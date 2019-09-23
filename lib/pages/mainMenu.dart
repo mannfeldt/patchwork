@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:patchwork/components/highscoreTable.dart';
 import 'package:patchwork/logic/gamestate.dart';
 import 'package:patchwork/logic/sessionstate.dart';
+import 'package:patchwork/pages/setup.dart';
 import 'package:provider/provider.dart';
 
 class MainMenu extends StatelessWidget {
@@ -19,7 +20,10 @@ class MainMenu extends StatelessWidget {
         ),
         RaisedButton(
           onPressed: () {
-            gameState.setView("setup");
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => Setup()),
+            );
           },
           child: Text("New game"),
         ),
