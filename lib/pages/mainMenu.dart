@@ -4,6 +4,7 @@ import 'package:patchwork/logic/gamestate.dart';
 import 'package:patchwork/logic/sessionstate.dart';
 import 'package:patchwork/pages/setup.dart';
 import 'package:patchwork/utilities/constants.dart';
+import 'package:patchwork/utilities/patchwork_icons_icons.dart';
 import 'package:provider/provider.dart';
 
 class MainMenu extends StatelessWidget {
@@ -13,29 +14,68 @@ class MainMenu extends StatelessWidget {
 
     return Center(
       child: Column(children: <Widget>[
-        RaisedButton(
-          onPressed: () {
-            gameState.startQuickPlay();
-          },
-          child: Text("Quick play 1v1"),
+        Card(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              const ListTile(
+                leading: Icon(PatchworkIcons.button_icon),
+                title: Text('Classic'),
+                subtitle: Text('Classic game.'),
+              ),
+              ButtonTheme.bar( // make buttons use the appropriate styles for cards
+                child: ButtonBar(
+                  children: <Widget>[
+                    RaisedButton(
+                      onPressed: () {
+                        gameState.startQuickPlay();
+                      },
+                      textColor: Colors.white,
+                      child: Text("Quick Play"),
+                    ),
+                    RaisedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Setup(gameMode: GameMode.CLASSIC)),
+                        );
+                      },
+                      textColor: Colors.white,
+                      child: Text("New Game"),
+                    )
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
-        RaisedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => Setup(gameMode: GameMode.CLASSIC)),
-            );
-          },
-          child: Text("Classic"),
-        ),
-        RaisedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => Setup(gameMode: GameMode.BINGO)),
-            );
-          },
-          child: Text("BINGO!!!!!!"),
+        Card(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              const ListTile(
+                leading: Icon(PatchworkIcons.button_icon),
+                title: Text('BINGO!!!!!!'),
+                subtitle: Text('Play bingo with everyone! For every line you complete in the same color you get extra loot.'),
+              ),
+              ButtonTheme.bar( // make buttons use the appropriate styles for cards
+                child: ButtonBar(
+                  children: <Widget>[
+                    RaisedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Setup(gameMode: GameMode.BINGO)),
+                        );
+                      },
+                      textColor: Colors.white,
+                      child: Text("Play"),
+                    )
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
         RaisedButton(
           onPressed: () {
