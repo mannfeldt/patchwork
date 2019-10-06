@@ -126,6 +126,17 @@ class GameState with ChangeNotifier {
     startGame(GameMode.CLASSIC, false);
   }
 
+  void startQuickBingoPlay() {
+    Random rng = new Random();
+    addPlayer(
+        "Player 1", playerColors[rng.nextInt(playerColors.length)], false);
+    List<Color> availablieColors =
+    playerColors.where((c) => c != _players[0].color).toList();
+    addPlayer("Player 2",
+        availablieColors[rng.nextInt(availablieColors.length)], false);
+    startGame(GameMode.BINGO, false);
+  }
+
   void startGame(GameMode mode, bool playTutorial) {
     switch (mode) {
       case GameMode.CLASSIC:

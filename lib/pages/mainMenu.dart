@@ -63,6 +63,13 @@ class MainMenu extends StatelessWidget {
                   children: <Widget>[
                     RaisedButton(
                       onPressed: () {
+                        gameState.startQuickBingoPlay();
+                      },
+                      textColor: Colors.white,
+                      child: Text("Quick Play"),
+                    ),
+                    RaisedButton(
+                      onPressed: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => Setup(gameMode: GameMode.BINGO)),
