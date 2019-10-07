@@ -1,6 +1,7 @@
 import 'package:patchwork/logic/gamestate.dart';
 import 'package:patchwork/models/announcement.dart';
 import 'package:patchwork/models/piece.dart';
+import 'package:patchwork/models/score.dart';
 import 'package:patchwork/models/square.dart';
 import 'package:patchwork/models/board.dart';
 import 'package:patchwork/models/player.dart';
@@ -9,18 +10,18 @@ import 'package:patchwork/utilities/pieceGenerator.dart';
 import 'package:patchwork/logic/patchworkRuleEngine.dart';
 import 'package:patchwork/utilities/utils.dart';
 
-class DefaultGameMechanics implements PatchworkRuleEngine {
+class ClassicGameMechanics implements PatchworkRuleEngine {
   @override
   bool isGameFinished(List<Player> players) {
     return players.every((p) => p.state == "finished");
   }
 
   @override
-  int calculateScore(Player player) {
-    int missingTiles =
-        (player.board.cols * player.board.rows) - player.board.squares.length;
-    int score = player.buttons - (missingTiles * 2);
-    if (player.hasSevenBySeven) score += 7;
+  Score calculateScore(Player player) {
+    int plus = player.buttons*20;
+    int minus = Utils.emptyBoardSpaces(player.board) * 2;
+    int extra = player.hasSevenBySeven ? 7 : 0;
+    Score score = new Score(plus, minus, extra);
     return score;
   }
 
@@ -35,7 +36,7 @@ class DefaultGameMechanics implements PatchworkRuleEngine {
     List<Piece> pieces = [];
     int stacksOfPieces = (noOfPlayers / 2).round();
     for (int i = 0; i < stacksOfPieces; i++) {
-      pieces.addAll(PieceGenerator.getDefaultPieces());
+      pieces.addAll(PieceGenerator.getClassicPieces());
     }
     pieces.shuffle();
     return pieces;

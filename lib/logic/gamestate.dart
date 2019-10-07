@@ -4,7 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:patchwork/logic/bingoGameMechanics.dart';
 import 'package:patchwork/utilities/constants.dart';
-import 'package:patchwork/logic/defaultGameMechanics.dart';
+import 'package:patchwork/logic/classicGameMechanics.dart';
 import 'package:patchwork/logic/patchworkRuleEngine.dart';
 import 'package:patchwork/models/announcement.dart';
 import 'package:patchwork/models/board.dart';
@@ -115,7 +115,7 @@ class GameState with ChangeNotifier {
     _bottomHeight = screenHeight - (maxSize + (gameBoardInset * 1));
   }
 
-  void startQuickPlay() {
+  void startQuickPlay(GameMode mode) {
     Random rng = new Random();
     addPlayer(
         "Player 1", playerColors[rng.nextInt(playerColors.length)], false);
@@ -123,13 +123,13 @@ class GameState with ChangeNotifier {
         playerColors.where((c) => c != _players[0].color).toList();
     addPlayer("Player 2",
         availablieColors[rng.nextInt(availablieColors.length)], false);
-    startGame(GameMode.CLASSIC, false);
+    startGame(mode, false);
   }
 
   void startGame(GameMode mode, bool playTutorial) {
     switch (mode) {
       case GameMode.CLASSIC:
-        _ruleEngine = new DefaultGameMechanics();
+        _ruleEngine = new ClassicGameMechanics();
         break;
       case GameMode.BINGO:
         _ruleEngine = new BingoGameMechanics();
@@ -351,10 +351,11 @@ class GameState with ChangeNotifier {
     if (after >= _timeBoard.goalIndex) {
       _currentPlayer.state = "finished";
       _currentPlayer.position = _timeBoard.goalIndex;
-      setAnnouncement(new Announcement(
-          "",
-          Text(_currentPlayer.name + " crossed the goal line"),
-          AnnouncementType.simpleDialog));
+
+      // setAnnouncement(new Announcement(
+      //     "",
+      //     Text(_currentPlayer.name + " crossed the goal line"),
+      //     AnnouncementType.simpleDialog));
     }
     if (_extraPieceCollected || _scissorsCollected) {
       placePieceMarker();

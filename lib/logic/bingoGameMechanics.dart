@@ -1,3 +1,4 @@
+import 'package:patchwork/models/score.dart';
 import 'package:patchwork/utilities/constants.dart';
 import 'package:patchwork/logic/gamestate.dart';
 import 'package:patchwork/models/piece.dart';
@@ -16,9 +17,11 @@ class BingoGameMechanics implements PatchworkRuleEngine {
   }
 
   @override
-  int calculateScore(Player player) {
-    int missingTiles = Utils.emptyBoardSpaces(player.board);
-    int score = player.buttons - (missingTiles * 2);
+  Score calculateScore(Player player) {
+    int minus = Utils.emptyBoardSpaces(player.board) * 2;
+    int plus = player.buttons;
+    Score score = new Score(plus, minus, 0);
+
     return score;
   }
 

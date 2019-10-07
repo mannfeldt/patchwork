@@ -1,6 +1,9 @@
 import 'dart:math';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:patchwork/models/highscore.dart';
 import 'package:patchwork/utilities/constants.dart';
 import 'package:patchwork/models/board.dart';
 import 'package:patchwork/models/lootBox.dart';
@@ -273,5 +276,39 @@ class Utils {
     }
     piece.shape = cropPiece(shape);
     return piece;
+  }
+
+  static bool isWithinTimeframe(Timestamp time, Timeframe timeframe) {
+    switch (timeframe) {
+      case Timeframe.WEEK:
+        return isThisWeek(time);
+        break;
+      case Timeframe.MONTH:
+        return isThisMonth(time);
+        break;
+      case Timeframe.ALL_TIME:
+        return true;
+        break;
+      default:
+        return false;
+    }
+  }
+
+  static bool isThisWeek(Timestamp timestamp) {
+    var now = new DateTime.now();
+    var date = new DateTime.fromMicrosecondsSinceEpoch(
+        timestamp.microsecondsSinceEpoch);
+    var diff = now.difference(date);
+    int daysAgo = diff.inDays;
+
+//detnna är felvänt
+    return daysAgo < 7 && date.weekday <= now.weekday;
+  }
+
+  static bool isThisMonth(Timestamp timestamp) {
+    var now = new DateTime.now();
+    var date = new DateTime.fromMicrosecondsSinceEpoch(
+        timestamp.microsecondsSinceEpoch);
+    return date.year == now.year && date.month == now.month;
   }
 }
