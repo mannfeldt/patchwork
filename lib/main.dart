@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:patchwork/components/highscoreTable.dart';
-import 'package:patchwork/logic/sessionstate.dart';
-import 'package:patchwork/models/highscore.dart';
+import 'package:patchwork/logic/highscoreState.dart';
 import 'package:patchwork/pages/endScreen.dart';
 import 'package:patchwork/pages/mainMenu.dart';
 import 'package:patchwork/pages/gameplay.dart';
-import 'package:patchwork/pages/setup.dart';
 import 'package:provider/provider.dart';
 import 'package:patchwork/logic/gamestate.dart';
 import 'package:flutter/services.dart';
@@ -22,20 +19,14 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(builder: (_) => GameState()),
-        ChangeNotifierProvider(builder: (_) => SessionState()),
+        ChangeNotifierProvider(builder: (_) => HighscoreState()),
       ],
       child: MaterialApp(
           title: 'Flutter Demo',
           theme: ThemeData(
             primarySwatch: Colors.blue,
           ),
-          home: MultiProvider(
-            providers: [
-              ChangeNotifierProvider(builder: (_) => GameState()),
-              ChangeNotifierProvider(builder: (_) => SessionState()),
-            ],
-            child: HomePage(),
-          )),
+          home: HomePage()),
     );
   }
 }
@@ -44,13 +35,18 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final gameState = Provider.of<GameState>(context);
+    final highscoreState = Provider.of<HighscoreState>(context);
+    if (highscoreState.getAllHightscores() == null) {
+      highscoreState.fetchHighscores();
+    }
     final view = gameState.getView();
     Widget child;
     bool showAppBar = true;
     if (view == null) {
       child = MainMenu();
     } else if (view == "gameplay") {
-      child = ShowCaseWidget(child: Gameplay());
+      child =
+          ShowCaseWidget(builder: Builder(builder: (context) => Gameplay()));
       showAppBar = false;
     } else if (view == "finished") {
       child = EndScreen();

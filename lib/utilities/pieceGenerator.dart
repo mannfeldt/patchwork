@@ -6,10 +6,10 @@ import 'package:patchwork/models/piece.dart';
 import 'package:patchwork/utilities/utils.dart';
 
 class PieceGenerator {
-  static List<Piece> getDefaultPieces() {
+  static List<Piece> getClassicPieces() {
     List<Piece> pieces = [];
-    for (int i = 0; i < defaultPieces.length; i++) {
-      var piece = defaultPieces[i];
+    for (int i = 0; i < classicPieces.length; i++) {
+      var piece = classicPieces[i];
       int buttons = piece['buttons'];
       int cost = piece['cost'];
       int time = piece['time'];

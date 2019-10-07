@@ -9,6 +9,12 @@ const double patchUnitSizeWithPadding = patchUnitSize + 1.0;
 const double boardTilePadding = 1.0;
 typedef PatchPlacedCallback = void Function(Piece piece);
 
+enum Timeframe { WEEK, MONTH, ALL_TIME }
+const Map<Timeframe, String> timeFrameName = {
+  Timeframe.WEEK: "Weekly",
+  Timeframe.MONTH: "Monthly",
+  Timeframe.ALL_TIME: "All time",
+};
 enum GameMode { CLASSIC, BINGO }
 const Map<GameMode, String> gameModeName = {
   GameMode.CLASSIC: "Classic",
@@ -20,6 +26,7 @@ const int bingoModeNrOfDifferentImages = 3;
 const int bingoStartButtons = 15;
 const double timeBoardTileHeight = 30.0;
 const double timeBoardTileWidth = 90.0;
+const int highscoreLimit = 5; //5
 const double boardInset = 5.0;
 const int maxPieceSize = 10;
 const int maxPieceLength = 6;
@@ -88,7 +95,7 @@ final List<List<String>> spicyPieces = [
   ],
 ];
 
-final List defaultPieces = [
+final List classicPieces = [
   {
     "visual": [
       "[ ][X][ ][ ][ ][ ][ ][ ][ ]",

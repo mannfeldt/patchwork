@@ -15,6 +15,7 @@ import 'package:patchwork/components/timeGameBoard.dart';
 import 'package:provider/provider.dart';
 import 'package:patchwork/logic/gamestate.dart';
 import 'package:showcaseview/showcaseview.dart';
+import 'package:showcaseview/showcaseview.dart' as prefix0;
 
 class Gameplay extends StatefulWidget {
   @override
@@ -48,7 +49,8 @@ class _GameplayState extends State<Gameplay> {
             );
           },
         );
-        ShowCaseWidget.startShowCase(context, [
+
+        ShowCaseWidget.of(context).startShowCase([
           _gameBoardTutorialKey,
           _patchesTutorialKey,
           _timeBoardTutorialKey,
