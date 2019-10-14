@@ -115,7 +115,12 @@ class GameState with ChangeNotifier {
     _bottomHeight = screenHeight - (maxSize + (gameBoardInset * 1));
   }
 
+<<<<<<< Updated upstream
   void startQuickPlay(GameMode mode) {
+=======
+  void startQuickPlay() { //TODO should take a GameState mode as input
+    //TODO should have the switch like the startGame bellow
+>>>>>>> Stashed changes
     Random rng = new Random();
     addPlayer(
         "Player 1", playerColors[rng.nextInt(playerColors.length)], false);
@@ -123,7 +128,11 @@ class GameState with ChangeNotifier {
         playerColors.where((c) => c != _players[0].color).toList();
     addPlayer("Player 2",
         availablieColors[rng.nextInt(availablieColors.length)], false);
+<<<<<<< Updated upstream
     startGame(mode, false);
+=======
+    startGame(GameMode.CLASSIC, false); //TODO should be widget.gameMode
+>>>>>>> Stashed changes
   }
 
   void startQuickBingoPlay() {
