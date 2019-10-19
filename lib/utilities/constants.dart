@@ -23,7 +23,7 @@ const Map<GameMode, String> gameModeName = {
 
 const int defaultGameBoardCols = 9;
 const int bingoModeNrOfDifferentImages = 3;
-const int bingoStartButtons = 15;
+const int bingoStartButtons = 300; //15 ska det vara, återställ
 const double timeBoardTileHeight = 30.0;
 const double timeBoardTileWidth = 90.0;
 const int highscoreLimit = 5; //5
@@ -44,28 +44,22 @@ final buttonColor = Colors.blue.shade800;
 final stitchColor = Colors.black87;
 //lite statas från default pieces: 55% av cost är i buttons 45% i time. så buttons ska vara lite större chans att få mer cost än time
 //avarage buttons är strax över 1
-const int minimumPlayers = 2;
+const int minimumPlayers = 1;
 const int maximumPlayers = 10;
 const int lazyLoadPieces = 12;
 final List<Square> directions = [_west, _east, _north, _south];
 final List<String> pieceImages = [
   "anchors.jpg",
-  "black_white_tile.png",
   "blue_knots.png",
-  "blue_stripes.jpg",
   "blue_sunflowers.jpg",
   "blue_tile.jpg",
   "brown_dots.png",
-  "brown_tile.png",
   "esher.jpg",
   "green_buds.png",
   "orange_sunflowers.jpg",
   "orange_tile.png",
   "purple_cross.jpg",
-  "red_tile.png",
   "sun.png",
-  "teal_tile.jpg",
-  "white_flower.jpg",
   "yellow_flower.jpg"
 ];
 final String singlePiece = "sun.png";

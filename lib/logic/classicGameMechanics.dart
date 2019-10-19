@@ -18,7 +18,7 @@ class ClassicGameMechanics implements PatchworkRuleEngine {
 
   @override
   Score calculateScore(Player player) {
-    int plus = player.buttons*20;
+    int plus = player.buttons * 25;
     int minus = Utils.emptyBoardSpaces(player.board) * 2;
     int extra = player.hasSevenBySeven ? 7 : 0;
     Score score = new Score(plus, minus, extra);

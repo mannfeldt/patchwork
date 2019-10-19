@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:patchwork/components/gameBoard.dart';
 import 'package:patchwork/components/newHighscoreTable.dart';
 import 'package:patchwork/components/scoreBubbles.dart';
 import 'package:patchwork/logic/highscoreState.dart';
@@ -24,12 +25,12 @@ class _EndScreenState extends State<EndScreen> {
 
     GameMode gameMode = gameState.getGameMode();
 
-    void _saveHighscore(Highscore highscore, String name) async {
+    void _saveHighscore(Highscore highscore, String name, Player player) async {
       Highscore newHighscore = highscore;
       newHighscore.name = name;
       newHighscore.time = Timestamp.now();
       newHighscore.mode = gameModeName[gameState.getGameMode()];
-      await highscoreState.saveHighscore(newHighscore);
+      await highscoreState.saveHighscore(newHighscore, player);
     }
 
     List<Player> players = gameState.getPlayers();
@@ -45,9 +46,9 @@ class _EndScreenState extends State<EndScreen> {
           List<Highscore> highscores =
               highscoreState.getHighscores(newHighscoreTimeFrame, gameMode);
           Highscore newHighscore = new Highscore(players[i], highscores.length);
-          if (highscores.any((h) => newHighscore.isSameAs(h))) {
-            continue;
-          }
+          // if (highscores.any((h) => newHighscore.isSameAs(h))) {
+          //   continue;
+          // }
           if (highscores.length == highscoreLimit) {
             highscores[highscoreLimit - 1] = newHighscore;
           } else {
@@ -56,32 +57,39 @@ class _EndScreenState extends State<EndScreen> {
           highscores.sort((a, b) => a.compareTo(b));
           highscoreState.setShowingNewHighscore(true);
 
-          //  highscoreScreen ser bra ut, förutom att det är gamla highscore som inte längre finns i firebase som visas??
-
-          //  i endscreen så får jag upp tomma tables.?? och bara en dialog fast än det är 2 som borde visas. fast den kanske ska vara tom då jag körde bingo?
-
-          // if (!highscores
-          //     .any((h) => h.userId == newHighscore.userId && h.isNew)) {
-          //   highscores.add(newHighscore);
-          // }
-
-          //skulle kunna visa flera i stack t.ex?
-
           await showDialog(
             context: context,
             barrierDismissible: false,
             builder: (BuildContext context) {
               return Dialog(
                   child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  Text(
-                    "New " +
-                        timeFrameName[newHighscoreTimeFrame] +
-                        " Highscore",
-                    style: TextStyle(fontSize: 22),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    //någon snygg default backgrund för fadeimage.assetnetwork? lägg någon random bild från nåot spel där? eller bara en place holder om är en gif? kan jag ha en gif här förresten? vore coolt
+                    //! ta fram en gif som bara är för en spelare. cropa så det bara är gameboard som syns. tänk på att gömma recording ikonen.
+                    //! tillfälligt stäng av animationer för buttons? men animation för lootbox får vara kvar.
+                    //! lägg till 1000 buttons att börja med så att det inte blir ett problem. gör banan också extra lång, jag kan avsluta när jag är nöjd då och klippa i videon
+                    //! testa göra det lite i slowmotion för jag kan ändå speeda upp det och vill
+                    //! kan bli lite jobbigt för ögat att ha två giffar spelandes samtiidgt? det jobbiga är speeden och att det är två spelare istället för en.
+                    //! om det inte går att spela med en spelare så klipp bort den andra spelaren bara.
+                    //! ha en rätt hög men jämn opacity
+                    //! ett alt är att man behöver kliicka för att starta gifen? det är först den färdiga boardet som visas som stillbild sen när man klickar så körs gifen en loop?
+                    //! ha någon förklarande ikon över bilden så att man förstår att det inte handlar om att man startar något spel utan bara gifen?
+                    //! men börja med att ta fram gifs och se hur de ser ut
+
+                    //! snygga till endscreen och newhighscreotable också. leaberboard.dart är jag nöjd med. kör på samma ty pav design. fast skipp kanske datum etc
+                    // 3.5 fixa till highscoreknappen? hur vill jag faktiskt ha den? som den är fast med en bättre ikon? text och ikon?
+                    // 4. lägg tillbaka alla fixar för att testa helhelten (autoscroll timeboard, pieces, timeboard classic finishindex, calculatescore)
+                    child: Text(
+                      "${timeFrameName[newHighscoreTimeFrame]} new highscore",
+                      style: TextStyle(fontSize: 20),
+                    ),
                   ),
                   NewHighscoreTable(
                     highscores: highscores,
+                    player: players[i],
                     callbackSaveHighscore: _saveHighscore,
                     newHighscore: newHighscore,
                   ),
@@ -105,57 +113,45 @@ class _EndScreenState extends State<EndScreen> {
           ),
         ),
         Expanded(
-            child: ListView.builder(
-          itemCount: players.length,
-          itemBuilder: (context, index) {
-            final player = players[index];
-            int ranking =
-                highscoreState.getAllTimeRanking(gameMode, player.score.total);
-            return Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 0),
-              child: Column(
-                children: <Widget>[
-                  ListTile(
-                    dense: true,
-                    title: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: <Widget>[
-                        Text(player.name),
-                        ScoreBubbles(
-                          plus: player.score.plus,
-                          minus: player.score.minus,
-                          extra: player.score.extra,
-                          total: player.score.total,
-                        ),
-                      ],
-                    ),
-                    leading: Icon(player.isAi ? Icons.android : Icons.person,
-                        color: player.color),
-                    trailing: SizedBox(
-                        width: 50,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: <Widget>[
-                            Icon(Icons.score),
-                            Text(ranking.toString())
-                          ],
-                        )),
+            child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: ListView.separated(
+            itemCount: players.length,
+            separatorBuilder: (context, index) {
+              return Divider(
+                color: Colors.black87,
+              );
+            },
+            itemBuilder: (context, index) {
+              final player = players[index];
+              int ranking = highscoreState.getAllTimeRanking(
+                  gameMode, player.score.total);
+              int totalScore = player.score.total;
+              return ListTile(
+                leading: Image.file(player.screenshot),
+                title: Text(
+                  player.name,
+                  style: TextStyle(
+                      fontSize: 20,
+                      letterSpacing: 1.5,
+                      fontWeight: FontWeight.w400),
+                ),
+                trailing: CircleAvatar(
+                  backgroundColor: totalScore < 0 ? Colors.red : Colors.blue,
+                  child: Text(
+                    totalScore.abs().toString(),
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  Divider(
-                    height: 0,
-                    color: Colors.black87,
-                  )
-                ],
-              ),
-            );
-          },
+                ),
+              );
+            },
+          ),
         )),
         RaisedButton(
           onPressed: () {
             gameState.restartApp();
           },
-          child: Text("New game"),
+          child: Text("Main menu"),
         )
       ],
     ));

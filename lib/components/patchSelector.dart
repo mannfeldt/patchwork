@@ -80,7 +80,7 @@ class _PatchSelectorState extends State<PatchSelector> {
           duration: const Duration(milliseconds: 400),
         );
         await gameState.clearPieceMarkerIndex(true);
-        _scrollController.jumpTo(0);
+        //_scrollController.jumpTo(0);
       }
     });
 

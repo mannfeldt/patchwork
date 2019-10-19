@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:page_indicator/page_indicator.dart';
+import 'package:patchwork/components/gameModeCard.dart';
 import 'package:patchwork/logic/gamestate.dart';
-import 'package:patchwork/pages/highscoreScreen.dart';
+import 'package:patchwork/logic/highscoreState.dart';
+import 'package:patchwork/pages/leaderboardScreen.dart';
 import 'package:patchwork/pages/setup.dart';
 import 'package:patchwork/utilities/constants.dart';
 import 'package:patchwork/utilities/patchwork_icons_icons.dart';
@@ -11,16 +12,26 @@ class MainMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final gameState = Provider.of<GameState>(context);
+    final highscoreState = Provider.of<HighscoreState>(context);
 
     return Center(
       child: Stack(children: <Widget>[
         Container(
-            color: Colors.purple,
             width: MediaQuery.of(context).size.width,
-            child: Image(
-              image: AssetImage('assets/patchwork_banner.jpg'),
-              width: 10,
-            )),
+            child: ShaderMask(
+                shaderCallback: (rect) {
+                  return LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Colors.purple, Colors.transparent],
+                  ).createShader(Rect.fromLTRB(
+                      0, rect.height * 0.8, rect.width, rect.height));
+                },
+                blendMode: BlendMode.dstIn,
+                child: Image.asset(
+                  'assets/background2.jpg',
+                  fit: BoxFit.contain,
+                ))),
         Column(
           children: <Widget>[
             Padding(
@@ -28,105 +39,72 @@ class MainMenu extends StatelessWidget {
               child: Text(
                 "Patchwork",
                 style: TextStyle(
-                    fontSize: 28,
+                    fontSize: 30,
                     fontWeight: FontWeight.bold,
+                    letterSpacing: 3,
+                    shadows: <Shadow>[
+                      Shadow(
+                        offset: Offset(2.0, 2.0),
+                        blurRadius: 3.0,
+                        color: Color.fromARGB(255, 0, 0, 0),
+                      ),
+                      Shadow(
+                        offset: Offset(2.0, 2.0),
+                        blurRadius: 8.0,
+                        color: Color.fromARGB(125, 0, 0, 255),
+                      ),
+                    ],
                     color: Colors.white),
               ),
             ),
-            Card(
-              margin: EdgeInsets.only(left: 16, right: 16, top: 4, bottom: 4),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  const ListTile(
-                    leading: Icon(PatchworkIcons.button_icon),
-                    title: Text('Classic'),
-                    subtitle: Text(
-                        'Classic game of patchwork. Identical to the board game.'),
-                  ),
-                  ButtonTheme.bar(
-                    child: ButtonBar(
-                      children: <Widget>[
-                        RaisedButton(
-                          onPressed: () {
-                            gameState.startQuickPlay(GameMode.CLASSIC);
-                          },
-                          textColor: Colors.white,
-                          child: Text("Quick Play"),
-                        ),
-                        RaisedButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      Setup(gameMode: GameMode.CLASSIC)),
-                            );
-                          },
-                          textColor: Colors.white,
-                          child: Text("New Game"),
-                        )
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+            GameModeCard(
+              backgroundImageSrc:
+                  highscoreState.getBackgroundImage(GameMode.CLASSIC),
+              gameMode: GameMode.CLASSIC,
+              title: "Classic",
+              subtitle:
+                  "Classic game of patchwork. Identical to the board game.",
+              quickplayCallback: gameState.startQuickPlay,
             ),
-            Card(
-              margin: EdgeInsets.only(left: 16, right: 16, top: 4, bottom: 4),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  const ListTile(
-                    leading: Icon(PatchworkIcons.button_icon),
-                    title: Text('Bingo'),
-                    subtitle: Text(
-                        'Patchwork with a twist! For every line you complete in the same color you get extra loot.'),
-                  ),
-                  ButtonTheme.bar(
-                    // make buttons use the appropriate styles for cards
-                    child: ButtonBar(
-                      children: <Widget>[
-                        RaisedButton(
-                          onPressed: () {
-                            gameState.startQuickPlay(GameMode.BINGO);
-                          },
-                          textColor: Colors.white,
-                          child: Text("Quick Play"),
-                        ),
-                        RaisedButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      Setup(gameMode: GameMode.BINGO)),
-                            );
-                          },
-                          textColor: Colors.white,
-                          child: Text("New Game"),
-                        )
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+            GameModeCard(
+              backgroundImageSrc:
+                  highscoreState.getBackgroundImage(GameMode.BINGO),
+              gameMode: GameMode.BINGO,
+              title: "Bingo",
+              subtitle:
+                  "Patchwork with a twist! For every line you complete in the same color you get extra loot.",
+              quickplayCallback: gameState.startQuickPlay,
             ),
-            RaisedButton(
+          ],
+        ),
+        Align(
+          alignment: Alignment.topRight,
+          child: Container(
+            margin: EdgeInsets.only(
+                top: MediaQuery.of(context).padding.top + 8, right: 8),
+            height: 40,
+            width: 40,
+            child: FlatButton(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0)),
+              color: Colors.yellow.shade800.withOpacity(0.7),
+              textColor: Colors.white,
+              padding: EdgeInsets.all(0.0),
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) => Scaffold(
                           appBar: AppBar(
-                            title: Text("Patchwork"),
+                            title: Text("Leaderboard"),
                           ),
-                          body: SafeArea(child: HighscoreScreen()))),
+                          body: SafeArea(child: LeaderboardScreen()))),
                 );
               },
-              child: Text("Highscores"),
-            )
-          ],
+              child: Icon(PatchworkIcons.award, color: Colors.yellow, size: 28),
+              //behöver lösa priblem med compound path för att få in de finare ikonerna. patchworkicons.award_1
+            ),
+          ),
         )
       ]),
     );

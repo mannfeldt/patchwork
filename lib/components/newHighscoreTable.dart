@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:patchwork/components/scoreBubbles.dart';
 import 'package:patchwork/models/highscore.dart';
+import 'package:patchwork/models/player.dart';
 import 'package:patchwork/utilities/constants.dart';
 
 //TODO
 //tsta vad som är fel nu
 //försök få in så att highscore dialog två har fått den första dialogens tillägg. krävs bara nytt anrop till highscoreprovidern för att få in de senaste fårn _highscore
 //hur ska det sorteras? samma score så ska man komma in på listan för dem tidigare?
-//lägg tillbaka timeline fokus. så att den autoscrollar till spelaren. nu är det bortkommenterat
+//lägg tillbaka timeline fokus. så att den autoscrollar till spelaren. nu är det bortkommenterat. återsätll calculateScore och finishTile i boardtile som är väldigt låg nu
 
 //det blir kanske lätt att överföra detta till "online"? behöver bara bry sig om en spelare egentligen då. alt kan man visa att den andra spelaren slog rekord genom någon ikon i endscreen tabellen också
 //LÄGG TILL DET NU! någon guldmedalj som säger vilken plats man är all_time? inte weekeyl
@@ -40,8 +41,12 @@ class NewHighscoreTable extends StatefulWidget {
   final List<Highscore> highscores;
   final Highscore newHighscore;
   final Function callbackSaveHighscore;
+  final Player player;
   NewHighscoreTable(
-      {this.highscores, this.callbackSaveHighscore, this.newHighscore});
+      {this.highscores,
+      this.callbackSaveHighscore,
+      this.newHighscore,
+      this.player});
 
   @override
   _NewHighscoreTableState createState() => _NewHighscoreTableState();
@@ -58,63 +63,127 @@ class _NewHighscoreTableState extends State<NewHighscoreTable> {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-        child: SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: Column(
-              children: <Widget>[
-                DataTable(
-                    dataRowHeight: 60.0,
-                    columnSpacing: 20.0,
-                    columns: <DataColumn>[
-                      DataColumn(
-                        label: Text('Name'),
-                      ),
-                      DataColumn(
-                        label: Text('Score'),
-                      )
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Flexible(
+          child: ListView.separated(
+              shrinkWrap: true,
+              scrollDirection: Axis.vertical,
+              itemCount: widget.highscores.length,
+              separatorBuilder: (context, index) {
+                return Divider(
+                  color: Colors.black87,
+                );
+              },
+              itemBuilder: (context, index) {
+                Highscore highscore = widget.highscores[index];
+                int score = highscore.getTotal();
+
+                return ListTile(
+                  leading: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Container(
+                          padding: EdgeInsets.only(right: 24),
+                          child: Text(
+                            (index + 1).toString(),
+                            style: TextStyle(fontSize: 20, color: Colors.blue),
+                          )),
+                      highscore.isNew
+                          ? Image.file(widget.player.screenshot)
+                          : FadeInImage.assetNetwork(
+                              image: highscore.thumbnail,
+                              fadeOutDuration: Duration(milliseconds: 200),
+                              fadeInDuration: Duration(milliseconds: 400),
+                              placeholder:
+                                  "assets/Ring-Preloader.gif", //här ska vi ha en annan placeholder. typ en gif loader?
+                            ),
                     ],
-                    rows: widget.highscores
-                        .asMap()
-                        .map((index, highscore) => MapEntry(
-                              index,
-                              DataRow(
-                                cells: [
-                                  DataCell(Container(
-                                    color: index >= highscoreLimit
-                                        ? Colors.red
-                                        : Colors.transparent,
-                                    child: highscore.isNew
-                                        ? TextField(
-                                            controller: nameController,
-                                            maxLength: 12,
-                                          )
-                                        : Text(highscore.name),
-                                  )),
-                                  DataCell(ScoreBubbles(
-                                    plus: highscore.score,
-                                    minus: highscore.scoreMinus,
-                                    extra: highscore.scoreExtra,
-                                    total: highscore.score -
-                                        highscore.scoreMinus +
-                                        highscore.scoreExtra,
-                                  ))
-                                ],
-                              ),
-                            ))
-                        .values
-                        .toList()),
-                RaisedButton(
-                  onPressed: () {
-                    if (widget.callbackSaveHighscore != null) {
-                      widget.callbackSaveHighscore(
-                          widget.newHighscore, nameController.text);
-                    }
-                    Navigator.of(context).pop();
-                  },
-                  child: Text("Save"),
-                )
-              ],
-            )));
+                  ),
+                  title: highscore.isNew
+                      ? TextField(
+                          controller: nameController,
+                          maxLength: 12,
+                          style: TextStyle(
+                              fontSize: 20,
+                              letterSpacing: 1.5,
+                              fontWeight: FontWeight.w400),
+                        )
+                      : Text(
+                          highscore.name,
+                          style: TextStyle(
+                              fontSize: 20,
+                              letterSpacing: 1.5,
+                              fontWeight: FontWeight.w400),
+                        ),
+                  trailing: CircleAvatar(
+                    backgroundColor: score < 0 ? Colors.red : Colors.blue,
+                    child: Text(
+                      score.abs().toString(),
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                );
+              }),
+        ),
+
+        //här vill jag visa thumbnails. kanske innan namnet? kanske ska skippa att det är ett datatable och bara använda listview?
+        //same as endScreen.
+        //add function to klick and view full size image (only in highscoreMenu?)
+        //instead of the roundBoubles make small graf? like stapeldiagram that shows plus minut extra in 3 colors
+        //väldigt liten. lika bred som hög. som en ikon.
+        //så vi har namn, thumnail, score, stapeldiagram.
+        //stapeldiagram och score ligger brevidvarandra. bilden llängst till höger troligen.
+        //stapeldiagramet är nice to have bara. senare grej
+
+        //if highscore.isNew så visa player.screenshot istället
+        //! ta in markellas ändringar. kopiera dem, merga inte då det är lite annat där också. ta bort bilder och ta backgrunden samt nya highscoreknappen
+        //ser det bra ut med den bilden? behåll den om det ser ok ut. annars gör om. jag gillar den lila bilden. gör den rundad och med en bubbla som PE har i en annan nyans av lila
+        //testa kör samma fade effekt på lila bilden.
+
+        //!skapa en listview istället för datatable. ingen rubrik då det är självförklarande
+        //! title: namn
+        //!subtitle: datum
+        //!trailing: thumbnail. kanske byter plats på thumbnail och score
+        //! leading: totalScore (visa i en svarvit bubbla? lila vit bubbla? något annat sätt?) BOLD
+        //! raden ska vara clickbar i highscoretable (inte new)
+        //! där får man upp en mer detaljerad vy. med scoreBubbles eller stapeldiagram, större screenshot,
+        //! är screenshoten "osynlig" så är det bra. blinkar det till eller r deplay så gör det till en grej. lägg lite mer delay och lägg till en blixt eller liknande kanske
+        //verkar vara lite olika. pieces blir vita ibland också? är det för att de inte hinner rendreras innan asyncgrejen kommer som tar screenshotet? lägga till lite väntetid? wait delayed?
+
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: <Widget>[
+            Padding(
+              padding:
+                  const EdgeInsets.only(right: 8.0, top: 16.0, bottom: 8.0),
+              child: FlatButton(
+                textColor: Colors.blue,
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                },
+                child: Text("Skip"),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(right: .0, top: 16.0, bottom: 8.0),
+              child: RaisedButton(
+                color: Colors.blue,
+                textColor: Colors.white,
+                onPressed: () async {
+                  if (widget.callbackSaveHighscore != null) {
+                    await widget.callbackSaveHighscore(widget.newHighscore,
+                        nameController.text, widget.player);
+                  }
+                  Navigator.of(context).pop();
+                },
+                child: Text("Save"),
+              ),
+            ),
+          ],
+        )
+      ],
+    );
   }
 }

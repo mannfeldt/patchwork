@@ -12,6 +12,10 @@
 ///       - asset: fonts/PatchworkIcons.ttf
 ///
 /// 
+/// * Font Awesome, Copyright (C) 2016 by Dave Gandy
+///         Author:    Dave Gandy
+///         License:   SIL ()
+///         Homepage:  http://fortawesome.github.com/Font-Awesome/
 ///
 import 'package:flutter/widgets.dart';
 
@@ -20,9 +24,13 @@ class PatchworkIcons {
 
   static const _kFontFam = 'PatchworkIcons';
 
+  static const IconData award = const IconData(0xe800, fontFamily: _kFontFam);
   static const IconData button_icon = const IconData(0xe803, fontFamily: _kFontFam);
   static const IconData thimble = const IconData(0xe80a, fontFamily: _kFontFam);
   static const IconData clothing_stitches = const IconData(0xe80b, fontFamily: _kFontFam);
   static const IconData lootbox_closed = const IconData(0xe80e, fontFamily: _kFontFam);
   static const IconData lootbox_open = const IconData(0xe80f, fontFamily: _kFontFam);
+  static const IconData award_1 = const IconData(0xe811, fontFamily: _kFontFam);
+  static const IconData cup = const IconData(0xe812, fontFamily: _kFontFam);
+  static const IconData success = const IconData(0xe813, fontFamily: _kFontFam);
 }
