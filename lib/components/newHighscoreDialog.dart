@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:patchwork/logic/gamestate.dart';
 import 'package:patchwork/models/highscore.dart';
 import 'package:provider/provider.dart';
-
+//används inte?
 class NewHighscoreDialog extends StatefulWidget {
   final Highscore highscore;
 

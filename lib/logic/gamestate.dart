@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -296,16 +297,23 @@ class GameState with ChangeNotifier {
     if (gameFinished) {
       _finishGame();
     }
-    Player newPlayer = _ruleEngine.getNextPlayer(_players, _currentPlayer);
+    Player newPlayer;
+    if (_currentPlayer.state == "Waiting_screenshot") {
+      newPlayer = _currentPlayer;
+    } else {
+      newPlayer = _ruleEngine.getNextPlayer(_players, _currentPlayer);
+    }
 
     if (newPlayer.id != _currentPlayer.id) {
       _turnCounter += 1;
       _previousPlayer = _currentPlayer;
     }
+
     _currentPlayer = newPlayer;
     _currentBoard = _currentPlayer.board;
 
     placePieceMarker();
+    print("nextturn: " + _currentPlayer.name + "  " + _currentPlayer.state);
     notifyListeners();
   }
 
@@ -369,9 +377,11 @@ class GameState with ChangeNotifier {
     }
 
     if (after >= _timeBoard.goalIndex) {
-      _currentPlayer.state = "finished";
+      _currentPlayer.state = "Waiting_screenshot";
+
       _currentPlayer.position = _timeBoard.goalIndex;
 
+      //return;
       // setAnnouncement(new Announcement(
       //     "",
       //     Text(_currentPlayer.name + " crossed the goal line"),
@@ -386,6 +396,15 @@ class GameState with ChangeNotifier {
     } else {
       nextTurn();
     }
+  }
+
+  void saveScreenshot(File image) {
+    _currentPlayer.screenShotted = true;
+    _currentPlayer.screenshot = image;
+    _currentPlayer.state = "finished";
+
+    // notifyListeners();
+    nextTurn();
   }
 
   void pass() {

@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -14,8 +15,8 @@ import 'package:patchwork/components/patchSelector.dart';
 import 'package:patchwork/components/timeGameBoard.dart';
 import 'package:provider/provider.dart';
 import 'package:patchwork/logic/gamestate.dart';
+import 'package:screenshot/screenshot.dart';
 import 'package:showcaseview/showcaseview.dart';
-import 'package:showcaseview/showcaseview.dart' as prefix0;
 
 class Gameplay extends StatefulWidget {
   @override
@@ -30,94 +31,113 @@ class _GameplayState extends State<Gameplay> {
   GlobalKey _cashTutorialKey = GlobalKey();
   GlobalKey _nameTutorialKey = GlobalKey();
 
+  ScreenshotController screenshotController = ScreenshotController();
+
   bool tutorialPlayed = false;
+  bool isScreenshotTaken = false;
   @override
   Widget build(BuildContext context) {
     final gameState = Provider.of<GameState>(context);
     double boardTileSize = gameState.getBoardTileSize();
     Player currentPlayer = gameState.getCurrentPlayer();
+
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      bool playTutorial = await gameState.isPlayTutorial();
-      if (playTutorial && !tutorialPlayed) {
-        tutorialPlayed = true;
-        await showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (BuildContext context) {
-            return TutorialPages(
-              gameMode: gameState.getGameMode(),
-            );
-          },
-        );
-
-        ShowCaseWidget.of(context).startShowCase([
-          _gameBoardTutorialKey,
-          _patchesTutorialKey,
-          _timeBoardTutorialKey,
-          _nameTutorialKey,
-          _cashTutorialKey,
-          _passTutorialKey
-        ]);
+      if (!isScreenshotTaken && currentPlayer.state == "Waiting_screenshot") {
+        setState(() {
+          isScreenshotTaken = true;
+        });
+        //en liten delay här fixar vita patches.. gör någon roligare animation än bara vänta? camera flash. android screenshot animation
+        //just a flas h animation like opacity
+        await Future.delayed(Duration(milliseconds: 200));
+        File image = await screenshotController.capture();
+        gameState.saveScreenshot(image);
+        setState(() {
+          isScreenshotTaken = false;
+        });
       }
-
-      Announcement announcement = gameState.getAnnouncement();
-      bool isButtonsAnimation = gameState.getButtonsAnimation();
-      bool isBingoAnimation = gameState.getBingoAnimation();
-      LootBox lootBox = gameState.getLootBox();
-      bool doneanimation = false;
-      if (announcement != null) {
-        switch (announcement.type) {
-          case AnnouncementType.snackbar:
-            Dialogs.snackbar(context, announcement);
-            break;
-          case AnnouncementType.simpleDialog:
-            Dialogs.simpleAnnouncement(context, announcement);
-            break;
-          case AnnouncementType.dialog:
-            Dialogs.announcement(context, announcement);
-            break;
-          default:
-            break;
-        }
-        gameState.clearAnnouncement();
-      }
-      if (isBingoAnimation && !doneanimation) {
-        gameState.setBingoAnimation(false);
-        await showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (BuildContext context) {
-            return LootBoxAnimation(lootBox, gameState.getBoardTileSize());
-          },
-        );
-
-        doneanimation = true;
-        //useless await?
-        gameState.handleBingoAnimationEnd();
-        doneanimation = false;
-      }
-      if (isButtonsAnimation && !doneanimation) {
-        if (currentPlayer.board.buttons > 0) {
+      if (currentPlayer.state != "Waiting_screenshot" &&
+          currentPlayer.state != "finished") {
+        bool playTutorial = await gameState.isPlayTutorial();
+        if (playTutorial && !tutorialPlayed) {
+          tutorialPlayed = true;
           await showDialog(
             context: context,
-            barrierDismissible: true,
+            barrierDismissible: false,
             builder: (BuildContext context) {
-              return GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: SimpleDialog(
-                    title: ButtonAnimation(
-                        currentPlayer, gameState.getBoardTileSize()),
-                    titlePadding: EdgeInsets.all(15.0),
-                  ));
+              return TutorialPages(
+                gameMode: gameState.getGameMode(),
+              );
             },
           );
+
+          ShowCaseWidget.of(context).startShowCase([
+            _gameBoardTutorialKey,
+            _patchesTutorialKey,
+            _timeBoardTutorialKey,
+            _nameTutorialKey,
+            _cashTutorialKey,
+            _passTutorialKey
+          ]);
         }
-        doneanimation = true;
-        //useless await?
-        gameState.clearAnimationButtons(true);
-        doneanimation = false;
+
+        Announcement announcement = gameState.getAnnouncement();
+        bool isButtonsAnimation = gameState.getButtonsAnimation();
+        bool isBingoAnimation = gameState.getBingoAnimation();
+        LootBox lootBox = gameState.getLootBox();
+        bool doneanimation = false;
+        if (announcement != null) {
+          switch (announcement.type) {
+            case AnnouncementType.snackbar:
+              Dialogs.snackbar(context, announcement);
+              break;
+            case AnnouncementType.simpleDialog:
+              Dialogs.simpleAnnouncement(context, announcement);
+              break;
+            case AnnouncementType.dialog:
+              Dialogs.announcement(context, announcement);
+              break;
+            default:
+              break;
+          }
+          gameState.clearAnnouncement();
+        }
+        if (isBingoAnimation && !doneanimation) {
+          gameState.setBingoAnimation(false);
+          await showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) {
+              return LootBoxAnimation(lootBox, gameState.getBoardTileSize());
+            },
+          );
+
+          doneanimation = true;
+          gameState.handleBingoAnimationEnd();
+          doneanimation = false;
+        }
+        if (isButtonsAnimation && !doneanimation) {
+          if (currentPlayer.board.buttons > 0) {
+            await showDialog(
+              context: context,
+              barrierDismissible: true,
+              builder: (BuildContext context) {
+                return GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: SimpleDialog(
+                      title: ButtonAnimation(
+                          currentPlayer, gameState.getBoardTileSize()),
+                      titlePadding: EdgeInsets.all(15.0),
+                    ));
+              },
+            );
+          }
+          doneanimation = true;
+          //useless await?
+          gameState.clearAnimationButtons(true);
+          doneanimation = false;
+        }
       }
     });
     Player previousPlayer = gameState.getPreviousPlayer();
@@ -140,23 +160,33 @@ class _GameplayState extends State<Gameplay> {
             child: Container(
               padding: EdgeInsets.fromLTRB(
                   gameBoardInset, gameBoardInset, gameBoardInset, 0),
-              child: AnimatedCrossFade(
-                firstCurve: Curves.easeIn,
-                secondCurve: Curves.easeIn,
-                firstChild: GameBoard(
-                    board:
-                        isEvenId ? currentPlayer.board : previousPlayer.board,
-                    useLootboxes: useLootboxes,
-                    tileSize: boardTileSize),
-                secondChild: GameBoard(
-                    board:
-                        !isEvenId ? currentPlayer.board : previousPlayer.board,
-                    useLootboxes: useLootboxes,
-                    tileSize: boardTileSize),
-                crossFadeState: isEvenId
-                    ? CrossFadeState.showFirst
-                    : CrossFadeState.showSecond,
-                duration: Duration(seconds: 1),
+              child: AnimatedOpacity(
+                duration: Duration(milliseconds: 50),
+                curve: Curves.easeIn,
+                opacity: isScreenshotTaken ? 0.1 : 1,
+                child: Screenshot(
+                  controller: screenshotController,
+                  child: AnimatedCrossFade(
+                    firstCurve: Curves.easeIn,
+                    secondCurve: Curves.easeIn,
+                    firstChild: GameBoard(
+                        board: isEvenId
+                            ? currentPlayer.board
+                            : previousPlayer.board,
+                        useLootboxes: useLootboxes,
+                        tileSize: boardTileSize),
+                    secondChild: GameBoard(
+                        board: !isEvenId
+                            ? currentPlayer.board
+                            : previousPlayer.board,
+                        useLootboxes: useLootboxes,
+                        tileSize: boardTileSize),
+                    crossFadeState: isEvenId
+                        ? CrossFadeState.showFirst
+                        : CrossFadeState.showSecond,
+                    duration: Duration(seconds: 1),
+                  ),
+                ),
               ),
               height: boardTileSize * 9,
             ),

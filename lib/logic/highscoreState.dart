@@ -1,7 +1,14 @@
+import 'dart:io';
 import 'dart:math';
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:image/image.dart';
+import 'package:image/image.dart' as prefix1;
 import 'package:patchwork/models/highscore.dart';
 import 'package:patchwork/models/player.dart';
 import 'package:patchwork/utilities/constants.dart';
@@ -15,12 +22,15 @@ class HighscoreState with ChangeNotifier {
   bool _isShowingNewHighscore = false;
 
   final databaseReference = Firestore.instance;
+  final StorageReference storageReference = FirebaseStorage().ref();
+  final FirebaseAuth auth = FirebaseAuth.instance;
 
   getAllHightscores() => _highscores;
   getNextPlayerToCheckHIghscore() => _nextPlayerToCheckHighscore;
   isShowingNewHighscore() => _isShowingNewHighscore;
 
   List<Highscore> getHighscores(Timeframe timeframe, GameMode gameMode) {
+    if(_highscores == null) return [];
     List<Highscore> filteredHighscore = [];
     filteredHighscore = _highscores
         .where((h) =>
@@ -33,7 +43,51 @@ class HighscoreState with ChangeNotifier {
     return filteredHighscore;
   }
 
-  void saveHighscore(Highscore highscore) async {
+  void saveHighscore(Highscore highscore, Player player) async {
+    //det tar lite tid nu att spara? kolla hur lång tid. ersätt knappen med en spinner under tiden eller något. gör det lokalt i state i newhighscoretable isf.
+    await auth.signInAnonymously();
+    String extension = "png";
+    final String fileName = 'screen_' +
+        DateTime.now().millisecondsSinceEpoch.toString() +
+        '.$extension';
+
+    final StorageReference imageRef =
+        storageReference.child('highscore_screenshots').child(fileName);
+    final StorageUploadTask uploadTask = imageRef.putFile(
+      player.screenshot,
+    );
+
+    final StorageTaskSnapshot downloadUrl = (await uploadTask.onComplete);
+    final String url = (await downloadUrl.ref.getDownloadURL());
+
+    highscore.thumbnail = url;
+    highscore.screenshot = url;
+
+    // final String thumbFileName = 'thumb' +
+    //     DateTime.now().millisecondsSinceEpoch.toString() +
+    //     '.$extension';
+
+    // prefix1.Image image = decodeImage(player.screenshot.readAsBytesSync());
+
+    // prefix1.Image thumbnail = copyResize(image, width: 120, height: 120);
+
+    // final StorageReference thumbRef =
+    //     storageReference.child('highscore_screenshots').child(thumbFileName);
+    // final StorageUploadTask uploadTaskThumb = thumbRef.putData(
+    //   thumbnail.getBytes(),
+    // );
+
+    // final StorageTaskSnapshot downloadUrlThumb =
+    //     (await uploadTaskThumb.onComplete);
+    // final String thumbUrl = (await downloadUrlThumb.ref.getDownloadURL());
+
+    //TODO
+    // jag ser att jag får fortarande vitt prices på gameboard ibland...
+    // googla lite på hur jag kan ändra tankesätt för detta med async vid rerender är ju inte hållbart som jag gör nu med amassa flagor
+    // vad är det för mönster jag saknar? något missar jag nog.
+
+    //testa igenom allt. olika många spelare. bingo classic. animation vid finish och inte. pass och putpice. scissor extra pice
+
     await databaseReference.collection("highscores").add({
       'userId': highscore.userId,
       'name': highscore.name,
@@ -41,24 +95,31 @@ class HighscoreState with ChangeNotifier {
       'scoreMinus': highscore.scoreMinus,
       'scoreExtra': highscore.scoreExtra,
       'time': highscore.time,
-      'mode': highscore.mode
+      'mode': highscore.mode,
+      'screenshot': highscore.screenshot,
+      'thumbnail': highscore.thumbnail,
     }).then(
         (
           onValue,
         ) =>
-            {print("hello")},
+            {print("SAVE HIGHSCORE")},
         onError: (e) => {print(e.toString())});
     highscore.isNew = false; //?
     _highscores.add(highscore);
     // _nextPlayerToCheckHighscore += 1;
     _isShowingNewHighscore = false;
-    print("SAVE HIGHSCORE");
-    notifyListeners();
+    //notifyListeners();
   }
 
   void setShowingNewHighscore(bool showingNewHighscore) {
     _isShowingNewHighscore = showingNewHighscore;
-    notifyListeners();
+    // notifyListeners();
+  }
+
+  String getBackgroundImage(GameMode mode) {
+    List<Highscore> highscores = getHighscores(Timeframe.ALL_TIME, mode);
+    if (highscores.isEmpty) return "";
+    return highscores[0].screenshot;
   }
 
   int getAllTimeRanking(GameMode gameMode, int score) {

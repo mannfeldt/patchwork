@@ -45,8 +45,8 @@ class HomePage extends StatelessWidget {
     if (view == null) {
       child = MainMenu();
     } else if (view == "gameplay") {
-      child =
-          ShowCaseWidget(builder: Builder(builder: (context) => Gameplay()));
+      child = ShowCaseWidget(
+          builder: Builder(builder: (context) => SafeArea(child: Gameplay())));
       showAppBar = false;
     } else if (view == "finished") {
       child = EndScreen();
@@ -54,23 +54,14 @@ class HomePage extends StatelessWidget {
     } else {
       child = Text("Loading...");
     }
-    return new WillPopScope(
-        onWillPop: () {
-          return new Future(() => false);
-        },
-        child: Scaffold(
-            appBar: showAppBar
-                ? AppBar(
-                    title: Text("Patchwork"),
-                  )
-                : null,
-            body: SafeArea(
-              child: new LayoutBuilder(
-                  builder: (BuildContext context, BoxConstraints constraints) {
-                gameState.setConstraints(
-                    constraints.maxWidth, constraints.maxHeight);
-                return child;
-              }),
-            )));
+    return new WillPopScope(onWillPop: () {
+      return new Future(() => false);
+    }, child: Scaffold(body: new LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+      final mq = MediaQuery.of(context);
+      double maxHeight = constraints.maxHeight - mq.padding.top; //alt: viewPadding
+      gameState.setConstraints(constraints.maxWidth, maxHeight);
+      return child;
+    })));
   }
 }

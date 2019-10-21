@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:patchwork/models/board.dart';
 import 'package:patchwork/models/score.dart';
@@ -14,6 +16,8 @@ class Player {
   bool hasSevenBySeven;
   Score score;
   List<int> bingos;
+  bool screenShotted;
+  File screenshot;
 
   Player(int id, String name, Color color, bool isAi) {
     this.id = id;
@@ -22,9 +26,10 @@ class Player {
     this.isAi = isAi;
     this.state = "waiting";
     this.position = 0;
-    this.buttons = 5;
+    this.buttons = 300;//återsältt till 5
     this.hasSevenBySeven = false;
     this.board = new Board(this);
     this.bingos = [];
+    this.screenShotted = false;
   }
 }
