@@ -125,11 +125,8 @@ class _GameplayState extends State<Gameplay> {
                     onTap: () {
                       Navigator.pop(context);
                     },
-                    child: SimpleDialog(
-                      title: ButtonAnimation(
-                          currentPlayer, gameState.getBoardTileSize()),
-                      titlePadding: EdgeInsets.all(15.0),
-                    ));
+                    child: ButtonAnimation(
+                        currentPlayer, gameState.getBoardTileSize()));
               },
             );
           }

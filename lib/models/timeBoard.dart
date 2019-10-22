@@ -6,14 +6,14 @@ class TimeBoard {
   int goalIndex;
 
   TimeBoard() {
-    this.goalIndex = 70; //ska vara vad? återsätll heal denna fil sen
-    this.buttonIndexes = [];
+    this.goalIndex = 53;
+    this.buttonIndexes = [5, 11, 17, 23, 29, 35, 41, 47, 53];
     this.pieceIndexes = [26, 32, 38, 44, 50];
     this.scissorsIndexes = [];
   }
   TimeBoard.bingo() {
-    this.goalIndex = 60;
-    this.buttonIndexes = [];
+    this.goalIndex = 40;
+    this.buttonIndexes = [4, 10, 16, 22, 30, 38];
     this.pieceIndexes = [];
     this.scissorsIndexes = [13, 20, 26, 34];
   }

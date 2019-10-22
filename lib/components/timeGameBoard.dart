@@ -25,13 +25,13 @@ class _TimeGameBoardState extends State<TimeGameBoard> {
         (currentPlayer.position * tileSize);
     if (currentPlayer.position > 0) scrollPos += tileSize;
 
-    // WidgetsBinding.instance.addPostFrameCallback((_) async {
-    //   await _scrollController.animateTo(
-    //     (scrollPos),
-    //     curve: Curves.easeIn,
-    //     duration: const Duration(milliseconds: 400),
-    //   );
-    // });
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _scrollController.animateTo(
+        (scrollPos),
+        curve: Curves.easeIn,
+        duration: const Duration(milliseconds: 400),
+      );
+    });
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 0.0, vertical: 0.0),

@@ -56,7 +56,7 @@ class _LeaderboardState extends State<Leaderboard> {
                   fadeOutDuration: Duration(milliseconds: 200),
                   fadeInDuration: Duration(milliseconds: 400),
                   placeholder:
-                      "assets/Ring-Preloader.gif",
+                      "assets/transparent.png",
                 ),
               ],
             ),

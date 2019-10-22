@@ -1,10 +1,7 @@
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:patchwork/models/highscore.dart';
 import 'package:patchwork/utilities/constants.dart';
 import 'package:patchwork/models/board.dart';
 import 'package:patchwork/models/lootBox.dart';
@@ -12,6 +9,7 @@ import 'package:patchwork/models/lootPrice.dart';
 import 'package:patchwork/models/piece.dart';
 import 'package:patchwork/models/square.dart';
 import 'package:patchwork/utilities/patchwork_icons_icons.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Utils {
   static LootBox getLootBox(int value) {
@@ -128,6 +126,18 @@ class Utils {
       if (!isUsed) return false;
     }
     return true;
+  }
+
+  static void savePreference(String key, String value) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString(key, value);
+    print('saved $value');
+  }
+
+  static Future<String> getPreference(String key) async {
+    final prefs = await SharedPreferences.getInstance();
+    final value = prefs.getString(key) ?? null;
+    return value;
   }
 
   static bool hasPattern(List<Square> pattern, Board board) {
@@ -311,24 +321,5 @@ class Utils {
     var date = new DateTime.fromMicrosecondsSinceEpoch(
         timestamp.microsecondsSinceEpoch);
     return date.year == now.year && date.month == now.month;
-  }
-
-  static void initFirebase() {
-    //testa detta ha två uppsättningar för prod och dev, switcha lokalt vid utveckling. eller lägg in i ett byggscript vad som ska köras.
-    //testa skapa upp en kopia som heter patchwork dev i firebase. räcker det att byta ut google-services.json? isåfall kan jag göra det lokalt
-    //TODO nu har jag en google servies.json för dev. testa swapa bara och se vad som händer.
-    //TODO fortsätt med fire storage screenshot https://pub.dev/packages/screenshot + https://medium.com/flutterpub/firebase-cloud-storage-and-flutter-fa2e91663b95
-    //får wrapa gameplay eller vad det nu blir och vid finished tar jag ett screenshot och sparar det till player.
-    //jag kan visa upp screenshotet i endscreen och om det är ett highscore så sparar jag det till fire storage också. koppla ihop det med highscore i databasen
-    //antingen genom att använda highscores unika ID? ta fram ett unikt id? playername+now().millisecondssienceepoc.png. eller så i savehighscoremetoden i provider
-    //så sparar jag ju bilden eller datat fröst beroende på vilken av dem som ger ett unikt id. och sen lägger jag den kopplingen på den andra.
-    //en tom doc() ger ett unikt id som jag kan använda för att spara både data och bild. och i datat får jag skapa en parameter som också är id= doc()grejen
-    //hur hämtar jag upp bilden då? det är ju snarare urlen jag vill spara under highscore datan.
-    //TODO spara bilden först och använd urlen som jag får tillbaka till att spara under highscore.image eller liknande.
-    //TODO thumbnail kan jag skapa också. bara att spara samma bild fast i annan storlek. highscore.thumbnail
-    //visa upp på något snyggt sätt i highcsore tables. skapa en thumbnail? klickar man på den får man full size i en dialog eller what ever.
-    //https://stackoverflow.com/questions/53368358/adding-image-in-firebase-storage-and-its-reference-in-firestore-while-avoiding
-    FirebaseApp.configure(
-        name: "dev", options: FirebaseOptions(googleAppID: "asdf"));
   }
 }

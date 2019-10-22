@@ -16,7 +16,6 @@ import 'package:patchwork/models/player.dart';
 import 'package:patchwork/models/square.dart';
 import 'package:patchwork/models/timeBoard.dart';
 import 'package:patchwork/utilities/utils.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class GameState with ChangeNotifier {
   PatchworkRuleEngine _ruleEngine;
@@ -401,19 +400,12 @@ class GameState with ChangeNotifier {
   void saveHasPlayed() async {
     bool firstGame = await isFirstGame();
     if (firstGame) {
-      _saveToPrefs("hasplayed", "true");
+      Utils.savePreference("hasplayed", "true");
     }
   }
 
-  void _saveToPrefs(String key, String value) async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString(key, value);
-    print('saved $value');
-  }
-
   Future<bool> isFirstGame() async {
-    final prefs = await SharedPreferences.getInstance();
-    final value = prefs.getString("hasplayed") ?? null;
+    final value = Utils.getPreference("hasplayed");
     return value == null;
   }
 }

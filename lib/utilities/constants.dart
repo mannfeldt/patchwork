@@ -23,10 +23,10 @@ const Map<GameMode, String> gameModeName = {
 
 const int defaultGameBoardCols = 9;
 const int bingoModeNrOfDifferentImages = 3;
-const int bingoStartButtons = 300; //15 ska det vara, återställ
+const int bingoStartButtons = 15;
 const double timeBoardTileHeight = 30.0;
 const double timeBoardTileWidth = 90.0;
-const int highscoreLimit = 5; //5
+const int highscoreLimit = 5;
 const double boardInset = 5.0;
 const int maxPieceSize = 10;
 const int maxPieceLength = 6;

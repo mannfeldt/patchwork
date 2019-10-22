@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:patchwork/utilities/constants.dart';
@@ -122,9 +123,15 @@ class _ButtonAnimationState extends State<ButtonAnimation>
         Duration(milliseconds: longestDurationMs + dialogIdleTime);
     children.add(IconMovementAnimation(
         closeDialog, 10, 10, 0, 0, Icon(null), animationCallback));
-    return Stack(
-      overflow: Overflow.visible,
-      children: children,
+    return BackdropFilter(
+      filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+      child: SimpleDialog(
+        title: Stack(
+          overflow: Overflow.visible,
+          children: children,
+        ),
+        contentPadding: EdgeInsets.all(15.0),
+      ),
     );
   }
 }
@@ -246,75 +253,79 @@ class _LootBoxAnimationState extends State<LootBoxAnimation>
 
     Duration closeDialog = Duration(seconds: 7);
 
-    return SimpleDialog(
-        title: Text(widget.lootBox.getName()),
-        children: <Widget>[
-          Container(
-            width: lootPriceSize * 3,
-            child: Column(
-              children: <Widget>[
-                Container(
-                  height: 0,
-                  width: 0,
-                  child: Stack(
-                    children: <Widget>[
-                      IconMovementAnimation(closeDialog, 10, 10, 0, 0,
-                          Icon(null), animationCallback),
-                    ],
+    return BackdropFilter(
+      filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+      child: SimpleDialog(
+          title: Text(widget.lootBox.getName()),
+          children: <Widget>[
+            Container(
+              width: lootPriceSize * 3,
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    height: 0,
+                    width: 0,
+                    child: Stack(
+                      children: <Widget>[
+                        IconMovementAnimation(closeDialog, 10, 10, 0, 0,
+                            Icon(null), animationCallback),
+                      ],
+                    ),
                   ),
-                ),
-                Stack(
-                  overflow: Overflow.visible,
-                  children: <Widget>[
-                    Container(
-                        width: lootPriceSize * 3,
-                        height: lootPriceSize,
-                        child: ListView.builder(
-                            physics: const NeverScrollableScrollPhysics(),
-                            scrollDirection: Axis.horizontal,
-                            itemCount: prices.length,
-                            controller: _controller,
-                            itemBuilder: (context, index) {
-                              LootPrice price = prices[index];
-                              return Container(
-                                height: lootPriceSize,
-                                width: lootPriceSize,
-                                child: new Card(
-                                  elevation:
-                                      scrollDone && index == winIndex ? 3 : 0,
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: <Widget>[
-                                      Icon(
-                                        price.icon,
-                                        size: widget.tileSize,
-                                        color: price.color,
-                                      ),
-                                      Text(
-                                        price.amount.toString(),
-                                        style: TextStyle(
-                                            color: price.color,
-                                            fontSize: widget.tileSize / 2),
-                                      )
-                                    ],
+                  Stack(
+                    overflow: Overflow.visible,
+                    children: <Widget>[
+                      Container(
+                          width: lootPriceSize * 3,
+                          height: lootPriceSize,
+                          child: ListView.builder(
+                              physics: const NeverScrollableScrollPhysics(),
+                              scrollDirection: Axis.horizontal,
+                              itemCount: prices.length,
+                              controller: _controller,
+                              itemBuilder: (context, index) {
+                                LootPrice price = prices[index];
+                                return Container(
+                                  height: lootPriceSize,
+                                  width: lootPriceSize,
+                                  child: new Card(
+                                    elevation:
+                                        scrollDone && index == winIndex ? 3 : 0,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: <Widget>[
+                                        Icon(
+                                          price.icon,
+                                          size: widget.tileSize,
+                                          color: price.color,
+                                        ),
+                                        Text(
+                                          price.amount.toString(),
+                                          style: TextStyle(
+                                              color: price.color,
+                                              fontSize: widget.tileSize / 2),
+                                        )
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              );
-                            })),
-                    Positioned(
-                      top: -4.0,
-                      left: lootPriceSize * 1.5,
-                      height: lootPriceSize + 8.0,
-                      child: Container(
-                        width: 3.0,
-                        color: lootBoxColor,
-                      ),
-                    )
-                  ],
-                )
-              ],
+                                );
+                              })),
+                      Positioned(
+                        top: -4.0,
+                        left: lootPriceSize * 1.5,
+                        height: lootPriceSize + 8.0,
+                        child: Container(
+                          width: 3.0,
+                          color: lootBoxColor,
+                        ),
+                      )
+                    ],
+                  )
+                ],
+              ),
             ),
-          ),
-        ]);
+          ]),
+    );
   }
 }

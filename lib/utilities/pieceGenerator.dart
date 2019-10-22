@@ -19,6 +19,7 @@ class PieceGenerator {
 
       int id = pieces.length;
       Piece p = new Piece(id, shape, buttons, cost, time, imgName);
+
       pieces.add(p);
     }
     return pieces;
@@ -231,10 +232,6 @@ class PieceGenerator {
       shape.add(newSquare);
     }
     return Utils.cropPiece(shape);
-  }
-
-  bool validate() {
-    //några specifika mönster jag inte vill ha? ha en lista i util
   }
 
   static int _getTotalValue(int buttons, int size, int difficulty) {
