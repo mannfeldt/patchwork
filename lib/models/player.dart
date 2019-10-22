@@ -8,7 +8,7 @@ import 'package:patchwork/models/score.dart';
 
 class Player {
   int id;
-  Emoji icon;
+  Emoji pickedEmoji;
   String name;
   int buttons;
   int position;
@@ -22,9 +22,9 @@ class Player {
   bool screenShotted;
   File screenshot;
 
-  Player(int id, Emoji icon, String name, Color color, bool isAi) {
+  Player(int id, Emoji pickedEmoji, String name, Color color, bool isAi) {
     this.id = id;
-    this.icon = icon;
+    this.pickedEmoji = pickedEmoji;
     this.name = name;
     this.color = color;
     this.isAi = isAi;

@@ -21,7 +21,7 @@ class Setup extends StatefulWidget {
 
 class SetupState extends State<Setup> {
   Color _pickerColor;
-  Emoji icon;
+  Emoji pickedEmoji;
   TextEditingController nameController = TextEditingController();
   bool _isAi = false;
   bool _playTutorial;
@@ -138,9 +138,7 @@ class SetupState extends State<Setup> {
                                                         child: EmojiPicker(
                                                           rows: 3,
                                                           columns: 7,
-                                                          onEmojiSelected: (icon, category){
-                                                            print(icon);
-                                                          },
+                                                          onEmojiSelected: changeEmoji
                                                         ),
                                                       ),
                                                     );
@@ -205,7 +203,7 @@ class SetupState extends State<Setup> {
                                                   content: Text(
                                                       "Can not add more players")));
                                         } else {
-                                          gameState.addPlayer(icon, nameController.text,
+                                          gameState.addPlayer(pickedEmoji, nameController.text,
                                               _pickerColor, _isAi);
                                           FocusScope.of(context)
                                               .requestFocus(new FocusNode());
@@ -217,32 +215,7 @@ class SetupState extends State<Setup> {
                                       child: Text("Add"),
                                     ))
                                 ]),
-                            Row(
-                              children: <Widget>[
-                                Expanded(
-                                    child: RaisedButton(
-                                      onPressed: () {
-                                        if (players.length >= maximumPlayers) {
-                                          Scaffold.of(context)
-                                              .hideCurrentSnackBar();
-                                          Scaffold.of(context).showSnackBar(
-                                              SnackBar(
-                                                  content: Text(
-                                                      "Can not add more players")));
-                                        } else {
-                                          gameState.addPlayer(icon, nameController.text,
-                                              _pickerColor, _isAi);
-                                          FocusScope.of(context)
-                                              .requestFocus(new FocusNode());
-
-                                          nameController.clear();
-                                          _pickerColor = null;
-                                        }
-                                      },
-                                      child: Text("Add"),
-                                    ))
-                              ],
-                            ),
+                            
                             Expanded(
                                 child: Padding(
                               padding:
@@ -267,11 +240,7 @@ class SetupState extends State<Setup> {
                                               color: Colors.deepOrange.shade300),
                                           child: ListTile(
                                             title: Text(player.name),
-                                            leading: Icon(
-                                                player.isAi
-                                                    ? Icons.android
-                                                    : icon,
-                                                color: player.color),
+                                            leading: Text(player.pickedEmoji.emoji),
                                           ),
                                         );
                                       },
@@ -321,9 +290,10 @@ class SetupState extends State<Setup> {
     Navigator.pop(context, null);
   }
 
-  void changeIcon(Emoji icon) {
-    setState(() => icon = icon);
+  void changeEmoji(Emoji value, var category ) {
+    setState(() => pickedEmoji = value);
     Navigator.pop(context, null);
+
   }
 
   void _aiChanged(bool value) => setState(() => _isAi = value);

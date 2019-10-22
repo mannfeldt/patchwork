@@ -54,11 +54,7 @@ class _TimeBoardTileState extends State<TimeBoardTile> {
         Player p = widget.players[i];
         Widget avatar = Padding(
           padding: EdgeInsets.fromLTRB(paddingLeft * i, 0, 0, 0),
-          child: Icon(
-            p.isAi ? Icons.android : Icons.person,
-            size: iconSize,
-            color: p.color,
-          ),
+          child: Text(p.pickedEmoji.emoji),
         );
         avatars.add(avatar);
       }

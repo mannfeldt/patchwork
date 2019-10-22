@@ -93,8 +93,8 @@ class GameState with ChangeNotifier {
     notifyListeners();
   }
 
-  void addPlayer(Emoji icon, String name, Color color, bool isAi) {
-    Player player = new Player(_players.length, icon, name, color, isAi);
+  void addPlayer(Emoji pickedEmoji, String name, Color color, bool isAi) {
+    Player player = new Player(_players.length, pickedEmoji, name, color, isAi);
     _players.add(player);
     notifyListeners();
   }
