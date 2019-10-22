@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:emoji_picker/emoji_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:patchwork/logic/bingoGameMechanics.dart';
 import 'package:patchwork/utilities/constants.dart';
@@ -92,8 +93,8 @@ class GameState with ChangeNotifier {
     notifyListeners();
   }
 
-  void addPlayer(String name, Color color, bool isAi) {
-    Player player = new Player(_players.length, name, color, isAi);
+  void addPlayer(Emoji icon, String name, Color color, bool isAi) {
+    Player player = new Player(_players.length, icon, name, color, isAi);
     _players.add(player);
     notifyListeners();
   }
@@ -116,33 +117,24 @@ class GameState with ChangeNotifier {
     _bottomHeight = screenHeight - (maxSize + (gameBoardInset * 1));
   }
 
-<<<<<<< Updated upstream
   void startQuickPlay(GameMode mode) {
-=======
-  void startQuickPlay() { //TODO should take a GameState mode as input
-    //TODO should have the switch like the startGame bellow
->>>>>>> Stashed changes
     Random rng = new Random();
     addPlayer(
-        "Player 1", playerColors[rng.nextInt(playerColors.length)], false);
+        playerEmojis[rng.nextInt(playerEmojis.length)], "Player 1", playerColors[rng.nextInt(playerColors.length)], false);
     List<Color> availablieColors =
         playerColors.where((c) => c != _players[0].color).toList();
-    addPlayer("Player 2",
+    addPlayer(playerEmojis[rng.nextInt(playerEmojis.length)], "Player 2",
         availablieColors[rng.nextInt(availablieColors.length)], false);
-<<<<<<< Updated upstream
     startGame(mode, false);
-=======
-    startGame(GameMode.CLASSIC, false); //TODO should be widget.gameMode
->>>>>>> Stashed changes
   }
 
   void startQuickBingoPlay() {
     Random rng = new Random();
-    addPlayer(
+    addPlayer(playerEmojis[rng.nextInt(playerEmojis.length)], 
         "Player 1", playerColors[rng.nextInt(playerColors.length)], false);
     List<Color> availablieColors =
     playerColors.where((c) => c != _players[0].color).toList();
-    addPlayer("Player 2",
+    addPlayer(playerEmojis[rng.nextInt(playerEmojis.length)], "Player 2",
         availablieColors[rng.nextInt(availablieColors.length)], false);
     startGame(GameMode.BINGO, false);
   }

@@ -1,3 +1,4 @@
+import 'package:emoji_picker/emoji_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:patchwork/models/square.dart';
 import 'package:patchwork/models/piece.dart';
@@ -79,6 +80,10 @@ final List<Color> playerColors = Colors.primaries;
 //   "OVER30": 0.3,
 //   "NONE": 0.0
 // };
+
+final List<Emoji> playerEmojis = {
+  '🐱', '🐷', '🐵', '😍', '🐼', '🍆', '🍑', '😄', '💩', '🤓', '😎'
+} as List<Emoji>;
 
 final List<List<String>> spicyPieces = [
   [

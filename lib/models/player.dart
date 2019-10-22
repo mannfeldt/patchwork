@@ -1,11 +1,14 @@
 import 'dart:io';
 
+import 'package:emoji_picker/emoji_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:patchwork/models/board.dart';
 import 'package:patchwork/models/score.dart';
 
+
 class Player {
   int id;
+  Emoji icon;
   String name;
   int buttons;
   int position;
@@ -19,8 +22,9 @@ class Player {
   bool screenShotted;
   File screenshot;
 
-  Player(int id, String name, Color color, bool isAi) {
+  Player(int id, Emoji icon, String name, Color color, bool isAi) {
     this.id = id;
+    this.icon = icon;
     this.name = name;
     this.color = color;
     this.isAi = isAi;

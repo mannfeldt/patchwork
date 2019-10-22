@@ -2,11 +2,13 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:patchwork/utilities/constants.dart';
+import 'package:patchwork/utilities/patchwork_icons_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:patchwork/logic/gamestate.dart';
 import 'package:flutter_colorpicker/block_picker.dart';
 import 'package:flutter_colorpicker/utils.dart';
 import 'package:patchwork/models/player.dart';
+import 'package:emoji_picker/emoji_picker.dart';
 
 class Setup extends StatefulWidget {
   final GameMode gameMode;
@@ -19,6 +21,7 @@ class Setup extends StatefulWidget {
 
 class SetupState extends State<Setup> {
   Color _pickerColor;
+  Emoji icon;
   TextEditingController nameController = TextEditingController();
   bool _isAi = false;
   bool _playTutorial;
@@ -49,172 +52,261 @@ class SetupState extends State<Setup> {
         ),
         body: Builder(
             builder: (context) => Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
+                  child: Stack(
                     children: <Widget>[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: <Widget>[
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Switch(
-                                activeColor: Colors.green.shade700,
-                                onChanged: _onSwitchChanged,
-                                value: _playTutorial ?? false,
-                              ),
-                              Text("Show Tutorial"),
-                            ],
-                          ),
-                          RaisedButton(
-                            color: buttonColor,
-                            onPressed: () {
-                              FocusScope.of(context)
-                                  .requestFocus(new FocusNode());
-                              Scaffold.of(context).hideCurrentSnackBar();
-                              if (players.length < minimumPlayers) {
-                                Scaffold.of(context).showSnackBar(SnackBar(
-                                    content: Text("Needs at least " +
-                                        minimumPlayers.toString() +
-                                        " players to start")));
-                              } else {
-                                gameState.startGame(
-                                    widget.gameMode, _playTutorial);
-                                Navigator.pop(context, null);
-                              }
+                      Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: MediaQuery.of(context).size.height * 0.15,
+                          child: ShaderMask(
+                            shaderCallback: (rect) {
+                              return LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [Colors.black, Colors.transparent],
+                              ).createShader(
+                                  Rect.fromLTRB(0, 0, rect.width, rect.height));
                             },
-                            child: Text(
-                              "Start",
-                              style: TextStyle(color: Colors.white),
+                            blendMode: BlendMode.dstIn,
+                            child: Image.asset(
+                              'assets/gameplay.gif',
+                              fit: BoxFit.fitWidth,
                             ),
-                          )
-                        ],
-                      ),
-                      new Padding(
-                        padding: const EdgeInsets.fromLTRB(2.0, 30.0, 0, 0),
-                        child: Text(
-                          "Add players",
-                          style: TextStyle(fontSize: 20),
-                        ),
-                      ),
-                      Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
-                        Expanded(
-                          child: new Padding(
-                            padding: const EdgeInsets.fromLTRB(2.0, 0, 0, 0),
-                            child: TextField(
-                              controller: nameController,
-                              maxLength: 12,
-                              decoration: InputDecoration(labelText: 'Name'),
-                            ),
+                          )),
+                          new Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 48),
                           ),
-                        ),
-                        Expanded(
-                          child: new Padding(
-                            padding: const EdgeInsets.fromLTRB(2.0, 0, 0, 0),
-                            child: new CheckboxListTile(
-                              value: _isAi,
-                              onChanged: _aiChanged,
-                              dense: true,
-                              secondary: new Icon(Icons.android),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                            child: Center(
-                          child: RaisedButton(
-                            elevation: 3.0,
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    title: Text('Select a color'),
-                                    content: SingleChildScrollView(
-                                      child: BlockPicker(
-                                        pickerColor: _pickerColor,
-                                        onColorChanged: changeColor,
-                                        availableColors: availableColors,
+                      Padding(
+                        padding: EdgeInsets.only(left: 16, right: 16, top: 4, bottom: 4),
+                        child: Column(
+                          children: <Widget>[
+                            Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  Expanded(
+                                    child: new Padding(
+                                      padding: const EdgeInsets.fromLTRB(2.0, 100.0, 0, 0),
+                                      child: Text(
+                                      "Add players",
+                                      style: TextStyle(fontSize: 30),
+                                    ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: new Padding(
+                                      padding:  const EdgeInsets.fromLTRB(2.0, 100.0, 0, 0),
+                                      child: SwitchListTile(
+                                        title: const Text("Show Tutorial"),
+                                        activeColor: Colors.green.shade700,
+                                        onChanged: _onSwitchChanged,
+                                        value: _playTutorial ?? false,
+                                        
+                                    ),
+                                    ),
+                                  ),
+                                ]),
+                            Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  Expanded(
+                                    child: new Padding(
+                                      padding:
+                                          const EdgeInsets.fromLTRB(2.0, 0, 0, 0),
+                                      child: TextField(
+                                        controller: nameController,
+                                        maxLength: 3,
+                                        decoration:
+                                            InputDecoration(labelText: 'Name'),
                                       ),
                                     ),
-                                  );
-                                },
-                              );
-                            },
-                            child: const Text('Color'),
-                            color: _pickerColor,
-                            textColor: useWhiteForeground(_pickerColor)
-                                ? const Color(0xffffffff)
-                                : const Color(0xff000000),
-                          ),
-                        ))
-                      ]),
-                      Row(
-                        children: <Widget>[
-                          Expanded(
-                              child: new Padding(
-                            padding:
-                                const EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 5.0),
-                            child: RaisedButton(
-                              onPressed: () {
-                                if (players.length >= maximumPlayers) {
-                                  Scaffold.of(context).hideCurrentSnackBar();
-                                  Scaffold.of(context).showSnackBar(SnackBar(
-                                      content:
-                                          Text("Can not add more players")));
-                                } else {
-                                  gameState.addPlayer(
-                                      nameController.text, _pickerColor, _isAi);
-                                  FocusScope.of(context)
-                                      .requestFocus(new FocusNode());
+                                  ),
+                                  Container(
+                                    child: Expanded(
+                                      child: new Padding(
+                                        padding: 
+                                          const EdgeInsets.fromLTRB(2.0, 0, 0, 0),
+                                          child: Container(
+                                            width: 20,
+                                            height: 40,
+                                            child: IconButton(
+                                              onPressed: () {
+                                                showDialog(
+                                                  context: context,
+                                                  builder: (BuildContext context) {
+                                                    return AlertDialog(
+                                                      title: Text('Select an emoji'),
+                                                      content: SingleChildScrollView(
+                                                        child: EmojiPicker(
+                                                          rows: 3,
+                                                          columns: 7,
+                                                          onEmojiSelected: (icon, category){
+                                                            print(icon);
+                                                          },
+                                                        ),
+                                                      ),
+                                                    );
+                                                  }
+                                                );
+                                              },
+                                              icon: Icon(Icons.person, color: Colors.yellow, size: 28),
+                                            ),
+                                          ),
 
-                                  nameController.clear();
-                                  _pickerColor = null;
+                                      ),
+                                    ),
+                                  ),
+                                  // Expanded(
+                                  //   child: new Padding(
+                                  //     padding:
+                                  //         const EdgeInsets.fromLTRB(2.0, 0, 0, 0),
+                                  //     child: new CheckboxListTile(
+                                  //       value: _isAi,
+                                  //       onChanged: _aiChanged,
+                                  //       dense: true,
+                                  //       secondary: new Icon(Icons.android),
+                                  //     ),
+                                  //   ),
+                                  // ),
+                                  Expanded(
+                                    child: RaisedButton(
+                                      elevation: 3.0,
+                                      onPressed: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: Text('Select a color'),
+                                              content: SingleChildScrollView(
+                                                child: BlockPicker(
+                                                  pickerColor: _pickerColor,
+                                                  onColorChanged: changeColor,
+                                                  availableColors:
+                                                      availableColors,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        );
+                                      },
+                                      child: const Text('Color'),
+                                      color: _pickerColor,
+                                      textColor: useWhiteForeground(_pickerColor)
+                                          ? const Color(0xffffffff)
+                                          : const Color(0xff000000),
+                                    )
+                                  ),
+                                  Expanded(
+                                    child: RaisedButton(
+                                      onPressed: () {
+                                        if (players.length >= maximumPlayers) {
+                                          Scaffold.of(context)
+                                              .hideCurrentSnackBar();
+                                          Scaffold.of(context).showSnackBar(
+                                              SnackBar(
+                                                  content: Text(
+                                                      "Can not add more players")));
+                                        } else {
+                                          gameState.addPlayer(icon, nameController.text,
+                                              _pickerColor, _isAi);
+                                          FocusScope.of(context)
+                                              .requestFocus(new FocusNode());
+
+                                          nameController.clear();
+                                          _pickerColor = null;
+                                        }
+                                      },
+                                      child: Text("Add"),
+                                    ))
+                                ]),
+                            Row(
+                              children: <Widget>[
+                                Expanded(
+                                    child: RaisedButton(
+                                      onPressed: () {
+                                        if (players.length >= maximumPlayers) {
+                                          Scaffold.of(context)
+                                              .hideCurrentSnackBar();
+                                          Scaffold.of(context).showSnackBar(
+                                              SnackBar(
+                                                  content: Text(
+                                                      "Can not add more players")));
+                                        } else {
+                                          gameState.addPlayer(icon, nameController.text,
+                                              _pickerColor, _isAi);
+                                          FocusScope.of(context)
+                                              .requestFocus(new FocusNode());
+
+                                          nameController.clear();
+                                          _pickerColor = null;
+                                        }
+                                      },
+                                      child: Text("Add"),
+                                    ))
+                              ],
+                            ),
+                            Expanded(
+                                child: Padding(
+                              padding:
+                                  const EdgeInsets.fromLTRB(5.0, 15.0, 5.0, 15.0),
+                              child: players != null
+                                  ? ListView.builder(
+                                      itemCount: players.length,
+                                      itemBuilder: (context, index) {
+                                        final player = players[index];
+                                        return Dismissible(
+                                          key: Key(player.id.toString()),
+                                          onDismissed: (direction) {
+                                            gameState.removePlayer(player);
+                                            Scaffold.of(context)
+                                                .hideCurrentSnackBar();
+                                            Scaffold.of(context).showSnackBar(
+                                                SnackBar(
+                                                    content: Text(player.name +
+                                                        " removed")));
+                                          },
+                                          background: Container(
+                                              color: Colors.deepOrange.shade300),
+                                          child: ListTile(
+                                            title: Text(player.name),
+                                            leading: Icon(
+                                                player.isAi
+                                                    ? Icons.android
+                                                    : icon,
+                                                color: player.color),
+                                          ),
+                                        );
+                                      },
+                                    )
+                                  : Text("No players",
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          height: 8,
+                                          color: Colors.grey)),
+                            )),
+                            RaisedButton(
+                              color: buttonColor,
+                              onPressed: () {
+                                FocusScope.of(context)
+                                    .requestFocus(new FocusNode());
+                                Scaffold.of(context).hideCurrentSnackBar();
+                                if (players.length < minimumPlayers) {
+                                  Scaffold.of(context).showSnackBar(SnackBar(
+                                      content: Text("Needs at least " +
+                                          minimumPlayers.toString() +
+                                          " players to start")));
+                                } else {
+                                  gameState.startGame(
+                                      widget.gameMode, _playTutorial);
+                                  Navigator.pop(context, null);
                                 }
                               },
-                              child: Text("Add"),
-                            ),
-                          ))
-                        ],
+                              child: Text(
+                                "Start",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            )
+                          ],
+                        ),
                       ),
-                      Expanded(
-                          child: Padding(
-                        padding:
-                            const EdgeInsets.fromLTRB(5.0, 15.0, 5.0, 15.0),
-                        child: players != null
-                            ? ListView.builder(
-                                itemCount: players.length,
-                                itemBuilder: (context, index) {
-                                  final player = players[index];
-                                  return Dismissible(
-                                    key: Key(player.id.toString()),
-                                    onDismissed: (direction) {
-                                      gameState.removePlayer(player);
-                                      Scaffold.of(context)
-                                          .hideCurrentSnackBar();
-                                      Scaffold.of(context).showSnackBar(
-                                          SnackBar(
-                                              content: Text(
-                                                  player.name + " removed")));
-                                    },
-                                    background: Container(
-                                        color: Colors.deepOrange.shade300),
-                                    child: ListTile(
-                                      title: Text(player.name),
-                                      leading: Icon(
-                                          player.isAi
-                                              ? Icons.android
-                                              : Icons.person,
-                                          color: player.color),
-                                    ),
-                                  );
-                                },
-                              )
-                            : Text("No players",
-                                style: TextStyle(
-                                    fontSize: 16,
-                                    height: 8,
-                                    color: Colors.grey)),
-                      ))
                     ],
                   ),
                 )));
@@ -226,6 +318,11 @@ class SetupState extends State<Setup> {
 
   void changeColor(Color value) {
     setState(() => _pickerColor = value);
+    Navigator.pop(context, null);
+  }
+
+  void changeIcon(Emoji icon) {
+    setState(() => icon = icon);
     Navigator.pop(context, null);
   }
 
