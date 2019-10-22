@@ -1,8 +1,8 @@
+import 'dart:ui';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:patchwork/components/gameBoard.dart';
 import 'package:patchwork/components/newHighscoreTable.dart';
-import 'package:patchwork/components/scoreBubbles.dart';
 import 'package:patchwork/logic/highscoreState.dart';
 import 'package:patchwork/models/highscore.dart';
 import 'package:patchwork/models/player.dart';
@@ -37,7 +37,6 @@ class _EndScreenState extends State<EndScreen> {
     players.sort((a, b) => b.score.compareTo(a.score));
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      //int nextPlayerIndex = sessionState.getNextPlayerToCheckHIghscore();
       bool isShowingNewHighscore = highscoreState.isShowingNewHighscore();
       for (int i = 0; i < players.length; i++) {
         Timeframe newHighscoreTimeFrame =
@@ -46,9 +45,7 @@ class _EndScreenState extends State<EndScreen> {
           List<Highscore> highscores =
               highscoreState.getHighscores(newHighscoreTimeFrame, gameMode);
           Highscore newHighscore = new Highscore(players[i], highscores.length);
-          // if (highscores.any((h) => newHighscore.isSameAs(h))) {
-          //   continue;
-          // }
+
           if (highscores.length == highscoreLimit) {
             highscores[highscoreLimit - 1] = newHighscore;
           } else {
@@ -61,40 +58,47 @@ class _EndScreenState extends State<EndScreen> {
             context: context,
             barrierDismissible: false,
             builder: (BuildContext context) {
-              return Dialog(
-                  child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    //någon snygg default backgrund för fadeimage.assetnetwork? lägg någon random bild från nåot spel där? eller bara en place holder om är en gif? kan jag ha en gif här förresten? vore coolt
-                    //! ta fram en gif som bara är för en spelare. cropa så det bara är gameboard som syns. tänk på att gömma recording ikonen.
-                    //! tillfälligt stäng av animationer för buttons? men animation för lootbox får vara kvar.
-                    //! lägg till 1000 buttons att börja med så att det inte blir ett problem. gör banan också extra lång, jag kan avsluta när jag är nöjd då och klippa i videon
-                    //! testa göra det lite i slowmotion för jag kan ändå speeda upp det och vill
-                    //! kan bli lite jobbigt för ögat att ha två giffar spelandes samtiidgt? det jobbiga är speeden och att det är två spelare istället för en.
-                    //! om det inte går att spela med en spelare så klipp bort den andra spelaren bara.
-                    //! ha en rätt hög men jämn opacity
-                    //! ett alt är att man behöver kliicka för att starta gifen? det är först den färdiga boardet som visas som stillbild sen när man klickar så körs gifen en loop?
-                    //! ha någon förklarande ikon över bilden så att man förstår att det inte handlar om att man startar något spel utan bara gifen?
-                    //! men börja med att ta fram gifs och se hur de ser ut
+              return BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+                child: Dialog(
+                    child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
 
-                    //! snygga till endscreen och newhighscreotable också. leaberboard.dart är jag nöjd med. kör på samma ty pav design. fast skipp kanske datum etc
-                    // 3.5 fixa till highscoreknappen? hur vill jag faktiskt ha den? som den är fast med en bättre ikon? text och ikon?
-                    // 4. lägg tillbaka alla fixar för att testa helhelten (autoscroll timeboard, pieces, timeboard classic finishindex, calculatescore)
-                    child: Text(
-                      "${timeFrameName[newHighscoreTimeFrame]} new highscore",
-                      style: TextStyle(fontSize: 20),
+//TODO
+//testa allt och pusha ovanstående
+//5. fixa leaderboard knappen i mainmenu. fixa en paktiskt bra ikon eller lös på annat sätt?
+//7. pusha och bygg till play store
+//8. kolla över vad jag ska prioritera next, snyggare setup.dart. (ta bort isandroid, lägg till emoji-picker som blir spelpjäs: det sparas som en textsträng. behöver bara ha någon validering så att man bara kan välja emoji)
+//alt1. ha ett vanligt textfält med patternvalidering som måste vara unicode för emojis. användaren använder keybord emojis
+//alt2 jag väljer ut en lista med godkända emojis/unicodes som man kan välja mellan. eller om jag kan hämta ut det från någon api eller liknande?selectbox?
+//alt3. https://pub.dev/packages/emoji_picker https://stackoverflow.com/questions/44936239/displaying-text-with-emojis-on-flutter
+//försökt med alt 3 först. ANNARS alt 2 med en gridlist över massa emojis
+//får inte ta någon som redan funnits.
+//spara detta till highscore tillsammans med ett 3 bokstäverl långt namn.
+//i setup så playername kan jag skita i? ersätts med emoji.
+//quickstart ska tilldelas en random emoji
+
+//kolla på personliga/lokala rekord. spara bara en siffra i bakgrunden till prefernces. en per mode "local_highscore_bingo" = "30"
+//updatera den vid nytt avslutat spel om det är högre. möjligen en dialog.simpleannouncement för att meddela detta.
+//se taiga för bättre hantering när jag väl fått in firebase users. då kan jag spara personliga highscore kopplat till users med bild och allt och visa upp på snyggt vis.
+
+                      child: Text(
+                        "${timeFrameName[newHighscoreTimeFrame]} new highscore",
+                        style: TextStyle(fontSize: 20),
+                      ),
                     ),
-                  ),
-                  NewHighscoreTable(
-                    highscores: highscores,
-                    player: players[i],
-                    callbackSaveHighscore: _saveHighscore,
-                    newHighscore: newHighscore,
-                  ),
-                ],
-              ));
+                    NewHighscoreTable(
+                      highscores: highscores,
+                      player: players[i],
+                      callbackSaveHighscore: _saveHighscore,
+                      newHighscore: newHighscore,
+                    ),
+                  ],
+                )),
+              );
             },
           );
         }
@@ -106,7 +110,7 @@ class _EndScreenState extends State<EndScreen> {
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
         Padding(
-          padding: const EdgeInsets.fromLTRB(25.0, 25.0, 25.0, 25.0),
+          padding: const EdgeInsets.fromLTRB(25.0, 50.0, 25.0, 25.0),
           child: Text(
             "Game finished",
             style: TextStyle(fontSize: 28.0),

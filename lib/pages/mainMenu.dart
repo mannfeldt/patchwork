@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:patchwork/components/gameModeCard.dart';
 import 'package:patchwork/logic/gamestate.dart';
-import 'package:patchwork/logic/highscoreState.dart';
 import 'package:patchwork/pages/leaderboardScreen.dart';
-import 'package:patchwork/pages/setup.dart';
 import 'package:patchwork/utilities/constants.dart';
 import 'package:patchwork/utilities/patchwork_icons_icons.dart';
 import 'package:provider/provider.dart';
@@ -12,7 +10,6 @@ class MainMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final gameState = Provider.of<GameState>(context);
-    final highscoreState = Provider.of<HighscoreState>(context);
 
     return Center(
       child: Stack(children: <Widget>[
@@ -58,8 +55,8 @@ class MainMenu extends StatelessWidget {
               ),
             ),
             GameModeCard(
-              backgroundImageSrc:
-                  highscoreState.getBackgroundImage(GameMode.CLASSIC),
+              backgroundImage: "assets/classic_screenshot.gif",
+              bakgroundVideo: "assets/classic_gameplay.gif",
               gameMode: GameMode.CLASSIC,
               title: "Classic",
               subtitle:
@@ -67,8 +64,8 @@ class MainMenu extends StatelessWidget {
               quickplayCallback: gameState.startQuickPlay,
             ),
             GameModeCard(
-              backgroundImageSrc:
-                  highscoreState.getBackgroundImage(GameMode.BINGO),
+              backgroundImage: "assets/bingo_screenshot.gif",
+              bakgroundVideo: "assets/bingo_gameplay.gif",
               gameMode: GameMode.BINGO,
               title: "Bingo",
               subtitle:

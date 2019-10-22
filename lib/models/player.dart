@@ -30,7 +30,7 @@ class Player {
     this.isAi = isAi;
     this.state = "waiting";
     this.position = 0;
-    this.buttons = 300;//återsältt till 5
+    this.buttons = 5;
     this.hasSevenBySeven = false;
     this.board = new Board(this);
     this.bingos = [];

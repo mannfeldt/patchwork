@@ -41,16 +41,13 @@ class HomePage extends StatelessWidget {
     }
     final view = gameState.getView();
     Widget child;
-    bool showAppBar = true;
     if (view == null) {
       child = MainMenu();
     } else if (view == "gameplay") {
       child = ShowCaseWidget(
           builder: Builder(builder: (context) => SafeArea(child: Gameplay())));
-      showAppBar = false;
     } else if (view == "finished") {
       child = EndScreen();
-      showAppBar = false;
     } else {
       child = Text("Loading...");
     }

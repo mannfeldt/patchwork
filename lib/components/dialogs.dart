@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:patchwork/models/announcement.dart';
 
@@ -26,9 +28,12 @@ class Dialogs {
             onTap: () {
               Navigator.pop(context);
             },
-            child: SimpleDialog(
-              title: announcement.content,
-              titlePadding: EdgeInsets.all(30.0),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+              child: SimpleDialog(
+                title: announcement.content,
+                titlePadding: EdgeInsets.all(30.0),
+              ),
             ));
       },
     );
@@ -40,18 +45,21 @@ class Dialogs {
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          title: Text(announcement.title),
-          content: announcement.content,
-          actions: <Widget>[
-            FlatButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Ok'),
+        return BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+          child: AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
             ),
-          ],
+            title: Text(announcement.title),
+            content: announcement.content,
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Ok'),
+              ),
+            ],
+          ),
         );
       },
     );
@@ -63,27 +71,30 @@ class Dialogs {
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-          title: Text(announcement.title),
-          content: announcement.content,
-          actions: <Widget>[
-            FlatButton(
-              onPressed: () => Navigator.of(context).pop(DialogAction.abort),
-              child: const Text('No'),
+        return BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+          child: AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
             ),
-            RaisedButton(
-              onPressed: () => Navigator.of(context).pop(DialogAction.yes),
-              child: const Text(
-                'Yes',
-                style: TextStyle(
-                  color: Colors.white,
+            title: Text(announcement.title),
+            content: announcement.content,
+            actions: <Widget>[
+              FlatButton(
+                onPressed: () => Navigator.of(context).pop(DialogAction.abort),
+                child: const Text('No'),
+              ),
+              RaisedButton(
+                onPressed: () => Navigator.of(context).pop(DialogAction.yes),
+                child: const Text(
+                  'Yes',
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         );
       },
     );

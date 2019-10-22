@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:patchwork/utilities/constants.dart';
@@ -171,14 +172,17 @@ class SetupState extends State<Setup> {
                                         showDialog(
                                           context: context,
                                           builder: (BuildContext context) {
-                                            return AlertDialog(
-                                              title: Text('Select a color'),
-                                              content: SingleChildScrollView(
-                                                child: BlockPicker(
-                                                  pickerColor: _pickerColor,
-                                                  onColorChanged: changeColor,
-                                                  availableColors:
-                                                      availableColors,
+                                            return BackdropFilter(
+                                              filter:
+                                                  ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+                                              child: AlertDialog(
+                                                title: Text('Select a color'),
+                                                content: SingleChildScrollView(
+                                                  child: BlockPicker(
+                                                    pickerColor: _pickerColor,
+                                                    onColorChanged: changeColor,
+                                                    availableColors: availableColors,
+                                                  ),
                                                 ),
                                               ),
                                             );
