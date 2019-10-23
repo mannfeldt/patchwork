@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:emoji_picker/emoji_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:patchwork/logic/bingoGameMechanics.dart';
 import 'package:patchwork/utilities/constants.dart';
@@ -91,8 +92,8 @@ class GameState with ChangeNotifier {
     notifyListeners();
   }
 
-  void addPlayer(String name, Color color, bool isAi) {
-    Player player = new Player(_players.length, name, color, isAi);
+  void addPlayer(Emoji pickedEmoji, String name, Color color, bool isAi) {
+    Player player = new Player(_players.length, pickedEmoji, name, color, isAi);
     _players.add(player);
     notifyListeners();
   }
@@ -118,12 +119,23 @@ class GameState with ChangeNotifier {
   void startQuickPlay(GameMode mode) {
     Random rng = new Random();
     addPlayer(
-        "Player 1", playerColors[rng.nextInt(playerColors.length)], false);
+        playerEmojis[rng.nextInt(playerEmojis.length)], "Player 1", playerColors[rng.nextInt(playerColors.length)], false);
     List<Color> availablieColors =
         playerColors.where((c) => c != _players[0].color).toList();
-    addPlayer("Player 2",
+    addPlayer(playerEmojis[rng.nextInt(playerEmojis.length)], "Player 2",
         availablieColors[rng.nextInt(availablieColors.length)], false);
     startGame(mode, false);
+  }
+
+  void startQuickBingoPlay() {
+    Random rng = new Random();
+    addPlayer(playerEmojis[rng.nextInt(playerEmojis.length)], 
+        "Player 1", playerColors[rng.nextInt(playerColors.length)], false);
+    List<Color> availablieColors =
+    playerColors.where((c) => c != _players[0].color).toList();
+    addPlayer(playerEmojis[rng.nextInt(playerEmojis.length)], "Player 2",
+        availablieColors[rng.nextInt(availablieColors.length)], false);
+    startGame(GameMode.BINGO, false);
   }
 
   void startGame(GameMode mode, bool playTutorial) {
