@@ -153,18 +153,6 @@ class SetupState extends State<Setup> {
                                       ),
                                     ),
                                   ),
-                                  // Expanded(
-                                  //   child: new Padding(
-                                  //     padding:
-                                  //         const EdgeInsets.fromLTRB(2.0, 0, 0, 0),
-                                  //     child: new CheckboxListTile(
-                                  //       value: _isAi,
-                                  //       onChanged: _aiChanged,
-                                  //       dense: true,
-                                  //       secondary: new Icon(Icons.android),
-                                  //     ),
-                                  //   ),
-                                  // ),
                                   Expanded(
                                     child: RaisedButton(
                                       elevation: 3.0,
