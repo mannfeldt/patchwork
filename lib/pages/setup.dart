@@ -4,7 +4,6 @@ import 'dart:ui';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:patchwork/utilities/constants.dart';
-import 'package:patchwork/utilities/patchwork_icons_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:patchwork/logic/gamestate.dart';
 import 'package:flutter_colorpicker/block_picker.dart';

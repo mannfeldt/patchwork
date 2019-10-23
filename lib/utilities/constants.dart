@@ -1,4 +1,3 @@
-import 'package:emoji_picker/emoji_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:patchwork/models/square.dart';
 import 'package:patchwork/models/piece.dart';
@@ -60,7 +59,6 @@ final List<String> pieceImages = [
   "orange_sunflowers.jpg",
   "orange_tile.png",
   "purple_cross.jpg",
-  "sun.png",
   "yellow_flower.jpg"
 ];
 final String singlePiece = "sun.png";
@@ -71,15 +69,6 @@ final List<Color> pieceColors = [
   Colors.deepOrange
 ];
 final List<Color> playerColors = Colors.primaries;
-// final Map<String, double> costAdjustments = {
-//   "SALE30": -0.3,
-//   "SALE20": -0.2,
-//   "SALE10": -0.1,
-//   "OVER10": 0.1,
-//   "OVER20": 0.2,
-//   "OVER30": 0.3,
-//   "NONE": 0.0
-// };
 
 final List<String> playerEmojis = [
   '🐱',

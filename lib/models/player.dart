@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:emoji_picker/emoji_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:patchwork/models/board.dart';
 import 'package:patchwork/models/score.dart';

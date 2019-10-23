@@ -109,8 +109,6 @@ class _EndScreenState extends State<EndScreen> {
             },
             itemBuilder: (context, index) {
               final player = players[index];
-              int ranking = highscoreState.getAllTimeRanking(
-                  gameMode, player.score.total);
               int totalScore = player.score.total;
               return ListTile(
                 leading: Image.file(player.screenshot),
