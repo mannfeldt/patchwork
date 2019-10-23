@@ -31,7 +31,7 @@ class _LeaderboardState extends State<Leaderboard> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 32),
       child: ListView.separated(
-        itemCount: widget.highscores.length,
+        itemCount: 5,
         shrinkWrap: true,
         separatorBuilder: (context, index) {
           return Divider(
@@ -39,6 +39,31 @@ class _LeaderboardState extends State<Leaderboard> {
           );
         },
         itemBuilder: (context, index) {
+          if (index + 1 > widget.highscores.length) {
+            return ListTile(
+              leading: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Container(
+                      padding: EdgeInsets.only(right: 24),
+                      child: Text(
+                        (index + 1).toString(),
+                        style: TextStyle(fontSize: 20, color: Colors.blue),
+                      )),
+                  Image.asset("assets/transparent.png")
+                ],
+              ),
+              title: Text(
+                "-",
+                style: TextStyle(
+                    fontSize: 20,
+                    letterSpacing: 1.5,
+                    fontWeight: FontWeight.w400),
+              ),
+              subtitle: Text(" "),
+              trailing: Text("-"),
+            );
+          }
           Highscore highscore = widget.highscores[index];
           int totalScore = highscore.getTotal();
           return ListTile(
@@ -55,13 +80,12 @@ class _LeaderboardState extends State<Leaderboard> {
                   image: highscore.thumbnail,
                   fadeOutDuration: Duration(milliseconds: 200),
                   fadeInDuration: Duration(milliseconds: 400),
-                  placeholder:
-                      "assets/transparent.png",
+                  placeholder: "assets/transparent.png",
                 ),
               ],
             ),
             title: Text(
-              highscore.name,
+              highscore.emoji + " " + highscore.name,
               style: TextStyle(
                   fontSize: 20,
                   letterSpacing: 1.5,

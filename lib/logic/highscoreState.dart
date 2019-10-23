@@ -66,6 +66,7 @@ class HighscoreState with ChangeNotifier {
       'mode': highscore.mode,
       'screenshot': highscore.screenshot,
       'thumbnail': highscore.thumbnail,
+      'emoji': highscore.emoji,
     }).then(
         (
           onValue,

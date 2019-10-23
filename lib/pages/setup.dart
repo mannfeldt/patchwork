@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:patchwork/utilities/constants.dart';
 import 'package:patchwork/utilities/patchwork_icons_icons.dart';
@@ -23,7 +24,7 @@ class Setup extends StatefulWidget {
 class SetupState extends State<Setup> {
   Random rng = new Random();
   Color _pickerColor;
-  Emoji _pickedEmoji;
+  String _pickedEmoji;
   TextEditingController nameController = TextEditingController();
   bool _isAi = false;
   bool _playTutorial;
@@ -48,8 +49,8 @@ class SetupState extends State<Setup> {
       _pickerColor = availableColors[rng.nextInt(availableColors.length)];
     }
 
-    List<Emoji> usedEmojis = players.map((p) => p.pickedEmoji).toList();
-    List<Emoji> availableEmojis = playerEmojis
+    List<String> usedEmojis = players.map((p) => p.emoji).toList();
+    List<String> availableEmojis = playerEmojis
         .where((pickedEmoji) => !usedEmojis.contains(pickedEmoji))
         .toList();
     if (_pickedEmoji == null) {
@@ -127,7 +128,7 @@ class SetupState extends State<Setup> {
                                       const EdgeInsets.fromLTRB(2.0, 0, 0, 0),
                                   child: TextField(
                                     controller: nameController,
-                                    maxLength: 3,
+                                    maxLength: 12,
                                     decoration:
                                         InputDecoration(labelText: 'Name'),
                                   ),
@@ -154,15 +155,33 @@ class SetupState extends State<Setup> {
                                                     (BuildContext context) {
                                                   return BackdropFilter(
                                                     filter: ImageFilter.blur(
-                                                    sigmaX: 4, sigmaY: 4),
+                                                        sigmaX: 4, sigmaY: 4),
                                                     child: AlertDialog(
-                                                      title:
-                                                          Text('Select an emoji'),
+                                                      contentPadding:
+                                                          EdgeInsets.all(0),
+                                                      title: Text(
+                                                          'Select your emoji'),
                                                       content:
                                                           SingleChildScrollView(
-                                                            child: EmojiPicker(
-                                                              onEmojiSelected: changeEmoji),
-                                                          ),
+                                                        dragStartBehavior:
+                                                            DragStartBehavior
+                                                                .start,
+                                                        scrollDirection:
+                                                            Axis.horizontal,
+                                                        child: Column(
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
+                                                          children: <Widget>[
+                                                            EmojiPicker(
+                                                                rows: 4,
+                                                                columns: 8,
+                                                                bgColor: Colors
+                                                                    .transparent,
+                                                                onEmojiSelected:
+                                                                    changeEmoji),
+                                                          ],
+                                                        ),
+                                                      ),
                                                     ),
                                                   );
                                                 });
@@ -170,7 +189,7 @@ class SetupState extends State<Setup> {
                                           textColor: Colors.blue,
                                           borderSide:
                                               BorderSide(color: Colors.blue),
-                                          child: Text(_pickedEmoji.emoji),
+                                          child: Text(_pickedEmoji),
                                         ),
                                       ),
                                       RaisedButton(
@@ -231,8 +250,8 @@ class SetupState extends State<Setup> {
                                           }
                                         },
                                         textColor: Colors.blue,
-                                          borderSide:
-                                              BorderSide(color: Colors.blue),
+                                        borderSide:
+                                            BorderSide(color: Colors.blue),
                                         child: Text("Add"),
                                       )
                                     ])),
@@ -257,16 +276,30 @@ class SetupState extends State<Setup> {
                                                 .hideCurrentSnackBar();
                                             Scaffold.of(context).showSnackBar(
                                                 SnackBar(
-                                                    content: Text(player.name +
-                                                        " removed")));
+                                                    content: Text(
+                                                        '${player.displayname} removed')));
                                           },
                                           background: Container(
                                               color:
                                                   Colors.deepOrange.shade300),
-                                          child: ListTile(
-                                            title: Text(player.name),
-                                            leading:
-                                                Text(player.pickedEmoji.emoji),
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                                gradient: LinearGradient(
+                                              begin: Alignment.centerLeft,
+                                              end: Alignment.centerRight,
+                                              stops: [0, 0.25, 0.5, 0.75, 1],
+                                              colors: [
+                                                player.color.withOpacity(0),
+                                                player.color.withOpacity(0.4),
+                                                player.color.withOpacity(0.5),
+                                                player.color.withOpacity(0.4),
+                                                player.color.withOpacity(0)
+                                              ],
+                                            )),
+                                            child: ListTile(
+                                              title: Text(player.name),
+                                              leading: Text(player.emoji),
+                                            ),
                                           ),
                                         );
                                       },
@@ -317,7 +350,7 @@ class SetupState extends State<Setup> {
   }
 
   void changeEmoji(Emoji value, var category) {
-    setState(() => _pickedEmoji = value);
+    setState(() => _pickedEmoji = value.emoji);
     Navigator.pop(context, null);
   }
 

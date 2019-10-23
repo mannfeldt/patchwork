@@ -66,25 +66,6 @@ class _EndScreenState extends State<EndScreen> {
                   children: <Widget>[
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-
-//TODO
-//testa allt och pusha ovanstående
-//5. fixa leaderboard knappen i mainmenu. fixa en paktiskt bra ikon eller lös på annat sätt?
-//7. pusha och bygg till play store
-//8. kolla över vad jag ska prioritera next, snyggare setup.dart. (ta bort isandroid, lägg till emoji-picker som blir spelpjäs: det sparas som en textsträng. behöver bara ha någon validering så att man bara kan välja emoji)
-//alt1. ha ett vanligt textfält med patternvalidering som måste vara unicode för emojis. användaren använder keybord emojis
-//alt2 jag väljer ut en lista med godkända emojis/unicodes som man kan välja mellan. eller om jag kan hämta ut det från någon api eller liknande?selectbox?
-//alt3. https://pub.dev/packages/emoji_picker https://stackoverflow.com/questions/44936239/displaying-text-with-emojis-on-flutter
-//försökt med alt 3 först. ANNARS alt 2 med en gridlist över massa emojis
-//får inte ta någon som redan funnits.
-//spara detta till highscore tillsammans med ett 3 bokstäverl långt namn.
-//i setup så playername kan jag skita i? ersätts med emoji.
-//quickstart ska tilldelas en random emoji
-
-//kolla på personliga/lokala rekord. spara bara en siffra i bakgrunden till prefernces. en per mode "local_highscore_bingo" = "30"
-//updatera den vid nytt avslutat spel om det är högre. möjligen en dialog.simpleannouncement för att meddela detta.
-//se taiga för bättre hantering när jag väl fått in firebase users. då kan jag spara personliga highscore kopplat till users med bild och allt och visa upp på snyggt vis.
-
                       child: Text(
                         "${timeFrameName[newHighscoreTimeFrame]} new highscore",
                         style: TextStyle(fontSize: 20),
@@ -134,7 +115,7 @@ class _EndScreenState extends State<EndScreen> {
               return ListTile(
                 leading: Image.file(player.screenshot),
                 title: Text(
-                  player.name,
+                  player.displayname,
                   style: TextStyle(
                       fontSize: 20,
                       letterSpacing: 1.5,
@@ -151,12 +132,14 @@ class _EndScreenState extends State<EndScreen> {
             },
           ),
         )),
-        RaisedButton(
+        OutlineButton(
           onPressed: () {
             gameState.restartApp();
           },
-          child: Text("Main menu"),
-        )
+          textColor: Colors.blue,
+          borderSide: BorderSide(color: Colors.blue),
+          child: Text("Continue"),
+        ),
       ],
     ));
   }

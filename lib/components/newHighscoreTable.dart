@@ -21,7 +21,10 @@ class _NewHighscoreTableState extends State<NewHighscoreTable> {
   TextEditingController nameController = new TextEditingController();
   @override
   void initState() {
-    nameController.text = widget.newHighscore.name;
+    String playerName = widget.newHighscore.name.toUpperCase();
+    playerName =
+        playerName.length > 3 ? playerName.substring(0, 3) : playerName;
+    nameController.text = playerName;
 
     super.initState();
   }
@@ -68,7 +71,8 @@ class _NewHighscoreTableState extends State<NewHighscoreTable> {
                   title: highscore.isNew
                       ? TextField(
                           controller: nameController,
-                          maxLength: 12,
+                          textCapitalization: TextCapitalization.characters,
+                          maxLength: 3,
                           style: TextStyle(
                               fontSize: 20,
                               letterSpacing: 1.5,
@@ -113,8 +117,14 @@ class _NewHighscoreTableState extends State<NewHighscoreTable> {
                 textColor: Colors.white,
                 onPressed: () async {
                   if (widget.callbackSaveHighscore != null) {
-                    await widget.callbackSaveHighscore(widget.newHighscore,
-                        nameController.text, widget.player);
+                    if (nameController.text.length < 3) {
+                      Scaffold.of(context).hideCurrentSnackBar();
+                      Scaffold.of(context).showSnackBar(SnackBar(
+                          content: Text("Name needs to be 3 characters long")));
+                    } else {
+                      await widget.callbackSaveHighscore(widget.newHighscore,
+                          nameController.text, widget.player);
+                    }
                   }
                   Navigator.of(context).pop();
                 },

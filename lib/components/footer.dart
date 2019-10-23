@@ -28,7 +28,10 @@ class Footer extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(children: <Widget>[
-                Text(currentPlayer.pickedEmoji.emoji),
+                Text(
+                  currentPlayer.emoji,
+                  style: TextStyle(fontSize: 22),
+                ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(5.0, 0, 0, 0),
                   child: Text(

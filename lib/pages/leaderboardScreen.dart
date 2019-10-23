@@ -51,17 +51,12 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
         timeframe: selectedTimeframe,
       );
 
-      //används för att visa om currentPlayer är med i
     }
     return Center(
       child: Column(
         children: <Widget>[
-          Text(
-            "Leaderboard",
-            style: TextStyle(fontSize: 28),
-          ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.fromLTRB(8,16,8,8),
             child: ToggleButtons(
               children: [
                 Text("Classic"),
@@ -107,7 +102,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
               isSelected: isSelectedTime,
             ),
           ),
-          tableWidget
+          tableWidget //kan animera med slideTransiton eller kanske Transform. eller skapa upp alla highscore tabeller redan innan och lägga dem i en indexedStack som animeras
         ],
       ),
     );

@@ -58,11 +58,7 @@ class _ButtonAnimationState extends State<ButtonAnimation>
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Icon(
-              widget.player.isAi ? Icons.android : Icons.person,
-              color: widget.player.color,
-            ),
-            Text(widget.player.name),
+            Text(widget.player.displayname),
           ],
         ),
         Row(

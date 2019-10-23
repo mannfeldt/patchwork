@@ -5,10 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:patchwork/models/board.dart';
 import 'package:patchwork/models/score.dart';
 
-
 class Player {
   int id;
-  Emoji pickedEmoji;
+  String emoji;
   String name;
   int buttons;
   int position;
@@ -22,9 +21,9 @@ class Player {
   bool screenShotted;
   File screenshot;
 
-  Player(int id, Emoji pickedEmoji, String name, Color color, bool isAi) {
+  Player(int id, String emoji, String name, Color color, bool isAi) {
     this.id = id;
-    this.pickedEmoji = pickedEmoji;
+    this.emoji = emoji;
     this.name = name;
     this.color = color;
     this.isAi = isAi;
@@ -36,4 +35,6 @@ class Player {
     this.bingos = [];
     this.screenShotted = false;
   }
+
+  String get displayname => '${this.emoji} ${this.name}';
 }

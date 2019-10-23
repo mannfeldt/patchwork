@@ -1,34 +1,34 @@
 {
   "project_info": {
-    "project_number": "282801487724",
-    "firebase_url": "https://patchwork-dev.firebaseio.com",
-    "project_id": "patchwork-dev",
-    "storage_bucket": "patchwork-dev.appspot.com"
+    "project_number": "470084694389",
+    "firebase_url": "https://patchwork-prod.firebaseio.com",
+    "project_id": "patchwork-prod",
+    "storage_bucket": "patchwork-prod.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:282801487724:android:86a2e3381ec1b36d717d49",
+        "mobilesdk_app_id": "1:470084694389:android:41ee043ee741e96e30e33c",
         "android_client_info": {
           "package_name": "mannfeldt.patchwork"
         }
       },
       "oauth_client": [
         {
-          "client_id": "282801487724-b4c15m1o62mp4mqfn9ik8kfgf3a5r0fe.apps.googleusercontent.com",
+          "client_id": "470084694389-4bsr0bntvgtj4usjeoul3s6phhti13lu.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyC1RKjk7rBinCWdDA0m_z_tSTqT7Dnwp0I"
+          "current_key": "AIzaSyBFpcrx--vHmRW9oC8tyNDcbCG_woY3td4"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "282801487724-b4c15m1o62mp4mqfn9ik8kfgf3a5r0fe.apps.googleusercontent.com",
+              "client_id": "470084694389-4bsr0bntvgtj4usjeoul3s6phhti13lu.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
