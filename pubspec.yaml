@@ -34,6 +34,7 @@ dependencies:
   firebase_auth: ^0.14.0+5
   image: ^2.1.4
   emoji_picker: ^0.0.2
+  flutter_emoji: ^2.1.0
 
 
 

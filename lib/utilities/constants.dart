@@ -81,9 +81,20 @@ final List<Color> playerColors = Colors.primaries;
 //   "NONE": 0.0
 // };
 
-final List<Emoji> playerEmojis = {
-  '🐱', '🐷', '🐵', '😍', '🐼', '🍆', '🍑', '😄', '💩', '🤓', '😎'
-} as List<Emoji>;
+final List<Emoji> playerEmojis = [
+  Emoji(emoji: '🐱', name: 'Cat Face'),
+  Emoji(emoji: '🐷', name: 'Pig Face'),
+  Emoji(emoji: '🐵', name: 'Monkey Face'),
+  Emoji(emoji: '😍', name: 'Smiling Face With Heart-Eyes'),
+  Emoji(emoji: '🐼', name: 'Panda Face'),
+  Emoji(emoji: '🍆', name: 'Eggplant'),
+  Emoji(emoji: '🍑', name: 'Peach'),
+  Emoji(emoji: '😄', name: 'Grinning Face With Smiling Eyes'),
+  Emoji(emoji: '💩', name: 'Pile of Poo'),
+  Emoji(emoji: '🤓', name: 'Nerd Face'),
+  Emoji(emoji: '😎', name: 'Smiling Face With Sunglasses')
+ ];
+
 
 final List<List<String>> spicyPieces = [
   [

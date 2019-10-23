@@ -21,8 +21,9 @@ class Setup extends StatefulWidget {
 }
 
 class SetupState extends State<Setup> {
+  Random rng = new Random();
   Color _pickerColor;
-  Emoji pickedEmoji;
+  Emoji _pickedEmoji;
   TextEditingController nameController = TextEditingController();
   bool _isAi = false;
   bool _playTutorial;
@@ -47,6 +48,15 @@ class SetupState extends State<Setup> {
       _pickerColor = availableColors[rng.nextInt(availableColors.length)];
     }
 
+    List<Emoji> usedEmojis = players.map((p) => p.pickedEmoji).toList();
+    List<Emoji> availableEmojis = playerEmojis
+        .where((pickedEmoji) => !usedEmojis.contains(pickedEmoji))
+        .toList();
+    if (_pickedEmoji == null) {
+      Random rng = new Random();
+      _pickedEmoji = availableEmojis[rng.nextInt(availableEmojis.length)];
+    }
+
     return Scaffold(
         appBar: AppBar(
           title: Text("New " + gameModeName[widget.gameMode] + " Game"),
@@ -69,15 +79,17 @@ class SetupState extends State<Setup> {
                             },
                             blendMode: BlendMode.dstIn,
                             child: Image.asset(
-                              'assets/gameplay.gif',
+                              'assets/classic_screenshot.gif',
                               fit: BoxFit.fitWidth,
                             ),
                           )),
-                          new Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 48),
-                          ),
+                      new Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 48),
+                      ),
                       Padding(
-                        padding: EdgeInsets.only(left: 16, right: 16, top: 4, bottom: 4),
+                        padding: EdgeInsets.only(
+                            left: 16, right: 16, top: 4, bottom: 4),
                         child: Column(
                           children: <Widget>[
                             Row(
@@ -85,145 +97,153 @@ class SetupState extends State<Setup> {
                                 children: <Widget>[
                                   Expanded(
                                     child: new Padding(
-                                      padding: const EdgeInsets.fromLTRB(2.0, 100.0, 0, 0),
+                                      padding: const EdgeInsets.fromLTRB(
+                                          2.0, 100.0, 0, 0),
                                       child: Text(
-                                      "Add players",
-                                      style: TextStyle(fontSize: 30),
-                                    ),
+                                        "Add players",
+                                        style: TextStyle(fontSize: 30),
+                                      ),
                                     ),
                                   ),
                                   Expanded(
                                     child: new Padding(
-                                      padding:  const EdgeInsets.fromLTRB(2.0, 100.0, 0, 0),
+                                      padding: const EdgeInsets.fromLTRB(
+                                          2.0, 100.0, 0, 0),
                                       child: SwitchListTile(
                                         title: const Text("Show Tutorial"),
                                         activeColor: Colors.green.shade700,
                                         onChanged: _onSwitchChanged,
                                         value: _playTutorial ?? false,
-                                        
-                                    ),
+                                      ),
                                     ),
                                   ),
                                 ]),
-                            Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: <Widget>[
-                                  Expanded(
-                                    child: new Padding(
-                                      padding:
-                                          const EdgeInsets.fromLTRB(2.0, 0, 0, 0),
-                                      child: TextField(
-                                        controller: nameController,
-                                        maxLength: 3,
-                                        decoration:
-                                            InputDecoration(labelText: 'Name'),
-                                      ),
-                                    ),
+                            Row(mainAxisSize: MainAxisSize.min, children: <
+                                Widget>[
+                              Container(
+                                width: 100,
+                                child: new Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(2.0, 0, 0, 0),
+                                  child: TextField(
+                                    controller: nameController,
+                                    maxLength: 3,
+                                    decoration:
+                                        InputDecoration(labelText: 'Name'),
                                   ),
-                                  Container(
-                                    child: Expanded(
-                                      child: new Padding(
-                                        padding: 
-                                          const EdgeInsets.fromLTRB(2.0, 0, 0, 0),
-                                          child: Container(
-                                            width: 20,
-                                            height: 40,
-                                            child: IconButton(
-                                              onPressed: () {
-                                                showDialog(
-                                                  context: context,
-                                                  builder: (BuildContext context) {
-                                                    return AlertDialog(
-                                                      title: Text('Select an emoji'),
-                                                      content: SingleChildScrollView(
-                                                        child: EmojiPicker(
-                                                          rows: 3,
-                                                          columns: 7,
-                                                          onEmojiSelected: changeEmoji
-                                                        ),
-                                                      ),
-                                                    );
-                                                  }
-                                                );
-                                              },
-                                              icon: Icon(Icons.person, color: Colors.yellow, size: 28),
-                                            ),
-                                          ),
-
+                                ),
+                              ),
+                              Container(
+                                child: Expanded(
+                                  child: new Padding(
+                                    padding:
+                                        const EdgeInsets.fromLTRB(2.0, 0, 0, 0),
+                                    child: ButtonTheme.bar(
+                                        child: ButtonBar(children: <Widget>[
+                                      Container(
+                                        width: 50,
+                                        height: 50,
+                                        child: OutlineButton(
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(25.0)),
+                                          onPressed: () {
+                                            showDialog(
+                                                context: context,
+                                                builder:
+                                                    (BuildContext context) {
+                                                  return BackdropFilter(
+                                                    filter: ImageFilter.blur(
+                                                    sigmaX: 4, sigmaY: 4),
+                                                    child: AlertDialog(
+                                                      title:
+                                                          Text('Select an emoji'),
+                                                      content:
+                                                          SingleChildScrollView(
+                                                            child: EmojiPicker(
+                                                              onEmojiSelected: changeEmoji),
+                                                          ),
+                                                    ),
+                                                  );
+                                                });
+                                          },
+                                          textColor: Colors.blue,
+                                          borderSide:
+                                              BorderSide(color: Colors.blue),
+                                          child: Text(_pickedEmoji.emoji),
+                                        ),
                                       ),
-                                    ),
-                                  ),
-                                  // Expanded(
-                                  //   child: new Padding(
-                                  //     padding:
-                                  //         const EdgeInsets.fromLTRB(2.0, 0, 0, 0),
-                                  //     child: new CheckboxListTile(
-                                  //       value: _isAi,
-                                  //       onChanged: _aiChanged,
-                                  //       dense: true,
-                                  //       secondary: new Icon(Icons.android),
-                                  //     ),
-                                  //   ),
-                                  // ),
-                                  Expanded(
-                                    child: RaisedButton(
-                                      elevation: 3.0,
-                                      onPressed: () {
-                                        showDialog(
-                                          context: context,
-                                          builder: (BuildContext context) {
-                                            return BackdropFilter(
-                                              filter:
-                                                  ImageFilter.blur(sigmaX: 4, sigmaY: 4),
-                                              child: AlertDialog(
-                                                title: Text('Select a color'),
-                                                content: SingleChildScrollView(
-                                                  child: BlockPicker(
-                                                    pickerColor: _pickerColor,
-                                                    onColorChanged: changeColor,
-                                                    availableColors: availableColors,
+                                      RaisedButton(
+                                        elevation: 3.0,
+                                        onPressed: () {
+                                          showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return BackdropFilter(
+                                                filter: ImageFilter.blur(
+                                                    sigmaX: 4, sigmaY: 4),
+                                                child: AlertDialog(
+                                                  title: Text('Select a color'),
+                                                  content:
+                                                      SingleChildScrollView(
+                                                    child: BlockPicker(
+                                                      pickerColor: _pickerColor,
+                                                      onColorChanged:
+                                                          changeColor,
+                                                      availableColors:
+                                                          availableColors,
+                                                    ),
                                                   ),
                                                 ),
-                                              ),
-                                            );
-                                          },
-                                        );
-                                      },
-                                      child: const Text('Color'),
-                                      color: _pickerColor,
-                                      textColor: useWhiteForeground(_pickerColor)
-                                          ? const Color(0xffffffff)
-                                          : const Color(0xff000000),
-                                    )
-                                  ),
-                                  Expanded(
-                                    child: RaisedButton(
-                                      onPressed: () {
-                                        if (players.length >= maximumPlayers) {
-                                          Scaffold.of(context)
-                                              .hideCurrentSnackBar();
-                                          Scaffold.of(context).showSnackBar(
-                                              SnackBar(
-                                                  content: Text(
-                                                      "Can not add more players")));
-                                        } else {
-                                          gameState.addPlayer(pickedEmoji, nameController.text,
-                                              _pickerColor, _isAi);
-                                          FocusScope.of(context)
-                                              .requestFocus(new FocusNode());
+                                              );
+                                            },
+                                          );
+                                        },
+                                        child: const Text('Color'),
+                                        color: _pickerColor,
+                                        textColor:
+                                            useWhiteForeground(_pickerColor)
+                                                ? const Color(0xffffffff)
+                                                : const Color(0xff000000),
+                                      ),
+                                      OutlineButton(
+                                        onPressed: () {
+                                          if (players.length >=
+                                              maximumPlayers) {
+                                            Scaffold.of(context)
+                                                .hideCurrentSnackBar();
+                                            Scaffold.of(context).showSnackBar(
+                                                SnackBar(
+                                                    content: Text(
+                                                        "Can not add more players")));
+                                          } else {
+                                            gameState.addPlayer(
+                                                _pickedEmoji,
+                                                nameController.text,
+                                                _pickerColor,
+                                                _isAi);
+                                            FocusScope.of(context)
+                                                .requestFocus(new FocusNode());
 
-                                          nameController.clear();
-                                          _pickerColor = null;
-                                        }
-                                      },
-                                      child: Text("Add"),
-                                    ))
-                                ]),
-                            
+                                            nameController.clear();
+                                            _pickerColor = null;
+                                            _pickedEmoji = null;
+                                          }
+                                        },
+                                        textColor: Colors.blue,
+                                          borderSide:
+                                              BorderSide(color: Colors.blue),
+                                        child: Text("Add"),
+                                      )
+                                    ])),
+                                  ),
+                                ),
+                              ),
+                            ]),
                             Expanded(
                                 child: Padding(
-                              padding:
-                                  const EdgeInsets.fromLTRB(5.0, 15.0, 5.0, 15.0),
+                              padding: const EdgeInsets.fromLTRB(
+                                  5.0, 15.0, 5.0, 15.0),
                               child: players != null
                                   ? ListView.builder(
                                       itemCount: players.length,
@@ -241,10 +261,12 @@ class SetupState extends State<Setup> {
                                                         " removed")));
                                           },
                                           background: Container(
-                                              color: Colors.deepOrange.shade300),
+                                              color:
+                                                  Colors.deepOrange.shade300),
                                           child: ListTile(
                                             title: Text(player.name),
-                                            leading: Text(player.pickedEmoji.emoji),
+                                            leading:
+                                                Text(player.pickedEmoji.emoji),
                                           ),
                                         );
                                       },
@@ -294,10 +316,9 @@ class SetupState extends State<Setup> {
     Navigator.pop(context, null);
   }
 
-  void changeEmoji(Emoji value, var category ) {
-    setState(() => pickedEmoji = value);
+  void changeEmoji(Emoji value, var category) {
+    setState(() => _pickedEmoji = value);
     Navigator.pop(context, null);
-
   }
 
   void _aiChanged(bool value) => setState(() => _isAi = value);
