@@ -77,7 +77,7 @@ class MainMenu extends StatelessWidget {
         Align(
           alignment: Alignment.bottomLeft,
           child: Container(
-            margin: EdgeInsets.only(top:8,bottom:8),
+            margin: EdgeInsets.only(top: 8, bottom: 8),
             height: 60,
             width: 60,
             child: FlatButton(
@@ -87,11 +87,8 @@ class MainMenu extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => Scaffold(
-                          appBar: AppBar(
-                            title: Text("Leaderboard"),
-                          ),
-                          body: SafeArea(child: LeaderboardScreen()))),
+                      builder: (context) =>
+                          Scaffold(body: LeaderboardScreen())),
                 );
               },
               child: SvgPicture.asset(

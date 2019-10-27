@@ -55,26 +55,64 @@ class _ButtonAnimationState extends State<ButtonAnimation>
     children.add(Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        Row(
+        Center(
+            child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(widget.player.displayname),
+            Hero(
+              tag: "buttonanimationemoji",
+              child: new Material(
+                color: Colors.transparent,
+                child: Text(
+                  widget.player.emoji + " ",
+                  style: TextStyle(fontSize: 18),
+                ),
+              ),
+            ),
+            Hero(
+              tag: "buttonanimationname",
+              child: new Material(
+                color: Colors.transparent,
+                child: Text(
+                  widget.player.name,
+                  style: TextStyle(
+                      color: Colors.black87,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1),
+                ),
+              ),
+            ),
           ],
-        ),
+        )),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(buttonsnr.toString()),
-            Icon(
-              PatchworkIcons.button_icon,
-              color: buttonColor,
-              size: widget.tileSize,
+            Hero(
+              tag: "buttonanimationscore",
+              child: Text(
+                buttonsnr.toString(),
+                style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1,
+                    color: Colors.black87),
+              ),
+            ),
+            Hero(
+              tag: "buttonanimationscoreicon",
+              child: Icon(
+                PatchworkIcons.button_icon,
+                color: buttonColor,
+                size: widget.tileSize,
+              ),
             ),
           ],
         ),
       ],
     ));
     int longestDurationMs = 0;
+    int maxAnimationDurationMS = 1500;
     for (int i = 0; i < buttonSquares.length; i++) {
       Square s = buttonSquares[i];
 
@@ -100,12 +138,13 @@ class _ButtonAnimationState extends State<ButtonAnimation>
       double endLeft = widget.tileSize / 1.5;
 
       int closestXposToDialog = 4;
-      int xDuration = ((s.x - closestXposToDialog).abs() * 100).round();
-      int yDuration = ((s.y - breakY).abs() * 100).round();
+      int xDuration = ((s.x - closestXposToDialog).abs() * 70).round();
+      int yDuration = ((s.y - breakY).abs() * 70).round();
 
       int durationMs = xDuration + yDuration;
 
-      int finalDur = durationMs + 250;
+      int finalDur = durationMs + 300;
+      finalDur = min(finalDur, maxAnimationDurationMS);
       if (finalDur > longestDurationMs) longestDurationMs = finalDur;
       Duration duration = Duration(milliseconds: finalDur);
       Icon icon = Icon(PatchworkIcons.button_icon,
@@ -122,6 +161,8 @@ class _ButtonAnimationState extends State<ButtonAnimation>
     return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
       child: SimpleDialog(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
         title: Stack(
           overflow: Overflow.visible,
           children: children,
@@ -234,7 +275,6 @@ class _LootBoxAnimationState extends State<LootBoxAnimation>
     Random rng = new Random();
     int randomOffset = rng.nextInt((lootPriceSize * 0.7).round());
     double offset = (lootPriceSize / 2) + randomOffset;
-
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!scrollDone) {
         await _controller
@@ -252,9 +292,33 @@ class _LootBoxAnimationState extends State<LootBoxAnimation>
     return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
       child: SimpleDialog(
-          title: Text(widget.lootBox.getName()),
+          elevation: 0,
+          title: Text(
+            widget.lootBox.getName(),
+            style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 3,
+                shadows: <Shadow>[
+                  Shadow(
+                    offset: Offset(1.0, 1.0),
+                    blurRadius: 1.0,
+                    color: Color.fromARGB(255, 0, 0, 0),
+                  ),
+                  Shadow(
+                    offset: Offset(1.0, 1.0),
+                    blurRadius: 2.0,
+                    color: Color.fromARGB(125, 0, 0, 255),
+                  ),
+                ],
+                color: Colors.white),
+          ),
+          backgroundColor: Colors.transparent,
           children: <Widget>[
             Container(
+              decoration: new BoxDecoration(
+                color: Colors.transparent,
+              ),
               width: lootPriceSize * 3,
               child: Column(
                 children: <Widget>[
@@ -271,42 +335,64 @@ class _LootBoxAnimationState extends State<LootBoxAnimation>
                   Stack(
                     overflow: Overflow.visible,
                     children: <Widget>[
-                      Container(
-                          width: lootPriceSize * 3,
-                          height: lootPriceSize,
-                          child: ListView.builder(
-                              physics: const NeverScrollableScrollPhysics(),
-                              scrollDirection: Axis.horizontal,
-                              itemCount: prices.length,
-                              controller: _controller,
-                              itemBuilder: (context, index) {
-                                LootPrice price = prices[index];
-                                return Container(
-                                  height: lootPriceSize,
-                                  width: lootPriceSize,
-                                  child: new Card(
-                                    elevation:
-                                        scrollDone && index == winIndex ? 3 : 0,
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: <Widget>[
-                                        Icon(
-                                          price.icon,
-                                          size: widget.tileSize,
-                                          color: price.color,
-                                        ),
-                                        Text(
-                                          price.amount.toString(),
-                                          style: TextStyle(
-                                              color: price.color,
-                                              fontSize: widget.tileSize / 2),
-                                        )
-                                      ],
+                      ShaderMask(
+                        shaderCallback: (rect) {
+                          return LinearGradient(
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                            stops: [0, 0.05, 0.5, 0.95, 1],
+                            colors: [
+                              Colors.white.withOpacity(0),
+                              Colors.white.withOpacity(1),
+                              Colors.white.withOpacity(1),
+                              Colors.white.withOpacity(1),
+                              Colors.white.withOpacity(0),
+                            ],
+                          ).createShader(
+                              Rect.fromLTRB(0, 0, rect.width, rect.height));
+                        },
+                        child: Container(
+                            decoration: new BoxDecoration(
+                              color: Colors.transparent,
+                            ),
+                            width: lootPriceSize * 3,
+                            height: lootPriceSize,
+                            child: ListView.builder(
+                                physics: const NeverScrollableScrollPhysics(),
+                                scrollDirection: Axis.horizontal,
+                                itemCount: prices.length,
+                                controller: _controller,
+                                itemBuilder: (context, index) {
+                                  LootPrice price = prices[index];
+                                  return Container(
+                                    height: lootPriceSize,
+                                    width: lootPriceSize,
+                                    child: new Card(
+                                      elevation: scrollDone && index == winIndex
+                                          ? 1
+                                          : 3,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: <Widget>[
+                                          Icon(
+                                            price.icon,
+                                            size: widget.tileSize,
+                                            color: price.color,
+                                          ),
+                                          Text(
+                                            price.amount.toString(),
+                                            style: TextStyle(
+                                                color: price.color,
+                                                fontSize: widget.tileSize / 2),
+                                          )
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                );
-                              })),
+                                  );
+                                })),
+                        blendMode: BlendMode.dstATop,
+                      ),
                       Positioned(
                         top: -4.0,
                         left: lootPriceSize * 1.5,

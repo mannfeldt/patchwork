@@ -44,6 +44,10 @@ class Highscore implements Comparable {
     this.isNew = true;
   }
 
+  String get displayname {
+    return this.emoji + " " + this.name;
+  }
+
   String getJson() {
     return jsonEncode(this);
   }

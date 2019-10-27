@@ -26,7 +26,7 @@ const int bingoModeNrOfDifferentImages = 3;
 const int bingoStartButtons = 15;
 const double timeBoardTileHeight = 30.0;
 const double timeBoardTileWidth = 90.0;
-const int highscoreLimit = 5;
+const int highscoreLimit = 20;
 const double boardInset = 5.0;
 const int maxPieceSize = 10;
 const int maxPieceLength = 6;
@@ -53,7 +53,6 @@ final List<String> pieceImages = [
   "blue_knots.png",
   "blue_sunflowers.jpg",
   "blue_tile.jpg",
-  "brown_dots.png",
   "esher.jpg",
   "green_buds.png",
   "orange_sunflowers.jpg",
@@ -491,8 +490,3 @@ final List classicPieces = [
     "time": 2
   },
 ];
-
-// gör detta till en lista av pieces. eller iaf så att de innehåller info om buttons och cost.
-//om jag skapar en mix mellan default och spicy/random så ska jag bara läsa shapes så att alla använder samma algoritm för cost
-//behöver alltså en ny konstruktor i pieces(id, shape, time, cost, buttons)
-//när jag blandar så tar jag samma lista fast plockar ut shape bara och skapar om genom fromvisual

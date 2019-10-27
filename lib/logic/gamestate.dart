@@ -320,9 +320,15 @@ class GameState with ChangeNotifier {
     }
   }
 
-  void clearAnimationButtons(bool goSleep) async {
-    _recieveButtonsAnimation = false;
-    _currentPlayer.buttons += _currentBoard.buttons;
+  void onButtonAnimationRecievedButtons() {
+    if (_recieveButtonsAnimation) {
+      _currentPlayer.buttons += _currentBoard.buttons;
+      _recieveButtonsAnimation = false;
+    }
+    notifyListeners();
+  }
+
+  void onButtonAnimationCompleted() async {
     if (_extraPieceCollected || _scissorsCollected) {
       notifyListeners();
     } else {

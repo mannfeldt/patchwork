@@ -27,19 +27,35 @@ class Footer extends StatelessWidget {
             description: 'Here you can see whos turn it is to play',
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Row(children: <Widget>[
-                Text(
-                  currentPlayer.emoji,
-                  style: TextStyle(fontSize: 22),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(5.0, 0, 0, 0),
-                  child: Text(
-                    currentPlayer.name,
-                    style: TextStyle(fontSize: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Hero(
+                    tag: "buttonanimationemoji",
+                    child: new Material(
+                      color: Colors.transparent,
+                      child: Text(
+                        currentPlayer.emoji + " ",
+                        style: TextStyle(fontSize: 18),
+                      ),
+                    ),
                   ),
-                )
-              ]),
+                  Hero(
+                    tag: "buttonanimationname",
+                    child: new Material(
+                      color: Colors.transparent,
+                      child: Text(
+                        currentPlayer.name,
+                        style: TextStyle(
+                            color: Colors.black87,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             )),
         Showcase(
             key: cashKey,
@@ -49,16 +65,35 @@ class Footer extends StatelessWidget {
             description: 'This is the amount of buttons you can spend',
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Row(children: <Widget>[
-                Text(
-                  currentPlayer.buttons.toString(),
-                  style: TextStyle(fontSize: 20),
-                ),
-                Icon(
-                  PatchworkIcons.button_icon,
-                  color: buttonColor,
-                ),
-              ]),
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Hero(
+                      tag: "buttonanimationscore",
+                      child: new Material(
+                        color: Colors.transparent,
+                        child: Text(
+                          currentPlayer.buttons.toString(),
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.black87,
+                            letterSpacing: 1,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Hero(
+                      tag: "buttonanimationscoreicon",
+                      child: new Material(
+                        color: Colors.transparent,
+                        child: Icon(
+                          PatchworkIcons.button_icon,
+                          color: buttonColor,
+                          size: 28,
+                        ),
+                      ),
+                    ),
+                  ]),
             )),
         Showcase(
             key: passKey,

@@ -50,61 +50,134 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
         highscores: filteredHighscores,
         timeframe: selectedTimeframe,
       );
-
     }
-    return Center(
-      child: Column(
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.fromLTRB(8,16,8,8),
-            child: ToggleButtons(
-              children: [
-                Text("Classic"),
-                Text("Bingo"),
+
+    return CustomScrollView(
+      physics: BouncingScrollPhysics(),
+      slivers: <Widget>[
+        SliverAppBar(
+          backgroundColor: Colors.transparent,
+          expandedHeight: 180,
+          pinned: true,
+          elevation: 0,
+          title: Text(
+            'Leaderboard',
+            style: TextStyle(
+                fontFamily: 'Helvetica',
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 24),
+          ),
+          flexibleSpace: Container(
+            padding: EdgeInsets.only(top: 80, left: 40),
+            decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.5),
+                    blurRadius: 15.0,
+                    spreadRadius: 1.0,
+                    offset: Offset(
+                      0,
+                      2.0,
+                    ),
+                  )
+                ],
+                gradient: new LinearGradient(
+                    colors: [Colors.blue.shade200, Colors.blue.shade700],
+                    begin: const FractionalOffset(1.0, 1.0),
+                    end: const FractionalOffset(0.2, 0.2),
+                    stops: [0.0, 1.0],
+                    tileMode: TileMode.clamp),
+                borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(30),
+                    bottomRight: Radius.circular(30))),
+            child: Column(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(top: 25.0),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: ToggleButtons(
+                      color: Colors.white,
+                      highlightColor: Colors.blue.shade800,
+                      fillColor: Colors.blue.shade800,
+                      selectedColor: Colors.white,
+                      renderBorder: false,
+                      children: [
+                        Text(
+                          "Classic",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          "Bingo",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                      onPressed: (int index) {
+                        setState(() {
+                          for (int buttonIndex = 0;
+                              buttonIndex < isSelectedMode.length;
+                              buttonIndex++) {
+                            if (buttonIndex == index) {
+                              isSelectedMode[buttonIndex] = true;
+                            } else {
+                              isSelectedMode[buttonIndex] = false;
+                            }
+                          }
+                        });
+                      },
+                      isSelected: isSelectedMode,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: ToggleButtons(
+                      renderBorder: false,
+                      color: Colors.white,
+                      fillColor: Colors.blue.shade800,
+                      highlightColor: Colors.blue.shade800,
+                      selectedColor: Colors.white,
+                      children: [
+                        Text(
+                          "Weekly",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          "Monthly",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          "All time",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                      onPressed: (int index) {
+                        setState(() {
+                          for (int buttonIndex = 0;
+                              buttonIndex < isSelectedTime.length;
+                              buttonIndex++) {
+                            if (buttonIndex == index) {
+                              isSelectedTime[buttonIndex] = true;
+                            } else {
+                              isSelectedTime[buttonIndex] = false;
+                            }
+                          }
+                        });
+                      },
+                      isSelected: isSelectedTime,
+                    ),
+                  ),
+                ),
               ],
-              onPressed: (int index) {
-                setState(() {
-                  for (int buttonIndex = 0;
-                      buttonIndex < isSelectedMode.length;
-                      buttonIndex++) {
-                    if (buttonIndex == index) {
-                      isSelectedMode[buttonIndex] = true;
-                    } else {
-                      isSelectedMode[buttonIndex] = false;
-                    }
-                  }
-                });
-              },
-              isSelected: isSelectedMode,
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ToggleButtons(
-              children: [
-                Text("Weekly"),
-                Text("Monthly"),
-                Text("All time"),
-              ],
-              onPressed: (int index) {
-                setState(() {
-                  for (int buttonIndex = 0;
-                      buttonIndex < isSelectedTime.length;
-                      buttonIndex++) {
-                    if (buttonIndex == index) {
-                      isSelectedTime[buttonIndex] = true;
-                    } else {
-                      isSelectedTime[buttonIndex] = false;
-                    }
-                  }
-                });
-              },
-              isSelected: isSelectedTime,
-            ),
-          ),
-          tableWidget //kan animera med slideTransiton eller kanske Transform. eller skapa upp alla highscore tabeller redan innan och lägga dem i en indexedStack som animeras
-        ],
-      ),
+        ),
+        tableWidget
+      ],
     );
+
   }
 }

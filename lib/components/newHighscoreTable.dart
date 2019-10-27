@@ -19,6 +19,10 @@ class NewHighscoreTable extends StatefulWidget {
 
 class _NewHighscoreTableState extends State<NewHighscoreTable> {
   TextEditingController nameController = new TextEditingController();
+  ScrollController _scrollController = new ScrollController();
+
+  bool isSaving = false;
+  bool disableSave = false;
   @override
   void initState() {
     String playerName = widget.newHighscore.name.toUpperCase();
@@ -31,12 +35,29 @@ class _NewHighscoreTableState extends State<NewHighscoreTable> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      int ranking = widget.highscores.indexWhere((h) => h.isNew);
+      await _scrollController.animateTo(
+        (ranking.toDouble() * 60),
+        curve: Curves.easeOut,
+        duration: Duration(milliseconds: 200 + (ranking * 100)),
+      );
+    });
+
+    bool disableSave =
+        nameController.text.length != 3 || widget.callbackSaveHighscore == null;
+    final mq = MediaQuery.of(context);
+    return Stack(
       children: <Widget>[
-        Flexible(
+        ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: 300 - mq.viewInsets.bottom,
+          ),
           child: ListView.separated(
+              controller: _scrollController,
+              padding: EdgeInsets.only(bottom: 80),
               shrinkWrap: true,
+              physics: BouncingScrollPhysics(),
               scrollDirection: Axis.vertical,
               itemCount: widget.highscores.length,
               separatorBuilder: (context, index) {
@@ -48,92 +69,116 @@ class _NewHighscoreTableState extends State<NewHighscoreTable> {
                 Highscore highscore = widget.highscores[index];
                 int score = highscore.getTotal();
 
-                return ListTile(
-                  leading: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Container(
-                          padding: EdgeInsets.only(right: 24),
-                          child: Text(
-                            (index + 1).toString(),
-                            style: TextStyle(fontSize: 20, color: Colors.blue),
-                          )),
-                      highscore.isNew
-                          ? Image.file(widget.player.screenshot)
-                          : FadeInImage.assetNetwork(
-                              image: highscore.thumbnail,
-                              fadeOutDuration: Duration(milliseconds: 200),
-                              fadeInDuration: Duration(milliseconds: 400),
-                              placeholder: "assets/transparent.png",
-                            ),
-                    ],
-                  ),
-                  title: highscore.isNew
-                      ? TextField(
-                          controller: nameController,
-                          textCapitalization: TextCapitalization.characters,
-                          maxLength: 3,
-                          style: TextStyle(
-                              fontSize: 20,
-                              letterSpacing: 1.5,
-                              fontWeight: FontWeight.w400),
-                        )
-                      : Text(
-                          highscore.name,
-                          style: TextStyle(
-                              fontSize: 20,
-                              letterSpacing: 1.5,
-                              fontWeight: FontWeight.w400),
-                        ),
-                  trailing: CircleAvatar(
-                    backgroundColor: score < 0 ? Colors.red : Colors.blue,
-                    child: Text(
-                      score.abs().toString(),
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                return Container(
+                  height: 60,
+                  child: ListTile(
+                    leading: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Container(
+                            padding: EdgeInsets.only(right: 24),
+                            child: Text(
+                              (index + 1).toString(),
+                              style:
+                                  TextStyle(fontSize: 20, color: Colors.blue),
+                            )),
+                        highscore.isNew
+                            ? Image.file(widget.player.screenshot)
+                            : FadeInImage.assetNetwork(
+                                image: highscore.thumbnail,
+                                fadeOutDuration: Duration(milliseconds: 200),
+                                fadeInDuration: Duration(milliseconds: 400),
+                                placeholder: "assets/transparent.png",
+                              ),
+                      ],
+                    ),
+                    title: highscore.isNew
+                        ? TextField(
+                            controller: nameController,
+                            onChanged: nameChanged,
+                            textCapitalization: TextCapitalization.characters,
+                            maxLength: 3,
+                            style: TextStyle(
+                                fontSize: 20,
+                                letterSpacing: 1.5,
+                                fontWeight: FontWeight.w400),
+                          )
+                        : Text(
+                            highscore.displayname,
+                            style: TextStyle(
+                                fontSize: 20,
+                                letterSpacing: 1.5,
+                                fontWeight: FontWeight.w400),
+                          ),
+                    trailing: CircleAvatar(
+                      backgroundColor: score < 0 ? Colors.red : Colors.blue,
+                      child: Text(
+                        score.abs().toString(),
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ),
                 );
               }),
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: <Widget>[
-            Padding(
-              padding:
-                  const EdgeInsets.only(right: 8.0, top: 16.0, bottom: 8.0),
-              child: FlatButton(
-                textColor: Colors.blue,
-                onPressed: () async {
-                  Navigator.of(context).pop();
-                },
-                child: Text("Skip"),
+        Positioned(
+          right: 0,
+          bottom: 0,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              Padding(
+                padding:
+                    const EdgeInsets.only(right: 8.0, top: 16.0, bottom: 8.0),
+                child: RaisedButton(
+                  textColor: Colors.blue,
+                  color: Colors.white,
+                  onPressed: () async {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text("Skip"),
+                ),
               ),
-            ),
-            Padding(
-              padding:
-                  const EdgeInsets.only(right: 16.0, top: 16.0, bottom: 8.0),
-              child: RaisedButton(
-                color: Colors.blue,
-                textColor: Colors.white,
-                onPressed: () async {
-                  if (widget.callbackSaveHighscore != null) {
-                    if (nameController.text.length < 3) {
-                      Scaffold.of(context).hideCurrentSnackBar();
-                      Scaffold.of(context).showSnackBar(SnackBar(
-                          content: Text("Name needs to be 3 characters long")));
-                    } else {
+              Padding(
+                padding:
+                    const EdgeInsets.only(right: 16.0, top: 16.0, bottom: 8.0),
+                child: RaisedButton(
+                  color: disableSave
+                      ? Colors.grey
+                      : isSaving ? Colors.white : Colors.blue,
+                  textColor: Colors.white,
+                  onPressed: () async {
+                    if (!disableSave && !isSaving) {
+                      setState(() {
+                        isSaving = true;
+                      });
                       await widget.callbackSaveHighscore(widget.newHighscore,
                           nameController.text, widget.player);
+                      setState(() {
+                        isSaving = false;
+                      });
+                      Navigator.of(context).pop();
                     }
-                  }
-                  Navigator.of(context).pop();
-                },
-                child: Text("Save"),
+                  },
+                  child: isSaving
+                      ? SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(),
+                        )
+                      : Text("Save"),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         )
       ],
     );
+  }
+
+  void nameChanged(String value) {
+    setState(() {
+      disableSave = value.length != 3;
+    });
   }
 }

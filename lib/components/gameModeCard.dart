@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:patchwork/pages/setup.dart';
 import 'package:patchwork/utilities/constants.dart';
@@ -12,7 +14,6 @@ class GameModeCard extends StatefulWidget {
     this.title,
     this.subtitle,
   }) : super(key: key);
-
   final Function quickplayCallback;
   final String backgroundImage;
   final String bakgroundVideo;
@@ -36,51 +37,51 @@ class _GameModeCardState extends State<GameModeCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 180,
+      height: min(MediaQuery.of(context).size.width - 24 - 220, 300),
       child: Card(
         margin: EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 4),
         child: Row(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Container(
-                child: GestureDetector(
-                    onTap: toggleGif,
-                    child: playGif
-                        ? Image.asset(
-                            widget.bakgroundVideo,
-                            fit: BoxFit.contain,
-                            alignment: Alignment.topLeft,
-                          )
-                        : Stack(
-                            children: <Widget>[
-                              Opacity(
-                                opacity: 0.4,
-                                child: Image.asset(
-                                  widget.backgroundImage,
-                                  fit: BoxFit.contain,
-                                  alignment: Alignment.topLeft,
-                                ),
+              GestureDetector(
+                  onTap: toggleGif,
+                  child: playGif
+                      ? Image.asset(
+                          widget.bakgroundVideo,
+                          fit: BoxFit.contain,
+                          alignment: Alignment.topLeft,
+                        )
+                      : Stack(
+                          children: <Widget>[
+                            Opacity(
+                              opacity: 0.4,
+                              child: Image.asset(
+                                widget.backgroundImage,
+                                fit: BoxFit.contain,
+                                alignment: Alignment
+                                    .topLeft, //klar med omordninga v game card with bug
                               ),
-                              Positioned.fill(
-                                child: Center(
-                                    child: Icon(
-                                  Icons.play_circle_outline,
-                                  size: 64,
-                                  color: Colors.blue.shade500.withOpacity(0.8),
-                                )),
-                              )
-                            ],
-                          )),
-              ),
-              Expanded(
+                            ),
+                            Positioned.fill(
+                              child: Center(
+                                  child: Icon(
+                                Icons.play_circle_outline,
+                                size: 64,
+                                color: Colors.blue.shade500.withOpacity(0.8),
+                              )),
+                            )
+                          ],
+                        )),
+              Container(
+                width: 220,
                 child: Column(
                     mainAxisSize: MainAxisSize.max,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       Padding(
                         padding: const EdgeInsets.only(
-                            top: 8.0, left: 8.0, right: 8.0, bottom: 0.0),
+                            top: 8.0, left: 8.0, right: 0.0, bottom: 0.0),
                         child: ListTile(
                           isThreeLine: true,
                           dense: true,
