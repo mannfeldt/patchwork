@@ -60,9 +60,6 @@ class SetupState extends State<Setup> {
     }
 
     return Scaffold(
-        appBar: AppBar(
-          title: Text("New " + gameModeName[widget.gameMode] + " Game"),
-        ),
         body: Builder(
             builder: (context) => Center(
                   child: Stack(
@@ -85,32 +82,66 @@ class SetupState extends State<Setup> {
                               fit: BoxFit.fitWidth,
                             ),
                           )),
-                      new Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 48),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            left: 16, right: 16, top: 4, bottom: 4),
-                        child: Column(
-                          children: <Widget>[
-                            Row(
-                                mainAxisSize: MainAxisSize.min,
+                      SafeArea(
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                              left: 16, right: 16, top: 0, bottom: 4),
+                          child: Column(
+                            children: <Widget>[
+                              Stack(
                                 children: <Widget>[
-                                  Expanded(
-                                    child: new Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          2.0, 100.0, 0, 0),
+                                  Align(
+                                    alignment: Alignment.topLeft,
+                                    child: IconButton(
+                                      icon: BackButtonIcon(),
+                                      color: Colors.white,
+                                      highlightColor: Colors.transparent,
+                                      iconSize: 28,
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(),
+                                    ),
+                                  ),
+                                  Align(
+                                    alignment: Alignment.bottomCenter,
+                                    heightFactor: 2,
+                                    child: Text(
+                                      "New ${gameModeName[widget.gameMode]} game",
+                                      style: TextStyle(
+                                          fontSize: 26,
+                                          fontWeight: FontWeight.bold,
+                                          letterSpacing: 1,
+                                          shadows: <Shadow>[
+                                            Shadow(
+                                              offset: Offset(1.0, 1.0),
+                                              blurRadius: 2.0,
+                                              color:
+                                                  Color.fromARGB(255, 0, 0, 0),
+                                            ),
+                                            Shadow(
+                                              offset: Offset(1.0, 1.0),
+                                              blurRadius: 2.0,
+                                              color: Color.fromARGB(
+                                                  125, 0, 0, 255),
+                                            ),
+                                          ],
+                                          color: Colors.white),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 30,
+                              ),
+                              Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    Expanded(
                                       child: Text(
                                         "Add players",
                                         style: TextStyle(fontSize: 30),
                                       ),
                                     ),
-                                  ),
-                                  Expanded(
-                                    child: new Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          2.0, 100.0, 0, 0),
+                                    Expanded(
                                       child: SwitchListTile(
                                         title: const Text("Show Tutorial"),
                                         activeColor: Colors.green.shade700,
@@ -118,15 +149,10 @@ class SetupState extends State<Setup> {
                                         value: _playTutorial ?? false,
                                       ),
                                     ),
-                                  ),
-                                ]),
-                            Row(mainAxisSize: MainAxisSize.min, children: <
-                                Widget>[
-                              Container(
-                                width: 100,
-                                child: new Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(2.0, 0, 0, 0),
+                                  ]),
+                              Row(mainAxisSize: MainAxisSize.min, children: <
+                                  Widget>[
+                                Expanded(
                                   child: TextField(
                                     controller: nameController,
                                     maxLength: 12,
@@ -134,12 +160,9 @@ class SetupState extends State<Setup> {
                                         InputDecoration(labelText: 'Name'),
                                   ),
                                 ),
-                              ),
-                              Container(
-                                child: Expanded(
+                                Container(
                                   child: new Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(2.0, 0, 0, 0),
+                                    padding: const EdgeInsets.only(left: 2),
                                     child: ButtonTheme.bar(
                                         child: ButtonBar(children: <Widget>[
                                       Container(
@@ -263,51 +286,52 @@ class SetupState extends State<Setup> {
                                     ])),
                                   ),
                                 ),
-                              ),
-                            ]),
-                            Expanded(
-                                child: Padding(
-                              padding: const EdgeInsets.fromLTRB(
-                                  5.0, 15.0, 5.0, 15.0),
-                              child: players != null
-                                  ? AnimatedList(
-                                      key: _listKey,
-                                      initialItemCount: players.length,
-                                      itemBuilder: (context, index, animation) {
-                                        final player = players[index];
-                                        return _buildItem(animation, player,
-                                            index, gameState.removePlayer);
-                                      },
-                                    )
-                                  : Text("No players",
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          height: 8,
-                                          color: Colors.grey)),
-                            )),
-                            RaisedButton(
-                              color: buttonColor,
-                              onPressed: () {
-                                FocusScope.of(context)
-                                    .requestFocus(new FocusNode());
-                                Scaffold.of(context).hideCurrentSnackBar();
-                                if (players.length < minimumPlayers) {
-                                  Scaffold.of(context).showSnackBar(SnackBar(
-                                      content: Text("Needs at least " +
-                                          minimumPlayers.toString() +
-                                          " players to start")));
-                                } else {
-                                  gameState.startGame(
-                                      widget.gameMode, _playTutorial);
-                                  Navigator.pop(context, null);
-                                }
-                              },
-                              child: Text(
-                                "Start",
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            )
-                          ],
+                              ]),
+                              Expanded(
+                                  child: Padding(
+                                padding: const EdgeInsets.fromLTRB(
+                                    5.0, 15.0, 5.0, 15.0),
+                                child: players != null
+                                    ? AnimatedList(
+                                        key: _listKey,
+                                        initialItemCount: players.length,
+                                        itemBuilder:
+                                            (context, index, animation) {
+                                          final player = players[index];
+                                          return _buildItem(animation, player,
+                                              index, gameState.removePlayer);
+                                        },
+                                      )
+                                    : Text("No players",
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            height: 8,
+                                            color: Colors.grey)),
+                              )),
+                              RaisedButton(
+                                color: buttonColor,
+                                onPressed: () {
+                                  FocusScope.of(context)
+                                      .requestFocus(new FocusNode());
+                                  Scaffold.of(context).hideCurrentSnackBar();
+                                  if (players.length < minimumPlayers) {
+                                    Scaffold.of(context).showSnackBar(SnackBar(
+                                        content: Text("Needs at least " +
+                                            minimumPlayers.toString() +
+                                            " players to start")));
+                                  } else {
+                                    gameState.startGame(
+                                        widget.gameMode, _playTutorial);
+                                    Navigator.pop(context, null);
+                                  }
+                                },
+                                child: Text(
+                                  "Start",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              )
+                            ],
+                          ),
                         ),
                       ),
                     ],
