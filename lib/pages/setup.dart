@@ -27,6 +27,8 @@ class SetupState extends State<Setup> {
   TextEditingController nameController = TextEditingController();
   bool _isAi = false;
   bool _playTutorial;
+  int _playerId = 0;
+  final GlobalKey<AnimatedListState> _listKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -236,16 +238,21 @@ class SetupState extends State<Setup> {
                                                         "Can not add more players")));
                                           } else {
                                             gameState.addPlayer(
+                                                _playerId,
                                                 _pickedEmoji,
                                                 nameController.text,
                                                 _pickerColor,
                                                 _isAi);
+                                            setState(() {
+                                              _playerId += 1;
+                                            });
                                             FocusScope.of(context)
                                                 .requestFocus(new FocusNode());
 
                                             nameController.clear();
                                             _pickerColor = null;
                                             _pickedEmoji = null;
+                                            _listKey.currentState.insertItem(0);
                                           }
                                         },
                                         textColor: Colors.blue,
@@ -263,44 +270,13 @@ class SetupState extends State<Setup> {
                               padding: const EdgeInsets.fromLTRB(
                                   5.0, 15.0, 5.0, 15.0),
                               child: players != null
-                                  ? ListView.builder(
-                                      itemCount: players.length,
-                                      itemBuilder: (context, index) {
+                                  ? AnimatedList(
+                                      key: _listKey,
+                                      initialItemCount: players.length,
+                                      itemBuilder: (context, index, animation) {
                                         final player = players[index];
-                                        return Dismissible(
-                                          key: Key(player.id.toString()),
-                                          onDismissed: (direction) {
-                                            gameState.removePlayer(player);
-                                            Scaffold.of(context)
-                                                .hideCurrentSnackBar();
-                                            Scaffold.of(context).showSnackBar(
-                                                SnackBar(
-                                                    content: Text(
-                                                        '${player.displayname} removed')));
-                                          },
-                                          background: Container(
-                                              color:
-                                                  Colors.deepOrange.shade300),
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                                gradient: LinearGradient(
-                                              begin: Alignment.centerLeft,
-                                              end: Alignment.centerRight,
-                                              stops: [0, 0.25, 0.5, 0.75, 1],
-                                              colors: [
-                                                player.color.withOpacity(0),
-                                                player.color.withOpacity(0.4),
-                                                player.color.withOpacity(0.5),
-                                                player.color.withOpacity(0.4),
-                                                player.color.withOpacity(0)
-                                              ],
-                                            )),
-                                            child: ListTile(
-                                              title: Text(player.name),
-                                              leading: Text(player.emoji),
-                                            ),
-                                          ),
-                                        );
+                                        return _buildItem(animation, player,
+                                            index, gameState.removePlayer);
                                       },
                                     )
                                   : Text("No players",
@@ -337,6 +313,45 @@ class SetupState extends State<Setup> {
                     ],
                   ),
                 )));
+  }
+
+  Widget _buildItem(Animation<double> animation, Player player, int index,
+      Function removePlayerCallback) {
+    return SizeTransition(
+      sizeFactor: animation,
+      child: Dismissible(
+        key: Key(player.id.toString()),
+        onDismissed: (direction) {
+          removePlayerCallback(player);
+          //fungerar tills jag tar bort lite flera eller någon mitt i? är nog index variabeln som är fel.
+          _listKey.currentState.removeItem(
+              index,
+              (BuildContext context, Animation<double> animation) =>
+                  Container(),
+              duration: const Duration(milliseconds: 250));
+        },
+        background: Container(color: Colors.deepOrange.shade300),
+        child: Container(
+          decoration: BoxDecoration(
+              gradient: LinearGradient(
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+            stops: [0, 0.25, 0.5, 0.75, 1],
+            colors: [
+              player.color.withOpacity(0),
+              player.color.withOpacity(0.4),
+              player.color.withOpacity(0.5),
+              player.color.withOpacity(0.4),
+              player.color.withOpacity(0)
+            ],
+          )),
+          child: ListTile(
+            title: Text(player.name),
+            leading: Text(player.emoji),
+          ),
+        ),
+      ),
+    );
   }
 
   void _onSwitchChanged(bool value) {
