@@ -13,9 +13,9 @@ class Highscore implements Comparable {
   Timestamp time;
   bool isNew;
   int id;
-  String thumbnail;
   String screenshot;
   String emoji;
+  String key;
 
   Highscore.fromJson(var data) {
     this.name = data['name'];
@@ -26,9 +26,9 @@ class Highscore implements Comparable {
     this.mode = data['mode'];
     this.time = data['time'];
     this.id = data['id'];
-    this.thumbnail = data['thumbnail'];
     this.screenshot = data['screenshot'];
     this.emoji = data['emoji'];
+    // this.key = data['key'];
     this.isNew = false;
   }
   Highscore(Player player, int id) {

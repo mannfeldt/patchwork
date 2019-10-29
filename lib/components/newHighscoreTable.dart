@@ -36,12 +36,14 @@ class _NewHighscoreTableState extends State<NewHighscoreTable> {
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      int ranking = widget.highscores.indexWhere((h) => h.isNew);
-      await _scrollController.animateTo(
-        (ranking.toDouble() * 60),
-        curve: Curves.easeOut,
-        duration: Duration(milliseconds: 200 + (ranking * 100)),
-      );
+      if (widget.highscores.length > 2) {
+        int scrollpos = widget.highscores.indexWhere((h) => h.isNew) - 2;
+        await _scrollController.animateTo(
+          (scrollpos.toDouble() * 60),
+          curve: Curves.easeOut,
+          duration: Duration(milliseconds: 200 + (scrollpos * 100)),
+        );
+      }
     });
 
     bool disableSave =
@@ -85,7 +87,7 @@ class _NewHighscoreTableState extends State<NewHighscoreTable> {
                         highscore.isNew
                             ? Image.file(widget.player.screenshot)
                             : FadeInImage.assetNetwork(
-                                image: highscore.thumbnail,
+                                image: highscore.screenshot,
                                 fadeOutDuration: Duration(milliseconds: 200),
                                 fadeInDuration: Duration(milliseconds: 400),
                                 placeholder: "assets/transparent.png",
@@ -93,16 +95,34 @@ class _NewHighscoreTableState extends State<NewHighscoreTable> {
                       ],
                     ),
                     title: highscore.isNew
-                        ? TextField(
-                            controller: nameController,
-                            onChanged: nameChanged,
-                            textCapitalization: TextCapitalization.characters,
-                            maxLength: 3,
-                            style: TextStyle(
-                                fontSize: 20,
-                                letterSpacing: 1.5,
-                                fontWeight: FontWeight.w400),
-                          )
+                        ? Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      bottom: 8, right: 8),
+                                  child: Text(
+                                    highscore.emoji,
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        letterSpacing: 1.5,
+                                        fontWeight: FontWeight.w400),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: TextField(
+                                    controller: nameController,
+                                    onChanged: nameChanged,
+                                    textCapitalization:
+                                        TextCapitalization.characters,
+                                    maxLength: 3,
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        letterSpacing: 1.5,
+                                        fontWeight: FontWeight.w400),
+                                  ),
+                                )
+                              ])
                         : Text(
                             highscore.displayname,
                             style: TextStyle(

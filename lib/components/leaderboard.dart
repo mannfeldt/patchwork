@@ -76,9 +76,9 @@ class _LeaderboardState extends State<Leaderboard> {
                         onTap: () => Navigator.of(context).pop(),
                         child: Hero(
                           transitionOnUserGestures: true,
-                          tag: highscore.thumbnail,
+                          tag: highscore.screenshot,
                           child: Image.network(
-                            highscore.thumbnail,
+                            highscore.screenshot,
                             fit: BoxFit.fitWidth,
                           ),
                         ),
@@ -91,15 +91,15 @@ class _LeaderboardState extends State<Leaderboard> {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Container(
-                  padding: EdgeInsets.only(right: 24),
+                  width: 50,
                   child: Text(
                     (index + 1).toString(),
                     style: TextStyle(fontSize: 20, color: Colors.blue),
                   )),
               Hero(
-                tag: highscore.thumbnail,
+                tag: highscore.screenshot,
                 child: FadeInImage.assetNetwork(
-                  image: highscore.thumbnail,
+                  image: highscore.screenshot,
                   fadeOutDuration: Duration(milliseconds: 200),
                   fadeInDuration: Duration(milliseconds: 400),
                   placeholder: "assets/transparent.png",

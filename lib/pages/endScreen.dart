@@ -29,7 +29,7 @@ class _EndScreenState extends State<EndScreen> {
       Highscore newHighscore = highscore;
       newHighscore.name = name;
       newHighscore.time = Timestamp.now();
-      newHighscore.mode = gameModeName[gameState.getGameMode()];
+      newHighscore.mode = gameState.getGameMode().toString();
       await highscoreState.saveHighscore(newHighscore, player);
     }
 
@@ -44,7 +44,8 @@ class _EndScreenState extends State<EndScreen> {
         if (newHighscoreTimeFrame != null && !isShowingNewHighscore) {
           List<Highscore> highscores =
               highscoreState.getHighscores(newHighscoreTimeFrame, gameMode);
-          Highscore newHighscore = new Highscore(players[i], highscores.length);
+          Highscore newHighscore =
+              new Highscore(players[i], i);
 
           if (highscores.length == highscoreLimit) {
             highscores[highscoreLimit - 1] = newHighscore;

@@ -107,6 +107,10 @@ class _GameplayState extends State<Gameplay> {
             PageRouteBuilder(
                 //TODO
 //3. se om jag kan få till en hero animation eller stagger för lootboxen.. generell stager eller animation för att visa dialoger?
+//4. kanske kan ha en staggerd animation i leaderboard för att visa upp nya listor när man ändrar filter
+//eller något liknande detta? https://medium.com/apparence/flutter-staggered-animations-82820c2f2b0e
+//lite mer delay innan newHighscoreDialog kommer upp? eller något. det är lite mycket som händer på samma gång när man går imål
+//kanske ändra animation kamera blixten? 
                 pageBuilder: (_context, _, __) =>
                     LootBoxAnimation(lootBox, gameState.getBoardTileSize()),
                 opaque: false),

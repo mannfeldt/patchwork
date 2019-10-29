@@ -28,7 +28,7 @@ class HighscoreState with ChangeNotifier {
     List<Highscore> filteredHighscore = [];
     filteredHighscore = _highscores
         .where((h) =>
-            h.mode == gameModeName[gameMode] &&
+            h.mode == gameMode.toString() &&
             Utils.isWithinTimeframe(h.time, timeframe))
         .toList();
     filteredHighscore.sort((a, b) => a.compareTo(b));
@@ -53,9 +53,9 @@ class HighscoreState with ChangeNotifier {
     final StorageTaskSnapshot downloadUrl = (await uploadTask.onComplete);
     final String url = (await downloadUrl.ref.getDownloadURL());
 
-    highscore.thumbnail = url;
     highscore.screenshot = url;
 
+//det är möjligt att köra en tom add({}) och köra ref.documentId på det jag fårsom svar och sen köra ref.set eller liknande
     await databaseReference.collection("highscores").add({
       'userId': highscore.userId,
       'name': highscore.name,
@@ -65,7 +65,6 @@ class HighscoreState with ChangeNotifier {
       'time': highscore.time,
       'mode': highscore.mode,
       'screenshot': highscore.screenshot,
-      'thumbnail': highscore.thumbnail,
       'emoji': highscore.emoji,
     }).then(
         (
@@ -75,7 +74,6 @@ class HighscoreState with ChangeNotifier {
         onError: (e) => {print(e.toString())});
     highscore.isNew = false; //?
     _highscores.add(highscore);
-    // _nextPlayerToCheckHighscore += 1;
     _isShowingNewHighscore = false;
     //notifyListeners();
   }
@@ -93,7 +91,7 @@ class HighscoreState with ChangeNotifier {
 
   int getAllTimeRanking(GameMode gameMode, int score) {
     List<Highscore> betterHighscores = _highscores
-        .where((h) => h.mode == gameModeName[gameMode] && h.getTotal() > score)
+        .where((h) => h.mode == gameMode.toString() && h.getTotal() > score)
         .toList();
     return betterHighscores.length;
   }
@@ -115,6 +113,21 @@ class HighscoreState with ChangeNotifier {
     }
     return false;
   }
+
+  // Map<Timeframe, int> getHighscoreRankings(Highscore highscore) {
+  //   Map<Timeframe, int> rankings = Map<Timeframe, int>();
+  //   GameMode mode =
+  //       GameMode.values.firstWhere((g) => g.toString() == highscore.mode);
+  //   for (Timeframe timeframe in Timeframe.values) {
+  //     int ranking = getHighscores(timeframe, mode)
+  //         .where((h) => h.getTotal() > highscore.getTotal())
+  //         .toList()
+  //         .length;
+  //     rankings.putIfAbsent(timeframe, () => ranking);
+  //   }
+
+  //   return rankings;
+  // }
 
   Timeframe getNewHighscoreTimeframe(Player player, GameMode gameMode) {
     if (checkHighscore(Timeframe.ALL_TIME, gameMode, player.score.total)) {
