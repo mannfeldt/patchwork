@@ -37,42 +37,44 @@ class _GameModeCardState extends State<GameModeCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: min(MediaQuery.of(context).size.width - 24 - 220, 300),
+      height: max(min(MediaQuery.of(context).size.width - 24 - 220, 300), 160),
       child: Card(
         margin: EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 4),
         child: Row(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              GestureDetector(
-                  onTap: toggleGif,
-                  child: playGif
-                      ? Image.asset(
-                          widget.bakgroundVideo,
-                          fit: BoxFit.contain,
-                          alignment: Alignment.topLeft,
-                        )
-                      : Stack(
-                          children: <Widget>[
-                            Opacity(
-                              opacity: 0.4,
-                              child: Image.asset(
-                                widget.backgroundImage,
-                                fit: BoxFit.contain,
-                                alignment: Alignment
-                                    .topLeft, //klar med omordninga v game card with bug
+              Expanded(
+                child: GestureDetector(
+                    onTap: toggleGif,
+                    child: playGif
+                        ? Image.asset(
+                            widget.bakgroundVideo,
+                            fit: BoxFit.contain,
+                            alignment: Alignment.topLeft,
+                          )
+                        : Stack(
+                            children: <Widget>[
+                              Opacity(
+                                opacity: 0.4,
+                                child: Image.asset(
+                                  widget.backgroundImage,
+                                  fit: BoxFit.contain,
+                                  alignment: Alignment
+                                      .topLeft,
+                                ),
                               ),
-                            ),
-                            Positioned.fill(
-                              child: Center(
-                                  child: Icon(
-                                Icons.play_circle_outline,
-                                size: 64,
-                                color: Colors.blue.shade500.withOpacity(0.8),
-                              )),
-                            )
-                          ],
-                        )),
+                              Positioned.fill(
+                                child: Center(
+                                    child: Icon(
+                                  Icons.play_circle_outline,
+                                  size: 64,
+                                  color: Colors.blue.shade500.withOpacity(0.8),
+                                )),
+                              )
+                            ],
+                          )),
+              ),
               Container(
                 width: 220,
                 child: Column(
