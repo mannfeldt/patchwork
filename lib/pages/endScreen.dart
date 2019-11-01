@@ -113,7 +113,27 @@ class _EndScreenState extends State<EndScreen> {
               final player = players[index];
               int totalScore = player.score.total;
               return ListTile(
-                leading: Image.file(player.screenshot),
+                onTap: () {
+                  Navigator.of(context).push(PageRouteBuilder(
+                      opaque: false,
+                      pageBuilder: (BuildContext context, _, __) {
+                        return BackdropFilter(
+                          filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+                          child: Container(
+                            child: GestureDetector(
+                              onTap: () => Navigator.of(context).pop(),
+                              child: Hero(
+                                  transitionOnUserGestures: true,
+                                  tag: 'screenshotEndScreen$index',
+                                  child: Image.file(player.screenshot)),
+                            ),
+                          ),
+                        );
+                      }));
+                },
+                leading: Hero(
+                    tag: 'screenshotEndScreen$index',
+                    child: Image.file(player.screenshot)),
                 title: Text(
                   player.displayname,
                   style: TextStyle(

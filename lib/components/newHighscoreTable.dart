@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:patchwork/models/highscore.dart';
 import 'package:patchwork/models/player.dart';
@@ -70,6 +72,35 @@ class _NewHighscoreTableState extends State<NewHighscoreTable> {
                   child: Container(
                     height: 80,
                     child: ListTile(
+                      onTap: () {
+                        Navigator.of(context).push(PageRouteBuilder(
+                            opaque: false,
+                            pageBuilder: (BuildContext context, _, __) {
+                              return BackdropFilter(
+                                filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+                                child: Container(
+                                  child: GestureDetector(
+                                    onTap: () => Navigator.of(context).pop(),
+                                    child: Hero(
+                                      transitionOnUserGestures: true,
+                                      tag: 'screenshot$index',
+                                      child: highscore.isNew
+                                          ? Image.file(widget.player.screenshot)
+                                          : FadeInImage.assetNetwork(
+                                              image: highscore.screenshot,
+                                              fadeOutDuration:
+                                                  Duration(milliseconds: 200),
+                                              fadeInDuration:
+                                                  Duration(milliseconds: 200),
+                                              placeholder:
+                                                  "assets/transparent.png",
+                                            ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }));
+                      },
                       leading: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
@@ -80,14 +111,18 @@ class _NewHighscoreTableState extends State<NewHighscoreTable> {
                                 style:
                                     TextStyle(fontSize: 20, color: Colors.blue),
                               )),
-                          highscore.isNew
-                              ? Image.file(widget.player.screenshot)
-                              : FadeInImage.assetNetwork(
-                                  image: highscore.screenshot,
-                                  fadeOutDuration: Duration(milliseconds: 200),
-                                  fadeInDuration: Duration(milliseconds: 400),
-                                  placeholder: "assets/transparent.png",
-                                ),
+                          Hero(
+                            tag: 'screenshot$index',
+                            child: highscore.isNew
+                                ? Image.file(widget.player.screenshot)
+                                : FadeInImage.assetNetwork(
+                                    image: highscore.screenshot,
+                                    fadeOutDuration:
+                                        Duration(milliseconds: 200),
+                                    fadeInDuration: Duration(milliseconds: 400),
+                                    placeholder: "assets/transparent.png",
+                                  ),
+                          )
                         ],
                       ),
                       title: highscore.isNew
