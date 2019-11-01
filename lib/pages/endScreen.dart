@@ -44,8 +44,7 @@ class _EndScreenState extends State<EndScreen> {
         if (newHighscoreTimeFrame != null && !isShowingNewHighscore) {
           List<Highscore> highscores =
               highscoreState.getHighscores(newHighscoreTimeFrame, gameMode);
-          Highscore newHighscore =
-              new Highscore(players[i], i);
+          Highscore newHighscore = new Highscore(players[i], i);
 
           if (highscores.length == highscoreLimit) {
             highscores[highscoreLimit - 1] = newHighscore;
@@ -59,27 +58,29 @@ class _EndScreenState extends State<EndScreen> {
             context: context,
             barrierDismissible: false,
             builder: (BuildContext context) {
-              return BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
-                child: Dialog(
-                    child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        "${timeFrameName[newHighscoreTimeFrame]} new highscore",
-                        style: TextStyle(fontSize: 20),
+              return Center(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+                  child: Dialog(
+                      child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          "${timeFrameName[newHighscoreTimeFrame]} new highscore",
+                          style: TextStyle(fontSize: 20),
+                        ),
                       ),
-                    ),
-                    NewHighscoreTable(
-                      highscores: highscores,
-                      player: players[i],
-                      callbackSaveHighscore: _saveHighscore,
-                      newHighscore: newHighscore,
-                    ),
-                  ],
-                )),
+                      NewHighscoreTable(
+                        highscores: highscores,
+                        player: players[i],
+                        callbackSaveHighscore: _saveHighscore,
+                        newHighscore: newHighscore,
+                      ),
+                    ],
+                  )),
+                ),
               );
             },
           );

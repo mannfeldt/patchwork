@@ -38,161 +38,158 @@ class _NewHighscoreTableState extends State<NewHighscoreTable> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (widget.highscores.length > 2) {
         int scrollpos = widget.highscores.indexWhere((h) => h.isNew) - 2;
-        await _scrollController.animateTo(
-          (scrollpos.toDouble() * 60),
-          curve: Curves.easeOut,
-          duration: Duration(milliseconds: 200 + (scrollpos * 100)),
-        );
+        if (scrollpos > 0) {
+          await _scrollController.animateTo(
+            (scrollpos.toDouble() * 80),
+            curve: Curves.easeInBack,
+            duration: Duration(milliseconds: 300 + (scrollpos * 80)),
+          );
+        }
       }
     });
 
     bool disableSave =
         nameController.text.length != 3 || widget.callbackSaveHighscore == null;
-    final mq = MediaQuery.of(context);
-    return Stack(
-      children: <Widget>[
-        ConstrainedBox(
-          constraints: BoxConstraints(
-            maxHeight: 300 - mq.viewInsets.bottom,
-          ),
-          child: ListView.separated(
+
+    return Expanded(
+      child: Stack(
+        children: <Widget>[
+          ListView.builder(
               controller: _scrollController,
               padding: EdgeInsets.only(bottom: 80),
-              shrinkWrap: true,
+              shrinkWrap: true, //lägg tillbaka det
               physics: BouncingScrollPhysics(),
               scrollDirection: Axis.vertical,
               itemCount: widget.highscores.length,
-              separatorBuilder: (context, index) {
-                return Divider(
-                  color: Colors.black87,
-                );
-              },
               itemBuilder: (context, index) {
                 Highscore highscore = widget.highscores[index];
                 int score = highscore.getTotal();
 
-                return Container(
-                  height: 60,
-                  child: ListTile(
-                    leading: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Container(
-                            padding: EdgeInsets.only(right: 24),
-                            child: Text(
-                              (index + 1).toString(),
-                              style:
-                                  TextStyle(fontSize: 20, color: Colors.blue),
-                            )),
-                        highscore.isNew
-                            ? Image.file(widget.player.screenshot)
-                            : FadeInImage.assetNetwork(
-                                image: highscore.screenshot,
-                                fadeOutDuration: Duration(milliseconds: 200),
-                                fadeInDuration: Duration(milliseconds: 400),
-                                placeholder: "assets/transparent.png",
-                              ),
-                      ],
-                    ),
-                    title: highscore.isNew
-                        ? Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      bottom: 8, right: 8),
-                                  child: Text(
-                                    highscore.emoji,
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        letterSpacing: 1.5,
-                                        fontWeight: FontWeight.w400),
-                                  ),
+                return Card(
+                  elevation: highscore.isNew ? 3 : 0,
+                  child: Container(
+                    height: 80,
+                    child: ListTile(
+                      leading: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Container(
+                              padding: EdgeInsets.only(right: 24),
+                              child: Text(
+                                (index + 1).toString(),
+                                style:
+                                    TextStyle(fontSize: 20, color: Colors.blue),
+                              )),
+                          highscore.isNew
+                              ? Image.file(widget.player.screenshot)
+                              : FadeInImage.assetNetwork(
+                                  image: highscore.screenshot,
+                                  fadeOutDuration: Duration(milliseconds: 200),
+                                  fadeInDuration: Duration(milliseconds: 400),
+                                  placeholder: "assets/transparent.png",
                                 ),
-                                Expanded(
-                                  child: TextField(
-                                    controller: nameController,
-                                    onChanged: nameChanged,
-                                    textCapitalization:
-                                        TextCapitalization.characters,
-                                    maxLength: 3,
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        letterSpacing: 1.5,
-                                        fontWeight: FontWeight.w400),
+                        ],
+                      ),
+                      title: highscore.isNew
+                          ? Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        bottom: 8, right: 8),
+                                    child: Text(
+                                      highscore.emoji,
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          letterSpacing: 1.5,
+                                          fontWeight: FontWeight.w400),
+                                    ),
                                   ),
-                                )
-                              ])
-                        : Text(
-                            highscore.displayname,
-                            style: TextStyle(
-                                fontSize: 20,
-                                letterSpacing: 1.5,
-                                fontWeight: FontWeight.w400),
-                          ),
-                    trailing: CircleAvatar(
-                      backgroundColor: score < 0 ? Colors.red : Colors.blue,
-                      child: Text(
-                        score.abs().toString(),
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                                  Expanded(
+                                    child: TextField(
+                                      controller: nameController,
+                                      onChanged: nameChanged,
+                                      textCapitalization:
+                                          TextCapitalization.characters,
+                                      maxLength: 3,
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          letterSpacing: 1.5,
+                                          fontWeight: FontWeight.w400),
+                                    ),
+                                  )
+                                ])
+                          : Text(
+                              highscore.displayname,
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  letterSpacing: 1.5,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                      trailing: CircleAvatar(
+                        backgroundColor: score < 0 ? Colors.red : Colors.blue,
+                        child: Text(
+                          score.abs().toString(),
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ),
                   ),
                 );
               }),
-        ),
-        Positioned(
-          right: 0,
-          bottom: 0,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: <Widget>[
-              Padding(
-                padding:
-                    const EdgeInsets.only(right: 8.0, top: 16.0, bottom: 8.0),
-                child: RaisedButton(
-                  textColor: Colors.blue,
-                  color: Colors.white,
-                  onPressed: () async {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text("Skip"),
-                ),
-              ),
-              Padding(
-                padding:
-                    const EdgeInsets.only(right: 16.0, top: 16.0, bottom: 8.0),
-                child: RaisedButton(
-                  color: disableSave
-                      ? Colors.grey
-                      : isSaving ? Colors.white : Colors.blue,
-                  textColor: Colors.white,
-                  onPressed: () async {
-                    if (!disableSave && !isSaving) {
-                      setState(() {
-                        isSaving = true;
-                      });
-                      await widget.callbackSaveHighscore(widget.newHighscore,
-                          nameController.text, widget.player);
-                      setState(() {
-                        isSaving = false;
-                      });
+          Positioned(
+            right: 0,
+            bottom: 0,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: <Widget>[
+                Padding(
+                  padding:
+                      const EdgeInsets.only(right: 8.0, top: 16.0, bottom: 8.0),
+                  child: RaisedButton(
+                    textColor: Colors.blue,
+                    color: Colors.white,
+                    onPressed: () async {
                       Navigator.of(context).pop();
-                    }
-                  },
-                  child: isSaving
-                      ? SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(),
-                        )
-                      : Text("Save"),
+                    },
+                    child: Text("Skip"),
+                  ),
                 ),
-              ),
-            ],
-          ),
-        )
-      ],
+                Padding(
+                  padding: const EdgeInsets.only(
+                      right: 16.0, top: 16.0, bottom: 8.0),
+                  child: RaisedButton(
+                    color: disableSave
+                        ? Colors.grey
+                        : isSaving ? Colors.white : Colors.blue,
+                    textColor: Colors.white,
+                    onPressed: () async {
+                      if (!disableSave && !isSaving) {
+                        setState(() {
+                          isSaving = true;
+                        });
+                        await widget.callbackSaveHighscore(widget.newHighscore,
+                            nameController.text, widget.player);
+                        setState(() {
+                          isSaving = false;
+                        });
+                        Navigator.of(context).pop();
+                      }
+                    },
+                    child: isSaving
+                        ? SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(),
+                          )
+                        : Text("Save"),
+                  ),
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
     );
   }
 
