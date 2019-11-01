@@ -402,7 +402,7 @@ class GameState with ChangeNotifier {
   void pass() {
     int nextPlayersPosition = _players
         .where((p) => p.id != _currentPlayer.id)
-        .reduce((a, b) => a.position > b.position ? a : b)
+        .reduce((a, b) => a.position < b.position ? a : b) //vänd på < för att ändra till att passning ställer sig längst fram av alla
         .position;
     int moves = (nextPlayersPosition - _currentPlayer.position) + 1;
     _currentPlayer.buttons += moves;
