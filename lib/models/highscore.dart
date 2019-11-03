@@ -14,6 +14,7 @@ class Highscore implements Comparable {
   bool isNew;
   int id;
   String screenshot;
+  String thumbnail;
   String emoji;
   String key;
 
@@ -27,6 +28,9 @@ class Highscore implements Comparable {
     this.time = data['time'];
     this.id = data['id'];
     this.screenshot = data['screenshot'];
+    this.thumbnail = this.screenshot.replaceFirst(".png",
+        "_180x180.png"); //det funkar inte. det är massa tecken efter png i urlen som är unikt för thubnailen..
+
     this.emoji = data['emoji'];
     // this.key = data['key'];
     this.isNew = false;

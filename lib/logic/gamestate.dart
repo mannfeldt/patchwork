@@ -3,7 +3,6 @@ import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:patchwork/logic/bingoGameMechanics.dart';
-import 'package:patchwork/models/score.dart';
 import 'package:patchwork/utilities/constants.dart';
 import 'package:patchwork/logic/classicGameMechanics.dart';
 import 'package:patchwork/logic/patchworkRuleEngine.dart';

@@ -153,8 +153,8 @@ class _GameplayState extends State<Gameplay> {
                 ? 'This is where you place your patches.\nCompleting a row in same color awards you with a lootbox.'
                 : 'This is where you place your patches',
             child: Container(
-              padding: EdgeInsets.fromLTRB(
-                  gameBoardInset, gameBoardInset, gameBoardInset, 0),
+              padding:
+                  EdgeInsets.fromLTRB(gameBoardInset, 0, gameBoardInset, 0),
               child: AnimatedOpacity(
                 duration: Duration(milliseconds: 50),
                 curve: Curves.easeIn,
