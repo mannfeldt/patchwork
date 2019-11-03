@@ -1,10 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:math';
-
-import 'package:emoji_picker/emoji_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:patchwork/logic/bingoGameMechanics.dart';
+import 'package:patchwork/models/score.dart';
 import 'package:patchwork/utilities/constants.dart';
 import 'package:patchwork/logic/classicGameMechanics.dart';
 import 'package:patchwork/logic/patchworkRuleEngine.dart';
@@ -101,6 +100,16 @@ class GameState with ChangeNotifier {
   void removePlayer(Player player) {
     _players.removeWhere((p) => p.id == player.id);
     notifyListeners();
+  }
+
+  void restartGame() {
+    List<Player> players = new List<Player>.from(_players);
+    _players.clear();
+    players.forEach((p) => addPlayer(p.id, p.emoji, p.name, p.color, p.isAi));
+    _bingoAnimation = false;
+    _recieveButtonsAnimation = false;
+
+    startGame(_gameMode, false);
   }
 
   void restartApp() {
@@ -299,7 +308,6 @@ class GameState with ChangeNotifier {
     _currentBoard = _currentPlayer.board;
 
     placePieceMarker();
-    print("nextturn: " + _currentPlayer.name + "  " + _currentPlayer.state);
     notifyListeners();
   }
 
@@ -402,7 +410,9 @@ class GameState with ChangeNotifier {
   void pass() {
     int nextPlayersPosition = _players
         .where((p) => p.id != _currentPlayer.id)
-        .reduce((a, b) => a.position < b.position ? a : b) //vänd på < för att ändra till att passning ställer sig längst fram av alla
+        .reduce((a, b) => a.position < b.position
+            ? a
+            : b) //vänd på < för att ändra till att passning ställer sig längst fram av alla
         .position;
     int moves = (nextPlayersPosition - _currentPlayer.position) + 1;
     _currentPlayer.buttons += moves;

@@ -46,7 +46,7 @@ class _GameplayState extends State<Gameplay> {
         setState(() {
           isScreenshotTaken = true;
         });
-        await Future.delayed(Duration(milliseconds: 200));
+        await Future.delayed(Duration(milliseconds: 300));
         File image = await screenshotController.capture();
         gameState.saveScreenshot(image);
         setState(() {
@@ -105,14 +105,6 @@ class _GameplayState extends State<Gameplay> {
 
           await Navigator.of(context).push(
             PageRouteBuilder(
-                //TODO
-//3. se om jag kan få till en hero animation eller stagger för lootboxen.. generell stager eller animation för att visa dialoger?
-//eller något liknande detta? https://medium.com/apparence/flutter-staggered-animations-82820c2f2b0e
-//lite mer delay innan newHighscoreDialog kommer upp? eller något. det är lite mycket som händer på samma gång när man går imål. inkl button animation
-//kanske ändra animation kamera blixten?
-//lägg till floating actiom button liknande som visas i gameplay så är den en pausmenu där man kan starta om spelet eller avsluta spelet.
-//lägg till en rematch knapp brevid continue på hemskärmen som också använder den här restartfunktionen
-//lägg till så att man kan backa ut ur appen från mainmenu?
                 pageBuilder: (_context, _, __) =>
                     LootBoxAnimation(lootBox, gameState.getBoardTileSize()),
                 opaque: false),

@@ -148,12 +148,9 @@ class HighscoreState with ChangeNotifier {
           .collection("highscores")
           .getDocuments()
           .then((QuerySnapshot snapshot) {
-        //läs och tranformera till hightscore modelen jag inte har än. och lägg till dem i listan _highscores
-        snapshot.documents.forEach((f) => print('${f.data}}'));
         _highscores = [];
         snapshot.documents
             .forEach((f) => {_highscores.add(Highscore.fromJson(f.data))});
-        // return _highscores;
       });
     }
     notifyListeners();

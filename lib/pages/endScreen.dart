@@ -152,13 +152,32 @@ class _EndScreenState extends State<EndScreen> {
             },
           ),
         )),
-        OutlineButton(
-          onPressed: () {
-            gameState.restartApp();
-          },
-          textColor: Colors.blue,
-          borderSide: BorderSide(color: Colors.blue),
-          child: Text("Continue"),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              OutlineButton(
+                onPressed: () {
+                  gameState.restartGame();
+                },
+                textColor: Colors.blue,
+                borderSide: BorderSide(color: Colors.blue),
+                child: Text("Rematch"),
+              ),
+              SizedBox(
+                width: 8,
+              ),
+              OutlineButton(
+                onPressed: () {
+                  gameState.restartApp();
+                },
+                textColor: Colors.blue,
+                borderSide: BorderSide(color: Colors.blue),
+                child: Text("Main menu"),
+              ),
+            ],
+          ),
         ),
       ],
     ));

@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:patchwork/logic/highscoreState.dart';
 import 'package:patchwork/pages/endScreen.dart';
@@ -51,14 +53,76 @@ class HomePage extends StatelessWidget {
     } else {
       child = Text("Loading...");
     }
-    return new WillPopScope(onWillPop: () {
-      return new Future(() => false);
+    return new WillPopScope(onWillPop: () async {
+      if (view == "gameplay") {
+        await showDialog(
+          context: context,
+          barrierDismissible: true,
+          builder: (BuildContext context) {
+            return new PauseDialog(gameState: gameState);
+          },
+        );
+      }
+      return new Future(() => view == null);
     }, child: Scaffold(body: new LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
       final mq = MediaQuery.of(context);
-      double maxHeight = constraints.maxHeight - mq.padding.top; //alt: viewPadding
+      double maxHeight = constraints.maxHeight - mq.padding.top;
       gameState.setConstraints(constraints.maxWidth, maxHeight);
       return child;
     })));
+  }
+}
+
+class PauseDialog extends StatelessWidget {
+  const PauseDialog({
+    Key key,
+    @required this.gameState,
+  }) : super(key: key);
+
+  final GameState gameState;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+        onTap: () {
+          Navigator.pop(context);
+        },
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+          child: AlertDialog(
+            title: Text("Game paused"),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                OutlineButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text("Resume"),
+                  borderSide: BorderSide(color: Colors.blue),
+                  textColor: Colors.blue,
+                ),
+                OutlineButton(
+                  onPressed: () {
+                    gameState.restartGame();
+                    Navigator.pop(context);
+                  },
+                  borderSide: BorderSide(color: Colors.blue),
+                  textColor: Colors.blue,
+                  child: Text("Restart"),
+                ),
+                OutlineButton(
+                  onPressed: () {
+                    gameState.restartApp();
+                    Navigator.pop(context);
+                  },
+                  borderSide: BorderSide(color: Colors.blue),
+                  textColor: Colors.blue,
+                  child: Text("Quit to main menu"),
+                ),
+              ],
+            ),
+            titlePadding: EdgeInsets.all(30.0),
+          ),
+        ));
   }
 }
