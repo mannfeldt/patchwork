@@ -1,9 +1,9 @@
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:patchwork/utilities/constants.dart';
-import 'package:patchwork/utilities/patchwork_icons_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:patchwork/logic/gamestate.dart';
 import 'package:flutter_colorpicker/block_picker.dart';
@@ -23,10 +23,12 @@ class Setup extends StatefulWidget {
 class SetupState extends State<Setup> {
   Random rng = new Random();
   Color _pickerColor;
-  Emoji _pickedEmoji;
+  String _pickedEmoji;
   TextEditingController nameController = TextEditingController();
   bool _isAi = false;
   bool _playTutorial;
+  int _playerId = 0;
+  final GlobalKey<AnimatedListState> _listKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -48,8 +50,8 @@ class SetupState extends State<Setup> {
       _pickerColor = availableColors[rng.nextInt(availableColors.length)];
     }
 
-    List<Emoji> usedEmojis = players.map((p) => p.pickedEmoji).toList();
-    List<Emoji> availableEmojis = playerEmojis
+    List<String> usedEmojis = players.map((p) => p.emoji).toList();
+    List<String> availableEmojis = playerEmojis
         .where((pickedEmoji) => !usedEmojis.contains(pickedEmoji))
         .toList();
     if (_pickedEmoji == null) {
@@ -58,9 +60,6 @@ class SetupState extends State<Setup> {
     }
 
     return Scaffold(
-        appBar: AppBar(
-          title: Text("New " + gameModeName[widget.gameMode] + " Game"),
-        ),
         body: Builder(
             builder: (context) => Center(
                   child: Stack(
@@ -83,32 +82,66 @@ class SetupState extends State<Setup> {
                               fit: BoxFit.fitWidth,
                             ),
                           )),
-                      new Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 48),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(
-                            left: 16, right: 16, top: 4, bottom: 4),
-                        child: Column(
-                          children: <Widget>[
-                            Row(
-                                mainAxisSize: MainAxisSize.min,
+                      SafeArea(
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                              left: 16, right: 16, top: 0, bottom: 4),
+                          child: Column(
+                            children: <Widget>[
+                              Stack(
                                 children: <Widget>[
-                                  Expanded(
-                                    child: new Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          2.0, 100.0, 0, 0),
+                                  Align(
+                                    alignment: Alignment.topLeft,
+                                    child: IconButton(
+                                      icon: BackButtonIcon(),
+                                      color: Colors.white,
+                                      highlightColor: Colors.transparent,
+                                      iconSize: 28,
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(),
+                                    ),
+                                  ),
+                                  Align(
+                                    alignment: Alignment.bottomCenter,
+                                    heightFactor: 2,
+                                    child: Text(
+                                      "New ${gameModeName[widget.gameMode]} game",
+                                      style: TextStyle(
+                                          fontSize: 26,
+                                          fontWeight: FontWeight.bold,
+                                          letterSpacing: 1,
+                                          shadows: <Shadow>[
+                                            Shadow(
+                                              offset: Offset(1.0, 1.0),
+                                              blurRadius: 2.0,
+                                              color:
+                                                  Color.fromARGB(255, 0, 0, 0),
+                                            ),
+                                            Shadow(
+                                              offset: Offset(1.0, 1.0),
+                                              blurRadius: 2.0,
+                                              color: Color.fromARGB(
+                                                  125, 0, 0, 255),
+                                            ),
+                                          ],
+                                          color: Colors.white),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 30,
+                              ),
+                              Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    Expanded(
                                       child: Text(
                                         "Add players",
                                         style: TextStyle(fontSize: 30),
                                       ),
                                     ),
-                                  ),
-                                  Expanded(
-                                    child: new Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          2.0, 100.0, 0, 0),
+                                    Expanded(
                                       child: SwitchListTile(
                                         title: const Text("Show Tutorial"),
                                         activeColor: Colors.green.shade700,
@@ -116,28 +149,20 @@ class SetupState extends State<Setup> {
                                         value: _playTutorial ?? false,
                                       ),
                                     ),
-                                  ),
-                                ]),
-                            Row(mainAxisSize: MainAxisSize.min, children: <
-                                Widget>[
-                              Container(
-                                width: 100,
-                                child: new Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(2.0, 0, 0, 0),
+                                  ]),
+                              Row(mainAxisSize: MainAxisSize.min, children: <
+                                  Widget>[
+                                Expanded(
                                   child: TextField(
                                     controller: nameController,
-                                    maxLength: 3,
+                                    maxLength: 12,
                                     decoration:
                                         InputDecoration(labelText: 'Name'),
                                   ),
                                 ),
-                              ),
-                              Container(
-                                child: Expanded(
+                                Container(
                                   child: new Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(2.0, 0, 0, 0),
+                                    padding: const EdgeInsets.only(left: 2),
                                     child: ButtonTheme.bar(
                                         child: ButtonBar(children: <Widget>[
                                       Container(
@@ -154,15 +179,33 @@ class SetupState extends State<Setup> {
                                                     (BuildContext context) {
                                                   return BackdropFilter(
                                                     filter: ImageFilter.blur(
-                                                    sigmaX: 4, sigmaY: 4),
+                                                        sigmaX: 4, sigmaY: 4),
                                                     child: AlertDialog(
-                                                      title:
-                                                          Text('Select an emoji'),
+                                                      contentPadding:
+                                                          EdgeInsets.all(0),
+                                                      title: Text(
+                                                          'Select your emoji'),
                                                       content:
                                                           SingleChildScrollView(
-                                                            child: EmojiPicker(
-                                                              onEmojiSelected: changeEmoji),
-                                                          ),
+                                                        dragStartBehavior:
+                                                            DragStartBehavior
+                                                                .start,
+                                                        scrollDirection:
+                                                            Axis.horizontal,
+                                                        child: Column(
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
+                                                          children: <Widget>[
+                                                            EmojiPicker(
+                                                                rows: 4,
+                                                                columns: 8,
+                                                                bgColor: Colors
+                                                                    .transparent,
+                                                                onEmojiSelected:
+                                                                    changeEmoji),
+                                                          ],
+                                                        ),
+                                                      ),
                                                     ),
                                                   );
                                                 });
@@ -170,7 +213,7 @@ class SetupState extends State<Setup> {
                                           textColor: Colors.blue,
                                           borderSide:
                                               BorderSide(color: Colors.blue),
-                                          child: Text(_pickedEmoji.emoji),
+                                          child: Text(_pickedEmoji),
                                         ),
                                       ),
                                       RaisedButton(
@@ -218,93 +261,121 @@ class SetupState extends State<Setup> {
                                                         "Can not add more players")));
                                           } else {
                                             gameState.addPlayer(
+                                                _playerId,
                                                 _pickedEmoji,
                                                 nameController.text,
                                                 _pickerColor,
                                                 _isAi);
+                                            setState(() {
+                                              _playerId += 1;
+                                            });
                                             FocusScope.of(context)
                                                 .requestFocus(new FocusNode());
 
                                             nameController.clear();
                                             _pickerColor = null;
                                             _pickedEmoji = null;
+                                            _listKey.currentState.insertItem(0);
                                           }
                                         },
                                         textColor: Colors.blue,
-                                          borderSide:
-                                              BorderSide(color: Colors.blue),
+                                        borderSide:
+                                            BorderSide(color: Colors.blue),
                                         child: Text("Add"),
                                       )
                                     ])),
                                   ),
                                 ),
-                              ),
-                            ]),
-                            Expanded(
-                                child: Padding(
-                              padding: const EdgeInsets.fromLTRB(
-                                  5.0, 15.0, 5.0, 15.0),
-                              child: players != null
-                                  ? ListView.builder(
-                                      itemCount: players.length,
-                                      itemBuilder: (context, index) {
-                                        final player = players[index];
-                                        return Dismissible(
-                                          key: Key(player.id.toString()),
-                                          onDismissed: (direction) {
-                                            gameState.removePlayer(player);
-                                            Scaffold.of(context)
-                                                .hideCurrentSnackBar();
-                                            Scaffold.of(context).showSnackBar(
-                                                SnackBar(
-                                                    content: Text(player.name +
-                                                        " removed")));
-                                          },
-                                          background: Container(
-                                              color:
-                                                  Colors.deepOrange.shade300),
-                                          child: ListTile(
-                                            title: Text(player.name),
-                                            leading:
-                                                Text(player.pickedEmoji.emoji),
-                                          ),
-                                        );
-                                      },
-                                    )
-                                  : Text("No players",
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          height: 8,
-                                          color: Colors.grey)),
-                            )),
-                            RaisedButton(
-                              color: buttonColor,
-                              onPressed: () {
-                                FocusScope.of(context)
-                                    .requestFocus(new FocusNode());
-                                Scaffold.of(context).hideCurrentSnackBar();
-                                if (players.length < minimumPlayers) {
-                                  Scaffold.of(context).showSnackBar(SnackBar(
-                                      content: Text("Needs at least " +
-                                          minimumPlayers.toString() +
-                                          " players to start")));
-                                } else {
-                                  gameState.startGame(
-                                      widget.gameMode, _playTutorial);
-                                  Navigator.pop(context, null);
-                                }
-                              },
-                              child: Text(
-                                "Start",
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            )
-                          ],
+                              ]),
+                              Expanded(
+                                  child: Padding(
+                                padding: const EdgeInsets.fromLTRB(
+                                    5.0, 15.0, 5.0, 15.0),
+                                child: players != null
+                                    ? AnimatedList(
+                                        key: _listKey,
+                                        initialItemCount: players.length,
+                                        itemBuilder:
+                                            (context, index, animation) {
+                                          final player = players[index];
+                                          return _buildItem(animation, player,
+                                              index, gameState.removePlayer);
+                                        },
+                                      )
+                                    : Text("No players",
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            height: 8,
+                                            color: Colors.grey)),
+                              )),
+                              RaisedButton(
+                                color: buttonColor,
+                                onPressed: () {
+                                  FocusScope.of(context)
+                                      .requestFocus(new FocusNode());
+                                  Scaffold.of(context).hideCurrentSnackBar();
+                                  if (players.length < minimumPlayers) {
+                                    Scaffold.of(context).showSnackBar(SnackBar(
+                                        content: Text("Needs at least " +
+                                            minimumPlayers.toString() +
+                                            " players to start")));
+                                  } else {
+                                    gameState.startGame(
+                                        widget.gameMode, _playTutorial);
+                                    Navigator.pop(context, null);
+                                  }
+                                },
+                                child: Text(
+                                  "Start",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              )
+                            ],
+                          ),
                         ),
                       ),
                     ],
                   ),
                 )));
+  }
+
+  Widget _buildItem(Animation<double> animation, Player player, int index,
+      Function removePlayerCallback) {
+    return SizeTransition(
+      sizeFactor: animation,
+      child: Dismissible(
+        key: Key(player.id.toString()),
+        onDismissed: (direction) {
+          removePlayerCallback(player);
+          //fungerar tills jag tar bort lite flera eller någon mitt i? är nog index variabeln som är fel.
+          _listKey.currentState.removeItem(
+              index,
+              (BuildContext context, Animation<double> animation) =>
+                  Container(),
+              duration: const Duration(milliseconds: 250));
+        },
+        background: Container(color: Colors.deepOrange.shade300),
+        child: Container(
+          decoration: BoxDecoration(
+              gradient: LinearGradient(
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+            stops: [0, 0.25, 0.5, 0.75, 1],
+            colors: [
+              player.color.withOpacity(0),
+              player.color.withOpacity(0.4),
+              player.color.withOpacity(0.5),
+              player.color.withOpacity(0.4),
+              player.color.withOpacity(0)
+            ],
+          )),
+          child: ListTile(
+            title: Text(player.name),
+            leading: Text(player.emoji),
+          ),
+        ),
+      ),
+    );
   }
 
   void _onSwitchChanged(bool value) {
@@ -317,7 +388,7 @@ class SetupState extends State<Setup> {
   }
 
   void changeEmoji(Emoji value, var category) {
-    setState(() => _pickedEmoji = value);
+    setState(() => _pickedEmoji = value.emoji);
     Navigator.pop(context, null);
   }
 

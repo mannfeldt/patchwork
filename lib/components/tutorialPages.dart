@@ -39,12 +39,14 @@ class _TutorialPagesState extends State<TutorialPages> {
                 padding: const EdgeInsets.all(2.0),
                 child: new SizedBox(
                   width: double.infinity,
-                  // height: double.infinity,
-                  child: RaisedButton(
-                      child: Text("close"),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      }),
+                  child: OutlineButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    borderSide: BorderSide(color: Colors.blue),
+                    textColor: Colors.blue,
+                    child: Text("Close"),
+                  ),
                 ),
               )
             ],

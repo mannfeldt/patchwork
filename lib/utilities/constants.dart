@@ -1,4 +1,3 @@
-import 'package:emoji_picker/emoji_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:patchwork/models/square.dart';
 import 'package:patchwork/models/piece.dart';
@@ -27,7 +26,7 @@ const int bingoModeNrOfDifferentImages = 3;
 const int bingoStartButtons = 15;
 const double timeBoardTileHeight = 30.0;
 const double timeBoardTileWidth = 90.0;
-const int highscoreLimit = 5;
+const int highscoreLimit = 20;
 const double boardInset = 5.0;
 const int maxPieceSize = 10;
 const int maxPieceLength = 6;
@@ -45,7 +44,7 @@ final buttonColor = Colors.blue.shade800;
 final stitchColor = Colors.black87;
 //lite statas från default pieces: 55% av cost är i buttons 45% i time. så buttons ska vara lite större chans att få mer cost än time
 //avarage buttons är strax över 1
-const int minimumPlayers = 1;
+const int minimumPlayers = 2;
 const int maximumPlayers = 10;
 const int lazyLoadPieces = 12;
 final List<Square> directions = [_west, _east, _north, _south];
@@ -54,13 +53,11 @@ final List<String> pieceImages = [
   "blue_knots.png",
   "blue_sunflowers.jpg",
   "blue_tile.jpg",
-  "brown_dots.png",
   "esher.jpg",
   "green_buds.png",
   "orange_sunflowers.jpg",
   "orange_tile.png",
   "purple_cross.jpg",
-  "sun.png",
   "yellow_flower.jpg"
 ];
 final String singlePiece = "sun.png";
@@ -71,30 +68,20 @@ final List<Color> pieceColors = [
   Colors.deepOrange
 ];
 final List<Color> playerColors = Colors.primaries;
-// final Map<String, double> costAdjustments = {
-//   "SALE30": -0.3,
-//   "SALE20": -0.2,
-//   "SALE10": -0.1,
-//   "OVER10": 0.1,
-//   "OVER20": 0.2,
-//   "OVER30": 0.3,
-//   "NONE": 0.0
-// };
 
-final List<Emoji> playerEmojis = [
-  Emoji(emoji: '🐱', name: 'Cat Face'),
-  Emoji(emoji: '🐷', name: 'Pig Face'),
-  Emoji(emoji: '🐵', name: 'Monkey Face'),
-  Emoji(emoji: '😍', name: 'Smiling Face With Heart-Eyes'),
-  Emoji(emoji: '🐼', name: 'Panda Face'),
-  Emoji(emoji: '🍆', name: 'Eggplant'),
-  Emoji(emoji: '🍑', name: 'Peach'),
-  Emoji(emoji: '😄', name: 'Grinning Face With Smiling Eyes'),
-  Emoji(emoji: '💩', name: 'Pile of Poo'),
-  Emoji(emoji: '🤓', name: 'Nerd Face'),
-  Emoji(emoji: '😎', name: 'Smiling Face With Sunglasses')
- ];
-
+final List<String> playerEmojis = [
+  '🐱',
+  '🐷',
+  '🐵',
+  '😍',
+  '🐼',
+  '🍆',
+  '🍑',
+  '😄',
+  '💩',
+  '🤓',
+  '😎'
+];
 
 final List<List<String>> spicyPieces = [
   [
@@ -503,8 +490,3 @@ final List classicPieces = [
     "time": 2
   },
 ];
-
-// gör detta till en lista av pieces. eller iaf så att de innehåller info om buttons och cost.
-//om jag skapar en mix mellan default och spicy/random så ska jag bara läsa shapes så att alla använder samma algoritm för cost
-//behöver alltså en ny konstruktor i pieces(id, shape, time, cost, buttons)
-//när jag blandar så tar jag samma lista fast plockar ut shape bara och skapar om genom fromvisual

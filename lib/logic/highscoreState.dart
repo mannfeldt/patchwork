@@ -12,7 +12,6 @@ import 'package:patchwork/utilities/utils.dart';
 
 class HighscoreState with ChangeNotifier {
   List<Highscore> _highscores;
-  int _nextPlayerToCheckHighscore = 0;
   bool _isShowingNewHighscore = false;
 
   final databaseReference = Firestore.instance;
@@ -20,7 +19,6 @@ class HighscoreState with ChangeNotifier {
   final FirebaseAuth auth = FirebaseAuth.instance;
 
   getAllHightscores() => _highscores;
-  getNextPlayerToCheckHIghscore() => _nextPlayerToCheckHighscore;
   isShowingNewHighscore() => _isShowingNewHighscore;
 
   List<Highscore> getHighscores(Timeframe timeframe, GameMode gameMode) {
@@ -28,7 +26,7 @@ class HighscoreState with ChangeNotifier {
     List<Highscore> filteredHighscore = [];
     filteredHighscore = _highscores
         .where((h) =>
-            h.mode == gameModeName[gameMode] &&
+            h.mode == gameMode.toString() &&
             Utils.isWithinTimeframe(h.time, timeframe))
         .toList();
     filteredHighscore.sort((a, b) => a.compareTo(b));
@@ -37,8 +35,20 @@ class HighscoreState with ChangeNotifier {
     return filteredHighscore;
   }
 
-  void saveHighscore(Highscore highscore, Player player) async {
-    await auth.signInAnonymously();
+  void reset() {
+    _isShowingNewHighscore = false;
+  }
+
+  void saveHighscoreLocal(Highscore highscore, Player player) {
+    //sätt
+    highscore.cachedScreenshot = player.screenshot;
+    highscore.hasCachedScreenshot = true;
+    highscore.isNew = false;
+    _highscores.add(highscore);
+  }
+
+  void saveHighscoreFirebase(Highscore highscore, Player player) async {
+    //await auth.signInAnonymously();
     String extension = "png";
     final String fileName = 'screen_' +
         DateTime.now().millisecondsSinceEpoch.toString() +
@@ -53,9 +63,9 @@ class HighscoreState with ChangeNotifier {
     final StorageTaskSnapshot downloadUrl = (await uploadTask.onComplete);
     final String url = (await downloadUrl.ref.getDownloadURL());
 
-    highscore.thumbnail = url;
     highscore.screenshot = url;
 
+//det är möjligt att köra en tom add({}) och köra ref.documentId på det jag fårsom svar och sen köra ref.set eller liknande
     await databaseReference.collection("highscores").add({
       'userId': highscore.userId,
       'name': highscore.name,
@@ -65,7 +75,7 @@ class HighscoreState with ChangeNotifier {
       'time': highscore.time,
       'mode': highscore.mode,
       'screenshot': highscore.screenshot,
-      'thumbnail': highscore.thumbnail,
+      'emoji': highscore.emoji,
     }).then(
         (
           onValue,
@@ -73,8 +83,7 @@ class HighscoreState with ChangeNotifier {
             {print("SAVE HIGHSCORE")},
         onError: (e) => {print(e.toString())});
     highscore.isNew = false; //?
-    _highscores.add(highscore);
-    // _nextPlayerToCheckHighscore += 1;
+    //_highscores.add(highscore);
     _isShowingNewHighscore = false;
     //notifyListeners();
   }
@@ -92,13 +101,12 @@ class HighscoreState with ChangeNotifier {
 
   int getAllTimeRanking(GameMode gameMode, int score) {
     List<Highscore> betterHighscores = _highscores
-        .where((h) => h.mode == gameModeName[gameMode] && h.getTotal() > score)
+        .where((h) => h.mode == gameMode.toString() && h.getTotal() > score)
         .toList();
     return betterHighscores.length;
   }
 
   void newGame() {
-    _nextPlayerToCheckHighscore = 0;
     notifyListeners();
   }
 
@@ -115,6 +123,21 @@ class HighscoreState with ChangeNotifier {
     return false;
   }
 
+  // Map<Timeframe, int> getHighscoreRankings(Highscore highscore) {
+  //   Map<Timeframe, int> rankings = Map<Timeframe, int>();
+  //   GameMode mode =
+  //       GameMode.values.firstWhere((g) => g.toString() == highscore.mode);
+  //   for (Timeframe timeframe in Timeframe.values) {
+  //     int ranking = getHighscores(timeframe, mode)
+  //         .where((h) => h.getTotal() > highscore.getTotal())
+  //         .toList()
+  //         .length;
+  //     rankings.putIfAbsent(timeframe, () => ranking);
+  //   }
+
+  //   return rankings;
+  // }
+
   Timeframe getNewHighscoreTimeframe(Player player, GameMode gameMode) {
     if (checkHighscore(Timeframe.ALL_TIME, gameMode, player.score.total)) {
       return Timeframe.ALL_TIME;
@@ -130,16 +153,14 @@ class HighscoreState with ChangeNotifier {
 
   Future<List<Highscore>> fetchHighscores() async {
     if (_highscores == null) {
+      await auth.signInAnonymously();
       await databaseReference
           .collection("highscores")
           .getDocuments()
           .then((QuerySnapshot snapshot) {
-        //läs och tranformera till hightscore modelen jag inte har än. och lägg till dem i listan _highscores
-        snapshot.documents.forEach((f) => print('${f.data}}'));
         _highscores = [];
         snapshot.documents
             .forEach((f) => {_highscores.add(Highscore.fromJson(f.data))});
-        // return _highscores;
       });
     }
     notifyListeners();

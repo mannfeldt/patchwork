@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:math';
-
-import 'package:emoji_picker/emoji_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:patchwork/logic/bingoGameMechanics.dart';
 import 'package:patchwork/utilities/constants.dart';
@@ -92,8 +90,8 @@ class GameState with ChangeNotifier {
     notifyListeners();
   }
 
-  void addPlayer(Emoji pickedEmoji, String name, Color color, bool isAi) {
-    Player player = new Player(_players.length, pickedEmoji, name, color, isAi);
+  void addPlayer(int id, String emoji, String name, Color color, bool isAi) {
+    Player player = new Player(id, emoji, name, color, isAi);
     _players.add(player);
     notifyListeners();
   }
@@ -101,6 +99,15 @@ class GameState with ChangeNotifier {
   void removePlayer(Player player) {
     _players.removeWhere((p) => p.id == player.id);
     notifyListeners();
+  }
+
+  void restartGame() {
+    List<Player> players = new List<Player>.from(_players);
+    reset();
+    _players.clear();
+    players.forEach((p) => addPlayer(p.id, p.emoji, p.name, p.color, p.isAi));
+
+    startGame(_gameMode, false);
   }
 
   void restartApp() {
@@ -116,29 +123,36 @@ class GameState with ChangeNotifier {
     _bottomHeight = screenHeight - (maxSize + (gameBoardInset * 1));
   }
 
+  void reset() {
+    _bingoAnimation = false;
+    _recieveButtonsAnimation = false;
+    _pieceMarkerIndex = 0;
+    _turnCounter = 0;
+    _extraPieceCollected = false;
+    _scissorsCollected = false;
+  }
+
   void startQuickPlay(GameMode mode) {
+    reset();
+    _players.clear();
     Random rng = new Random();
-    addPlayer(
-        playerEmojis[rng.nextInt(playerEmojis.length)], "Player 1", playerColors[rng.nextInt(playerColors.length)], false);
+    addPlayer(1, playerEmojis[rng.nextInt(playerEmojis.length)], "Player 1",
+        playerColors[rng.nextInt(playerColors.length)], false);
     List<Color> availablieColors =
         playerColors.where((c) => c != _players[0].color).toList();
-    addPlayer(playerEmojis[rng.nextInt(playerEmojis.length)], "Player 2",
-        availablieColors[rng.nextInt(availablieColors.length)], false);
+    List<String> availablieEmojis =
+        playerEmojis.where((e) => e != _players[0].emoji).toList();
+    addPlayer(
+        2,
+        availablieEmojis[rng.nextInt(availablieEmojis.length)],
+        "Player 2",
+        availablieColors[rng.nextInt(availablieColors.length)],
+        false);
     startGame(mode, false);
   }
 
-  void startQuickBingoPlay() {
-    Random rng = new Random();
-    addPlayer(playerEmojis[rng.nextInt(playerEmojis.length)], 
-        "Player 1", playerColors[rng.nextInt(playerColors.length)], false);
-    List<Color> availablieColors =
-    playerColors.where((c) => c != _players[0].color).toList();
-    addPlayer(playerEmojis[rng.nextInt(playerEmojis.length)], "Player 2",
-        availablieColors[rng.nextInt(availablieColors.length)], false);
-    startGame(GameMode.BINGO, false);
-  }
-
   void startGame(GameMode mode, bool playTutorial) {
+    reset();
     switch (mode) {
       case GameMode.CLASSIC:
         _ruleEngine = new ClassicGameMechanics();
@@ -155,13 +169,9 @@ class GameState with ChangeNotifier {
     _nextPieceList = _gamePieces;
     _timeBoard = _ruleEngine.initTimeBoard();
     _players = _ruleEngine.initPlayers(_players);
-    _pieceMarkerIndex = 0;
-    _turnCounter = 0;
     _currentPlayer = _players[0];
     _previousPlayer = _currentPlayer;
     _currentBoard = _currentPlayer.board;
-    _extraPieceCollected = false;
-    _scissorsCollected = false;
     _playTutorial = playTutorial;
     nextTurn();
     saveHasPlayed();
@@ -304,7 +314,6 @@ class GameState with ChangeNotifier {
     _currentBoard = _currentPlayer.board;
 
     placePieceMarker();
-    print("nextturn: " + _currentPlayer.name + "  " + _currentPlayer.state);
     notifyListeners();
   }
 
@@ -321,9 +330,15 @@ class GameState with ChangeNotifier {
     }
   }
 
-  void clearAnimationButtons(bool goSleep) async {
-    _recieveButtonsAnimation = false;
-    _currentPlayer.buttons += _currentBoard.buttons;
+  void onButtonAnimationRecievedButtons() {
+    if (_recieveButtonsAnimation) {
+      _currentPlayer.buttons += _currentBoard.buttons;
+      _recieveButtonsAnimation = false;
+    }
+    notifyListeners();
+  }
+
+  void onButtonAnimationCompleted() async {
     if (_extraPieceCollected || _scissorsCollected) {
       notifyListeners();
     } else {
@@ -401,7 +416,9 @@ class GameState with ChangeNotifier {
   void pass() {
     int nextPlayersPosition = _players
         .where((p) => p.id != _currentPlayer.id)
-        .reduce((a, b) => a.position > b.position ? a : b)
+        .reduce((a, b) => a.position < b.position
+            ? a
+            : b) //vänd på < för att ändra till att passning ställer sig längst fram av alla
         .position;
     int moves = (nextPlayersPosition - _currentPlayer.position) + 1;
     _currentPlayer.buttons += moves;

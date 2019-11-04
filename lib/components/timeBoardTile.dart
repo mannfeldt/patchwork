@@ -54,7 +54,7 @@ class _TimeBoardTileState extends State<TimeBoardTile> {
         Player p = widget.players[i];
         Widget avatar = Padding(
           padding: EdgeInsets.fromLTRB(paddingLeft * i, 0, 0, 0),
-          child: Text(p.pickedEmoji.emoji),
+          child: Text(p.emoji),
         );
         avatars.add(avatar);
       }
@@ -64,7 +64,8 @@ class _TimeBoardTileState extends State<TimeBoardTile> {
       tileContent.add(Center(
           child: Icon(
         PatchworkIcons.button_icon,
-        color: buttonColor.withOpacity(0.8),
+        size: tileWidth / 2,
+        color: buttonColor.withOpacity(0.6),
       )));
     }
     if (widget.hasPiece) {
@@ -72,7 +73,7 @@ class _TimeBoardTileState extends State<TimeBoardTile> {
           child: Container(
               padding: EdgeInsets.all(tileWidth / 10),
               child: Image.asset(
-                "assets/sun.png",
+                "assets/$singlePiece",
               ))));
     }
     if (widget.hasScissors) {

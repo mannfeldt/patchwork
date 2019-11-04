@@ -29,8 +29,10 @@ class _EndScreenState extends State<EndScreen> {
       Highscore newHighscore = highscore;
       newHighscore.name = name;
       newHighscore.time = Timestamp.now();
-      newHighscore.mode = gameModeName[gameState.getGameMode()];
-      await highscoreState.saveHighscore(newHighscore, player);
+      newHighscore.mode = gameState.getGameMode().toString();
+      highscoreState.saveHighscoreLocal(newHighscore, player);
+      await Future.delayed(Duration(seconds: 1));
+      highscoreState.saveHighscoreFirebase(newHighscore, player);
     }
 
     List<Player> players = gameState.getPlayers();
@@ -44,7 +46,7 @@ class _EndScreenState extends State<EndScreen> {
         if (newHighscoreTimeFrame != null && !isShowingNewHighscore) {
           List<Highscore> highscores =
               highscoreState.getHighscores(newHighscoreTimeFrame, gameMode);
-          Highscore newHighscore = new Highscore(players[i], highscores.length);
+          Highscore newHighscore = new Highscore(players[i], i);
 
           if (highscores.length == highscoreLimit) {
             highscores[highscoreLimit - 1] = newHighscore;
@@ -58,46 +60,29 @@ class _EndScreenState extends State<EndScreen> {
             context: context,
             barrierDismissible: false,
             builder: (BuildContext context) {
-              return BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
-                child: Dialog(
-                    child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-
-//TODO
-//testa allt och pusha ovanstående
-//5. fixa leaderboard knappen i mainmenu. fixa en paktiskt bra ikon eller lös på annat sätt?
-//7. pusha och bygg till play store
-//8. kolla över vad jag ska prioritera next, snyggare setup.dart. (ta bort isandroid, lägg till emoji-picker som blir spelpjäs: det sparas som en textsträng. behöver bara ha någon validering så att man bara kan välja emoji)
-//alt1. ha ett vanligt textfält med patternvalidering som måste vara unicode för emojis. användaren använder keybord emojis
-//alt2 jag väljer ut en lista med godkända emojis/unicodes som man kan välja mellan. eller om jag kan hämta ut det från någon api eller liknande?selectbox?
-//alt3. https://pub.dev/packages/emoji_picker https://stackoverflow.com/questions/44936239/displaying-text-with-emojis-on-flutter
-//försökt med alt 3 först. ANNARS alt 2 med en gridlist över massa emojis
-//får inte ta någon som redan funnits.
-//spara detta till highscore tillsammans med ett 3 bokstäverl långt namn.
-//i setup så playername kan jag skita i? ersätts med emoji.
-//quickstart ska tilldelas en random emoji
-
-//kolla på personliga/lokala rekord. spara bara en siffra i bakgrunden till prefernces. en per mode "local_highscore_bingo" = "30"
-//updatera den vid nytt avslutat spel om det är högre. möjligen en dialog.simpleannouncement för att meddela detta.
-//se taiga för bättre hantering när jag väl fått in firebase users. då kan jag spara personliga highscore kopplat till users med bild och allt och visa upp på snyggt vis.
-
-                      child: Text(
-                        "${timeFrameName[newHighscoreTimeFrame]} new highscore",
-                        style: TextStyle(fontSize: 20),
+              return Center(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+                  child: Dialog(
+                      child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          "${timeFrameName[newHighscoreTimeFrame]} new highscore",
+                          style: TextStyle(fontSize: 20),
+                        ),
                       ),
-                    ),
-                    NewHighscoreTable(
-                      highscores: highscores,
-                      player: players[i],
-                      callbackSaveHighscore: _saveHighscore,
-                      newHighscore: newHighscore,
-                    ),
-                  ],
-                )),
+                      NewHighscoreTable(
+                        highscores: highscores,
+                        player: players[i],
+                        callbackSaveHighscore: _saveHighscore,
+                        newHighscore: newHighscore,
+                      ),
+                    ],
+                  )),
+                ),
               );
             },
           );
@@ -128,13 +113,31 @@ class _EndScreenState extends State<EndScreen> {
             },
             itemBuilder: (context, index) {
               final player = players[index];
-              int ranking = highscoreState.getAllTimeRanking(
-                  gameMode, player.score.total);
               int totalScore = player.score.total;
               return ListTile(
-                leading: Image.file(player.screenshot),
+                onTap: () {
+                  Navigator.of(context).push(PageRouteBuilder(
+                      opaque: false,
+                      pageBuilder: (BuildContext context, _, __) {
+                        return BackdropFilter(
+                          filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+                          child: Container(
+                            child: GestureDetector(
+                              onTap: () => Navigator.of(context).pop(),
+                              child: Hero(
+                                  transitionOnUserGestures: true,
+                                  tag: 'screenshotEndScreen$index',
+                                  child: Image.file(player.screenshot)),
+                            ),
+                          ),
+                        );
+                      }));
+                },
+                leading: Hero(
+                    tag: 'screenshotEndScreen$index',
+                    child: Image.file(player.screenshot)),
                 title: Text(
-                  player.name,
+                  player.displayname,
                   style: TextStyle(
                       fontSize: 20,
                       letterSpacing: 1.5,
@@ -151,12 +154,35 @@ class _EndScreenState extends State<EndScreen> {
             },
           ),
         )),
-        RaisedButton(
-          onPressed: () {
-            gameState.restartApp();
-          },
-          child: Text("Main menu"),
-        )
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              OutlineButton(
+                onPressed: () {
+                  highscoreState.reset();
+                  gameState.restartGame();
+                },
+                textColor: Colors.blue,
+                borderSide: BorderSide(color: Colors.blue),
+                child: Text("Rematch"),
+              ),
+              SizedBox(
+                width: 8,
+              ),
+              OutlineButton(
+                onPressed: () {
+                  highscoreState.reset();
+                  gameState.restartApp();
+                },
+                textColor: Colors.blue,
+                borderSide: BorderSide(color: Colors.blue),
+                child: Text("Main menu"),
+              ),
+            ],
+          ),
+        ),
       ],
     ));
   }

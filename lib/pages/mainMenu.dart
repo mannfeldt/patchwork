@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:patchwork/components/gameModeCard.dart';
 import 'package:patchwork/logic/gamestate.dart';
 import 'package:patchwork/pages/leaderboardScreen.dart';
 import 'package:patchwork/utilities/constants.dart';
-import 'package:patchwork/utilities/patchwork_icons_icons.dart';
 import 'package:provider/provider.dart';
 
 class MainMenu extends StatelessWidget {
@@ -75,31 +75,25 @@ class MainMenu extends StatelessWidget {
           ],
         ),
         Align(
-          alignment: Alignment.topRight,
+          alignment: Alignment.bottomLeft,
           child: Container(
-            margin: EdgeInsets.only(
-                top: MediaQuery.of(context).padding.top + 8, right: 8),
-            height: 40,
-            width: 40,
+            margin: EdgeInsets.only(top: 8, bottom: 8),
+            height: 60,
+            width: 60,
             child: FlatButton(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20.0)),
-              color: Colors.yellow.shade800.withOpacity(0.7),
               textColor: Colors.white,
               padding: EdgeInsets.all(0.0),
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => Scaffold(
-                          appBar: AppBar(
-                            title: Text("Leaderboard"),
-                          ),
-                          body: SafeArea(child: LeaderboardScreen()))),
+                      builder: (context) =>
+                          Scaffold(body: LeaderboardScreen())),
                 );
               },
-              child: Icon(PatchworkIcons.award, color: Colors.yellow, size: 28),
-              //behöver lösa priblem med compound path för att få in de finare ikonerna. patchworkicons.award_1
+              child: SvgPicture.asset(
+                "assets/leaderboard.svg",
+              ),
             ),
           ),
         )

@@ -46,9 +46,7 @@ class _GameplayState extends State<Gameplay> {
         setState(() {
           isScreenshotTaken = true;
         });
-        //en liten delay här fixar vita patches.. gör någon roligare animation än bara vänta? camera flash. android screenshot animation
-        //just a flas h animation like opacity
-        await Future.delayed(Duration(milliseconds: 200));
+        await Future.delayed(Duration(milliseconds: 300));
         File image = await screenshotController.capture();
         gameState.saveScreenshot(image);
         setState(() {
@@ -101,14 +99,15 @@ class _GameplayState extends State<Gameplay> {
           }
           gameState.clearAnnouncement();
         }
+
         if (isBingoAnimation && !doneanimation) {
           gameState.setBingoAnimation(false);
-          await showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (BuildContext context) {
-              return LootBoxAnimation(lootBox, gameState.getBoardTileSize());
-            },
+
+          await Navigator.of(context).push(
+            PageRouteBuilder(
+                pageBuilder: (_context, _, __) =>
+                    LootBoxAnimation(lootBox, gameState.getBoardTileSize()),
+                opaque: false),
           );
 
           doneanimation = true;
@@ -117,22 +116,21 @@ class _GameplayState extends State<Gameplay> {
         }
         if (isButtonsAnimation && !doneanimation) {
           if (currentPlayer.board.buttons > 0) {
-            await showDialog(
-              context: context,
-              barrierDismissible: true,
-              builder: (BuildContext context) {
-                return GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: ButtonAnimation(
-                        currentPlayer, gameState.getBoardTileSize()));
-              },
+            await Navigator.of(context).push(
+              PageRouteBuilder(
+                  transitionDuration: Duration(milliseconds: 300),
+                  pageBuilder: (_context, _, __) => ButtonAnimation(
+                      currentPlayer, gameState.getBoardTileSize()),
+                  opaque: false),
             );
           }
           doneanimation = true;
-          //useless await?
-          gameState.clearAnimationButtons(true);
+          gameState.onButtonAnimationRecievedButtons();
+          if (currentPlayer.board.buttons > 0) {
+            await Future.delayed(Duration(milliseconds: 600));
+          }
+
+          gameState.onButtonAnimationCompleted();
           doneanimation = false;
         }
       }
@@ -155,8 +153,8 @@ class _GameplayState extends State<Gameplay> {
                 ? 'This is where you place your patches.\nCompleting a row in same color awards you with a lootbox.'
                 : 'This is where you place your patches',
             child: Container(
-              padding: EdgeInsets.fromLTRB(
-                  gameBoardInset, gameBoardInset, gameBoardInset, 0),
+              padding:
+                  EdgeInsets.fromLTRB(gameBoardInset, 0, gameBoardInset, 0),
               child: AnimatedOpacity(
                 duration: Duration(milliseconds: 50),
                 curve: Curves.easeIn,
