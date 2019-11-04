@@ -33,7 +33,7 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
   @override
   Widget build(BuildContext context) {
     final highscoreState = Provider.of<HighscoreState>(context);
-    List<Highscore> highscores = highscoreState.getAllHightscores();
+    List<Highscore> highscores = highscoreState.getAllHightscores() ?? [];
     Widget tableWidget;
     if (highscores == null) {
       //sessionS.fetchHighscores();
@@ -178,6 +178,5 @@ class _LeaderboardScreenState extends State<LeaderboardScreen> {
         tableWidget
       ],
     );
-
   }
 }

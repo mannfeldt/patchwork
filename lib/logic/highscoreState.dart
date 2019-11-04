@@ -38,7 +38,7 @@ class HighscoreState with ChangeNotifier {
   }
 
   void saveHighscore(Highscore highscore, Player player) async {
-    await auth.signInAnonymously();
+    //await auth.signInAnonymously();
     String extension = "png";
     final String fileName = 'screen_' +
         DateTime.now().millisecondsSinceEpoch.toString() +
@@ -144,6 +144,7 @@ class HighscoreState with ChangeNotifier {
 
   Future<List<Highscore>> fetchHighscores() async {
     if (_highscores == null) {
+      await auth.signInAnonymously();
       await databaseReference
           .collection("highscores")
           .getDocuments()
