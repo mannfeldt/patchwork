@@ -12,7 +12,6 @@ import 'package:patchwork/utilities/utils.dart';
 
 class HighscoreState with ChangeNotifier {
   List<Highscore> _highscores;
-  int _nextPlayerToCheckHighscore = 0;
   bool _isShowingNewHighscore = false;
 
   final databaseReference = Firestore.instance;
@@ -20,7 +19,6 @@ class HighscoreState with ChangeNotifier {
   final FirebaseAuth auth = FirebaseAuth.instance;
 
   getAllHightscores() => _highscores;
-  getNextPlayerToCheckHIghscore() => _nextPlayerToCheckHighscore;
   isShowingNewHighscore() => _isShowingNewHighscore;
 
   List<Highscore> getHighscores(Timeframe timeframe, GameMode gameMode) {
@@ -37,7 +35,19 @@ class HighscoreState with ChangeNotifier {
     return filteredHighscore;
   }
 
-  void saveHighscore(Highscore highscore, Player player) async {
+  void reset() {
+    _isShowingNewHighscore = false;
+  }
+
+  void saveHighscoreLocal(Highscore highscore, Player player) {
+    //sätt
+    highscore.cachedScreenshot = player.screenshot;
+    highscore.hasCachedScreenshot = true;
+    highscore.isNew = false;
+    _highscores.add(highscore);
+  }
+
+  void saveHighscoreFirebase(Highscore highscore, Player player) async {
     //await auth.signInAnonymously();
     String extension = "png";
     final String fileName = 'screen_' +
@@ -73,7 +83,7 @@ class HighscoreState with ChangeNotifier {
             {print("SAVE HIGHSCORE")},
         onError: (e) => {print(e.toString())});
     highscore.isNew = false; //?
-    _highscores.add(highscore);
+    //_highscores.add(highscore);
     _isShowingNewHighscore = false;
     //notifyListeners();
   }
@@ -97,7 +107,6 @@ class HighscoreState with ChangeNotifier {
   }
 
   void newGame() {
-    _nextPlayerToCheckHighscore = 0;
     notifyListeners();
   }
 

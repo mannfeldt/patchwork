@@ -39,11 +39,11 @@ class _NewHighscoreTableState extends State<NewHighscoreTable> {
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (widget.highscores.length > 2) {
-        int scrollpos = widget.highscores.indexWhere((h) => h.isNew) - 2;
+        int scrollpos = widget.highscores.indexWhere((h) => h.isNew) - 1;
         if (scrollpos > 0) {
           await _scrollController.animateTo(
             (scrollpos.toDouble() * 80),
-            curve: Curves.easeInBack,
+            curve: Curves.ease,
             duration: Duration(milliseconds: 300 + (scrollpos * 80)),
           );
         }
@@ -67,6 +67,20 @@ class _NewHighscoreTableState extends State<NewHighscoreTable> {
                 Highscore highscore = widget.highscores[index];
                 int score = highscore.getTotal();
 
+                Widget image = Image.asset("assets/transparent.png");
+                if (highscore.isNew) {
+                  image = Image.file(widget.player.screenshot);
+                } else if (highscore.hasCachedScreenshot) {
+                  image = Image.file(highscore.cachedScreenshot);
+                } else {
+                  image = FadeInImage.assetNetwork(
+                    image: highscore.screenshot,
+                    fadeOutDuration: Duration(milliseconds: 200),
+                    fadeInDuration: Duration(milliseconds: 200),
+                    placeholder: "assets/transparent.png",
+                  );
+                }
+
                 return Card(
                   elevation: highscore.isNew ? 3 : 0,
                   child: Container(
@@ -84,17 +98,7 @@ class _NewHighscoreTableState extends State<NewHighscoreTable> {
                                     child: Hero(
                                       transitionOnUserGestures: true,
                                       tag: 'screenshot$index',
-                                      child: highscore.isNew
-                                          ? Image.file(widget.player.screenshot)
-                                          : FadeInImage.assetNetwork(
-                                              image: highscore.screenshot,
-                                              fadeOutDuration:
-                                                  Duration(milliseconds: 200),
-                                              fadeInDuration:
-                                                  Duration(milliseconds: 200),
-                                              placeholder:
-                                                  "assets/transparent.png",
-                                            ),
+                                      child: image,
                                     ),
                                   ),
                                 ),
@@ -111,18 +115,7 @@ class _NewHighscoreTableState extends State<NewHighscoreTable> {
                                 style:
                                     TextStyle(fontSize: 20, color: Colors.blue),
                               )),
-                          Hero(
-                            tag: 'screenshot$index',
-                            child: highscore.isNew
-                                ? Image.file(widget.player.screenshot)
-                                : FadeInImage.assetNetwork(
-                                    image: highscore.screenshot,
-                                    fadeOutDuration:
-                                        Duration(milliseconds: 200),
-                                    fadeInDuration: Duration(milliseconds: 400),
-                                    placeholder: "assets/transparent.png",
-                                  ),
-                          )
+                          Hero(tag: 'screenshot$index', child: image)
                         ],
                       ),
                       title: highscore.isNew

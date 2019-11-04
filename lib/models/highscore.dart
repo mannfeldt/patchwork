@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:patchwork/models/player.dart';
@@ -17,6 +18,8 @@ class Highscore implements Comparable {
   String thumbnail;
   String emoji;
   String key;
+  File cachedScreenshot;
+  bool hasCachedScreenshot;
 
   Highscore.fromJson(var data) {
     this.name = data['name'];
@@ -34,6 +37,7 @@ class Highscore implements Comparable {
     this.emoji = data['emoji'];
     // this.key = data['key'];
     this.isNew = false;
+    this.hasCachedScreenshot = false;
   }
   Highscore(Player player, int id) {
     this.name = player.name;
@@ -46,6 +50,8 @@ class Highscore implements Comparable {
     this.time = Timestamp.now();
     this.id = id;
     this.isNew = true;
+    this.hasCachedScreenshot = true;
+    this.cachedScreenshot = player.screenshot;
   }
 
   String get displayname {

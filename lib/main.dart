@@ -59,7 +59,8 @@ class HomePage extends StatelessWidget {
           context: context,
           barrierDismissible: true,
           builder: (BuildContext context) {
-            return new PauseDialog(gameState: gameState);
+            return new PauseDialog(
+                gameState: gameState, highscoreState: highscoreState);
           },
         );
       }
@@ -78,9 +79,11 @@ class PauseDialog extends StatelessWidget {
   const PauseDialog({
     Key key,
     @required this.gameState,
+    this.highscoreState,
   }) : super(key: key);
 
   final GameState gameState;
+  final HighscoreState highscoreState;
 
   @override
   Widget build(BuildContext context) {
@@ -103,6 +106,7 @@ class PauseDialog extends StatelessWidget {
                 ),
                 OutlineButton(
                   onPressed: () {
+                    highscoreState.reset();
                     gameState.restartGame();
                     Navigator.pop(context);
                   },

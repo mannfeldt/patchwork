@@ -30,7 +30,9 @@ class _EndScreenState extends State<EndScreen> {
       newHighscore.name = name;
       newHighscore.time = Timestamp.now();
       newHighscore.mode = gameState.getGameMode().toString();
-      await highscoreState.saveHighscore(newHighscore, player);
+      highscoreState.saveHighscoreLocal(newHighscore, player);
+      await Future.delayed(Duration(seconds: 1));
+      highscoreState.saveHighscoreFirebase(newHighscore, player);
     }
 
     List<Player> players = gameState.getPlayers();
@@ -159,6 +161,7 @@ class _EndScreenState extends State<EndScreen> {
             children: <Widget>[
               OutlineButton(
                 onPressed: () {
+                  highscoreState.reset();
                   gameState.restartGame();
                 },
                 textColor: Colors.blue,
@@ -170,6 +173,7 @@ class _EndScreenState extends State<EndScreen> {
               ),
               OutlineButton(
                 onPressed: () {
+                  highscoreState.reset();
                   gameState.restartApp();
                 },
                 textColor: Colors.blue,

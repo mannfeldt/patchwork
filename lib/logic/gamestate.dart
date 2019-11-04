@@ -103,10 +103,9 @@ class GameState with ChangeNotifier {
 
   void restartGame() {
     List<Player> players = new List<Player>.from(_players);
+    reset();
     _players.clear();
     players.forEach((p) => addPlayer(p.id, p.emoji, p.name, p.color, p.isAi));
-    _bingoAnimation = false;
-    _recieveButtonsAnimation = false;
 
     startGame(_gameMode, false);
   }
@@ -124,7 +123,18 @@ class GameState with ChangeNotifier {
     _bottomHeight = screenHeight - (maxSize + (gameBoardInset * 1));
   }
 
+  void reset() {
+    _bingoAnimation = false;
+    _recieveButtonsAnimation = false;
+    _pieceMarkerIndex = 0;
+    _turnCounter = 0;
+    _extraPieceCollected = false;
+    _scissorsCollected = false;
+  }
+
   void startQuickPlay(GameMode mode) {
+    reset();
+    _players.clear();
     Random rng = new Random();
     addPlayer(1, playerEmojis[rng.nextInt(playerEmojis.length)], "Player 1",
         playerColors[rng.nextInt(playerColors.length)], false);
@@ -142,6 +152,7 @@ class GameState with ChangeNotifier {
   }
 
   void startGame(GameMode mode, bool playTutorial) {
+    reset();
     switch (mode) {
       case GameMode.CLASSIC:
         _ruleEngine = new ClassicGameMechanics();
@@ -158,13 +169,9 @@ class GameState with ChangeNotifier {
     _nextPieceList = _gamePieces;
     _timeBoard = _ruleEngine.initTimeBoard();
     _players = _ruleEngine.initPlayers(_players);
-    _pieceMarkerIndex = 0;
-    _turnCounter = 0;
     _currentPlayer = _players[0];
     _previousPlayer = _currentPlayer;
     _currentBoard = _currentPlayer.board;
-    _extraPieceCollected = false;
-    _scissorsCollected = false;
     _playTutorial = playTutorial;
     nextTurn();
     saveHasPlayed();
