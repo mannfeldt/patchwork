@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(builder: (_) => HighscoreState()),
       ],
       child: MaterialApp(
-          title: 'Flutter Demo',
+          title: 'Patchwork 2.0',
           theme: ThemeData(
             primarySwatch: Colors.blue,
           ),
