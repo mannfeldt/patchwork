@@ -51,9 +51,8 @@ class SetupState extends State<Setup> {
     }
 
     List<String> usedEmojis = players.map((p) => p.emoji).toList();
-    List<String> availableEmojis = playerEmojis
-        .where((pickedEmoji) => !usedEmojis.contains(pickedEmoji))
-        .toList();
+    List<String> availableEmojis = 
+        playerEmojis.where((pickedEmoji) => !usedEmojis.contains(pickedEmoji)).toList();
     if (_pickedEmoji == null) {
       Random rng = new Random();
       _pickedEmoji = availableEmojis[rng.nextInt(availableEmojis.length)];
